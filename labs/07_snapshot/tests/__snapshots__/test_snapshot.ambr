@@ -1,0 +1,26 @@
+# serializer version: 1
+# name: test_order_payload_snapshot
+  dict({
+    'amount': dict({
+      'currency': 'CNY',
+      'total': 59.7,
+    }),
+    'customer': dict({
+      'name': '王小明',
+      'tier': 'vip',
+    }),
+    'id': 'A1024',
+    'item': dict({
+      'qty': 3,
+      'sku': 'SKU-88',
+      'unit_price': 19.9,
+    }),
+    'meta': dict({
+      'channel': 'app',
+      'version': 3,
+    }),
+  })
+# ---
+# name: test_render_row_snapshot
+  '<tr data-id="A1024"><td> class="name">王小明</<td><td> class="qty">3</<td><td> class="total">¥59.7</<td></tr>'
+# ---

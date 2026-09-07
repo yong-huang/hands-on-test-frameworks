@@ -1,0 +1,94 @@
+# lab 30：分层测试流水线（push 触发；本地用 act 复跑，见 labs/30_local_ci）
+# 分层语义：单测 → API → E2E → 性能冒烟 → a11y/安全基线，任一环红则整体红
+name: tests
+
+on: [push, workflow_dispatch]
+
+jobs:
+  # ---------- 第 0 层：纯 pytest 核心单测（act 本地可复跑的最小闭环） ----------
+  unit-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: pytest 基本功（labs 01-05 快子集）
+        run: |
+          pip install pytest
+          cd labs/01_pytest_basics && python -m pytest -c configs/pytest.ini --rootdir=. -q -k "not regression_demo"
+          cd ../../labs/03_parametrize && python -m pytest -c configs/pytest.ini --rootdir=. -q
+
+  # ---------- 第 1 层：高级单测（性质/快照/异步/并行） ----------
+  unit-advanced:
+    runs-on: ubuntu-latest
+    needs: unit-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: hypothesis + syrupy + asyncio
+        run: |
+          pip install pytest hypothesis syrupy pytest-asyncio time-machine
+          cd labs/06_hypothesis && python -m pytest -c configs/pytest.ini --rootdir=. -q --ignore=tests/test_props.py -k stateful
+          cd ../../labs/08_async && python -m pytest -c configs/pytest.ini --rootdir=. -q
+
+  # ---------- 第 2 层：API 测试（起 SUT 真端口） ----------
+  api-tests:
+    runs-on: ubuntu-latest
+    needs: unit-advanced
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: labs/12 API 套件
+        run: |
+          pip install pytest httpx fastapi "uvicorn[standard]"
+          cd labs/12_api_tests && ./api_tests.sh
+
+  # ---------- 第 3 层：E2E（Playwright Chromium） ----------
+  e2e-playwright:
+    runs-on: ubuntu-latest
+    needs: api-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: labs/16 E2E 三部曲
+        run: |
+          pip install pytest pytest-playwright httpx fastapi "uvicorn[standard]"
+          playwright install --with-deps chromium
+          cd labs/16_pw_basics && ./pw_basics.sh
+
+  # ---------- 第 4 层：性能冒烟（k6 smoke 场景） ----------
+  perf-smoke:
+    runs-on: ubuntu-latest
+    needs: e2e-playwright
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: labs/27 k6 smoke（thresholds 即门禁）
+        run: |
+          pip install fastapi "uvicorn[standard]"
+          sudo apt-get update && sudo apt-get install -y curl
+          curl -sL https://github.com/grafana/k6/releases/download/v0.57.0/k6-v0.57.0-linux-amd64.tar.gz | tar xz --strip-components=1
+          ./k6 --version
+          cd labs/27_k6 && ./k6_run.sh
+
+  # ---------- 第 5 层：a11y/安全基线（axe 门禁 + ZAP 报告 artifact） ----------
+  a11y-security:
+    runs-on: ubuntu-latest
+    needs: perf-smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: labs/29 双基线
+        run: |
+          pip install pytest pytest-playwright axe-playwright-python fastapi "uvicorn[standard]"
+          playwright install --with-deps chromium
+          cd labs/29_a11y_security && ./a11y_security.sh
+      - name: 上传 ZAP 报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: zap-report, path: labs/29_a11y_security/docs/zap_report.html }

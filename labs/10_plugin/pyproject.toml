@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-ministore-report"
+version = "0.1.0"
+description = "教学插件：marker 校验 + 慢用例自动打标 + 失败上下文 JSON"
+requires-python = ">=3.11"
+dependencies = ["pytest>=7"]
+
+# pytest11 是 pytest 的插件入口点组：装进环境即全局生效（代码内部用 --ministore 开关自限）
+[project.entry-points.pytest11]
+ministore_report = "pytest_ministore_report.plugin"
+
+[tool.setuptools]
+packages = ["pytest_ministore_report"]

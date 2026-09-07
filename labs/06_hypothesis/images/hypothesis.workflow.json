@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "property-based：生成-断言-收缩-入库",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/06_hypothesis/images/hypothesis.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "decl",
+      "label": "声明"
+    },
+    {
+      "id": "gen",
+      "label": "生成期"
+    },
+    {
+      "id": "fix",
+      "label": "失败处置"
+    },
+    {
+      "id": "store",
+      "label": "沉淀"
+    }
+  ],
+  "phases": [
+    {
+      "id": "loop",
+      "label": "N 组随机输入",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "shrink",
+      "label": "收缩到最小",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "given",
+    "gen",
+    "prop",
+    "shr",
+    "db"
+  ],
+  "nodes": [
+    {
+      "id": "given",
+      "lane": "decl",
+      "col": 0,
+      "type": "external",
+      "label": "@given 策略",
+      "width": 132,
+      "sublabel": "st.lists/floats"
+    },
+    {
+      "id": "ex",
+      "lane": "decl",
+      "col": 1,
+      "type": "security",
+      "label": "@example 锚点",
+      "width": 132,
+      "sublabel": "固定回归"
+    },
+    {
+      "id": "gen",
+      "lane": "gen",
+      "col": 1,
+      "type": "backend",
+      "label": "随机输入",
+      "width": 132,
+      "sublabel": "200 例"
+    },
+    {
+      "id": "prop",
+      "lane": "gen",
+      "col": 2,
+      "type": "backend",
+      "label": "性质断言",
+      "width": 132,
+      "sublabel": "往返/不变量"
+    },
+    {
+      "id": "shr",
+      "lane": "fix",
+      "col": 3,
+      "type": "security",
+      "label": "Falsifying example",
+      "width": 132,
+      "sublabel": "最小复现",
+      "tag": "收缩"
+    },
+    {
+      "id": "db",
+      "lane": "store",
+      "col": 4,
+      "type": "database",
+      "label": ".hypothesis 库",
+      "width": 132,
+      "sublabel": "失败永久重放"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "given",
+      "to": "gen",
+      "variant": "default"
+    },
+    {
+      "id": "b",
+      "from": "ex",
+      "to": "gen",
+      "variant": "security",
+      "label": "锚点必跑"
+    },
+    {
+      "id": "c",
+      "from": "gen",
+      "to": "prop",
+      "variant": "emphasis",
+      "label": "执行性质"
+    },
+    {
+      "id": "d",
+      "from": "prop",
+      "to": "shr",
+      "variant": "security",
+      "label": "失败即收缩"
+    },
+    {
+      "id": "f",
+      "from": "shr",
+      "to": "db",
+      "variant": "dashed",
+      "label": "入库重放"
+    }
+  ]
+}

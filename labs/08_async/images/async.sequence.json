@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "异步重试客户端：退避时序与注入点",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/08_async/images/async.html",
+    "viewBox": [
+      1050,
+      605
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "test",
+      "type": "external",
+      "label": "测试",
+      "sublabel": "注入 sleeper"
+    },
+    {
+      "id": "cli",
+      "type": "backend",
+      "label": "RetryClient",
+      "sublabel": "指数退避"
+    },
+    {
+      "id": "tp",
+      "type": "cloud",
+      "label": "transport",
+      "sublabel": "注入的替身"
+    },
+    {
+      "id": "sl",
+      "type": "messagebus",
+      "label": "sleeper",
+      "sublabel": "记账不真睡"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 297,
+      "label": "首次尝试"
+    },
+    {
+      "from": 306,
+      "to": 427,
+      "label": "指数退避"
+    },
+    {
+      "from": 436,
+      "to": 506,
+      "label": "成功返回"
+    }
+  ],
+  "messages": [
+    {
+      "from": "test",
+      "to": "cli",
+      "y": 160,
+      "label": "get(url)",
+      "variant": "emphasis"
+    },
+    {
+      "from": "cli",
+      "to": "tp",
+      "y": 182,
+      "label": "尝试 #1",
+      "variant": "emphasis"
+    },
+    {
+      "from": "tp",
+      "to": "cli",
+      "y": 216,
+      "label": "TransientError",
+      "variant": "return"
+    },
+    {
+      "from": "cli",
+      "to": "sl",
+      "y": 251,
+      "label": "sleep(0.5) 名义",
+      "variant": "emphasis"
+    },
+    {
+      "from": "cli",
+      "to": "tp",
+      "y": 303,
+      "label": "尝试 #2",
+      "variant": "default"
+    },
+    {
+      "from": "tp",
+      "to": "cli",
+      "y": 338,
+      "label": "又失败",
+      "variant": "return"
+    },
+    {
+      "from": "cli",
+      "to": "sl",
+      "y": 373,
+      "label": "sleep(1.0) 名义",
+      "variant": "emphasis"
+    },
+    {
+      "from": "cli",
+      "to": "tp",
+      "y": 425,
+      "label": "尝试 #3 → 200",
+      "variant": "emphasis"
+    },
+    {
+      "from": "cli",
+      "to": "test",
+      "y": 460,
+      "label": "Response（fetched_at 冻结时间）",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "cli",
+      "from": 138,
+      "to": 486,
+      "type": "backend"
+    },
+    {
+      "participant": "sl",
+      "from": 243,
+      "to": 390,
+      "type": "messagebus"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# 本地 Selenium Grid（单节点 2 并发 Chrome）
+# 用法：docker compose -f docker-compose.grid.yml up -d
+#       http://localhost:4444/ui 可看节点
+services:
+  chrome:
+    image: selenium/standalone-chrome:latest
+    shm_size: 2g
+    ports:
+      - "4444:4444"
+    environment:
+      SE_NODE_MAX_SESSIONS: 2        # 允许两个 Chrome 会话并行
+      SE_NODE_SESSION_TIMEOUT: 120

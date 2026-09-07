@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "三核矩阵与失败取证管线",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/20_pw_quality/images/pw_quality.html"
+  },
+  "components": [
+    {
+      "id": "suite",
+      "type": "backend",
+      "label": "冒烟套件 ×3",
+      "sublabel": "同语义用例",
+      "pos": [
+        150,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "cr",
+      "type": "frontend",
+      "label": "Chromium",
+      "sublabel": "主力内核",
+      "pos": [
+        420,
+        100
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "ff",
+      "type": "frontend",
+      "label": "Firefox",
+      "sublabel": "独立引擎",
+      "pos": [
+        420,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "wk",
+      "type": "frontend",
+      "label": "WebKit",
+      "sublabel": "Safari 同源",
+      "pos": [
+        420,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "res",
+      "type": "database",
+      "label": "test-results/",
+      "sublabel": "按用例×内核归档",
+      "pos": [
+        700,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "ev",
+      "type": "messagebus",
+      "label": "png+webm+trace",
+      "sublabel": "失败三件套",
+      "pos": [
+        700,
+        400
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "only-on-failure"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "suite",
+      "to": "cr",
+      "label": "--browser ×3"
+    },
+    {
+      "id": "b",
+      "from": "suite",
+      "to": "ff"
+    },
+    {
+      "id": "c",
+      "from": "suite",
+      "to": "wk"
+    },
+    {
+      "id": "d",
+      "from": "wk",
+      "to": "res",
+      "label": "失败落盘",
+      "variant": "dashed"
+    },
+    {
+      "id": "f",
+      "from": "res",
+      "to": "ev"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "矩阵语义",
+      "items": [
+        "9 用例 = 3×3 全绿",
+        "WebKit 无需特殊处理（诚实记录）"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "取证",
+      "items": [
+        "retain-on-failure",
+        "show-trace 时间旅行"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "边界意识",
+      "items": [
+        "引擎差异靠 expect 等待吸收",
+        "skipif + issue 才是迁就之道"
+      ]
+    }
+  ]
+}

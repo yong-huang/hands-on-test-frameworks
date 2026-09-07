@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "k6 场景与 thresholds 门禁",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/27_k6/images/k6.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "scn",
+      "label": "场景"
+    },
+    {
+      "id": "exec",
+      "label": "执行"
+    },
+    {
+      "id": "metric",
+      "label": "指标"
+    },
+    {
+      "id": "gate",
+      "label": "门禁"
+    }
+  ],
+  "phases": [
+    {
+      "id": "sel",
+      "label": "SCENARIO 选择",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "judge",
+      "label": "阈值判定",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "smoke",
+    "ramp",
+    "spike",
+    "tags",
+    "thr",
+    "exit"
+  ],
+  "nodes": [
+    {
+      "id": "smoke",
+      "lane": "scn",
+      "col": 0,
+      "type": "external",
+      "label": "smoke",
+      "width": 132,
+      "sublabel": "1 VU 15s 验活"
+    },
+    {
+      "id": "ramp",
+      "lane": "scn",
+      "col": 1,
+      "type": "backend",
+      "label": "ramping",
+      "width": 132,
+      "sublabel": "0→20→0 VU"
+    },
+    {
+      "id": "spike",
+      "lane": "exec",
+      "col": 1,
+      "type": "backend",
+      "label": "spike",
+      "width": 132,
+      "sublabel": "5→60 到达率突刺",
+      "tag": "突刺"
+    },
+    {
+      "id": "tags",
+      "lane": "metric",
+      "col": 2,
+      "type": "messagebus",
+      "label": "endpoint:fast 标签",
+      "width": 132,
+      "sublabel": "阈值只管快接口"
+    },
+    {
+      "id": "thr",
+      "lane": "gate",
+      "col": 3,
+      "type": "security",
+      "label": "p95<500ms & 错误<1%",
+      "width": 132,
+      "sublabel": "不达标退出非 0",
+      "tag": "CI 门禁"
+    },
+    {
+      "id": "exit",
+      "lane": "gate",
+      "col": 4,
+      "type": "messagebus",
+      "label": "退出码",
+      "width": 132,
+      "sublabel": "直接当闸门"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "smoke",
+      "to": "ramp",
+      "variant": "default"
+    },
+    {
+      "id": "b",
+      "from": "ramp",
+      "to": "spike",
+      "variant": "emphasis",
+      "label": "同脚本三形态"
+    },
+    {
+      "id": "c",
+      "from": "spike",
+      "to": "tags",
+      "variant": "default"
+    },
+    {
+      "id": "d",
+      "from": "tags",
+      "to": "thr",
+      "variant": "default"
+    },
+    {
+      "id": "f",
+      "from": "thr",
+      "to": "exit",
+      "variant": "security",
+      "label": "不达标拦下提交"
+    }
+  ]
+}

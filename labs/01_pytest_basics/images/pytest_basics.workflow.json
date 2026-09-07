@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pytest 一次运行的生命周期",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/01_pytest_basics/images/pytest_basics.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "cli",
+      "label": "命令行"
+    },
+    {
+      "id": "collect",
+      "label": "收集期"
+    },
+    {
+      "id": "run",
+      "label": "执行期"
+    },
+    {
+      "id": "report",
+      "label": "报告期"
+    }
+  ],
+  "phases": [
+    {
+      "id": "find",
+      "label": "发现用例",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "exec",
+      "label": "逐条执行",
+      "fromCol": 2,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "sum",
+      "label": "汇总退出",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "cli",
+    "ini",
+    "disc",
+    "mark",
+    "assert",
+    "sum"
+  ],
+  "nodes": [
+    {
+      "id": "cli",
+      "lane": "cli",
+      "col": 0,
+      "type": "external",
+      "label": "pytest 命令",
+      "width": 132,
+      "sublabel": "-k / -x / -v"
+    },
+    {
+      "id": "ini",
+      "lane": "cli",
+      "col": 1,
+      "type": "frontend",
+      "label": "pytest.ini",
+      "width": 132,
+      "sublabel": "rootdir + addopts"
+    },
+    {
+      "id": "disc",
+      "lane": "collect",
+      "col": 2,
+      "type": "backend",
+      "label": "用例发现",
+      "width": 132,
+      "sublabel": "test_*.py::test_*"
+    },
+    {
+      "id": "assert",
+      "lane": "run",
+      "col": 3,
+      "type": "backend",
+      "label": "断言重写",
+      "width": 132,
+      "sublabel": "失败展开中间值",
+      "tag": "教学点"
+    },
+    {
+      "id": "mark",
+      "lane": "run",
+      "col": 2,
+      "type": "backend",
+      "label": "参数化展开",
+      "width": 132,
+      "sublabel": "一函数多实例"
+    },
+    {
+      "id": "sum",
+      "lane": "report",
+      "col": 3,
+      "type": "messagebus",
+      "label": "汇总报告",
+      "width": 132,
+      "sublabel": "退出码 0/1"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "cli",
+      "to": "ini",
+      "variant": "default"
+    },
+    {
+      "id": "b",
+      "from": "ini",
+      "to": "disc",
+      "variant": "emphasis",
+      "label": "按配置收集"
+    },
+    {
+      "id": "c",
+      "from": "disc",
+      "to": "mark",
+      "variant": "default"
+    },
+    {
+      "id": "d",
+      "from": "mark",
+      "to": "assert",
+      "variant": "default",
+      "label": "逐条执行"
+    },
+    {
+      "id": "f",
+      "from": "assert",
+      "to": "sum",
+      "variant": "default",
+      "label": "结果汇总"
+    }
+  ]
+}

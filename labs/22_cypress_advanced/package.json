@@ -1,0 +1,7 @@
+{
+  "name": "hands-on-22-cypress-advanced",
+  "private": true,
+  "devDependencies": {
+    "cypress": "^16.0.0"
+  }
+}

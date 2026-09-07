@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "参数化：一条函数展开成用例矩阵",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/03_parametrize/images/parametrize.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "src",
+      "label": "数据来源"
+    },
+    {
+      "id": "expand",
+      "label": "展开期"
+    },
+    {
+      "id": "run",
+      "label": "执行期"
+    },
+    {
+      "id": "out",
+      "label": "报告"
+    }
+  ],
+  "phases": [
+    {
+      "id": "decl",
+      "label": "声明矩阵",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "exec",
+      "label": "24 条独立执行",
+      "fromCol": 2,
+      "toCol": 2,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "func",
+    "vals",
+    "ids",
+    "cart",
+    "ind",
+    "cases"
+  ],
+  "nodes": [
+    {
+      "id": "func",
+      "lane": "src",
+      "col": 0,
+      "type": "external",
+      "label": "11 个测试函数",
+      "width": 132,
+      "sublabel": "被测：配置解析器"
+    },
+    {
+      "id": "vals",
+      "lane": "src",
+      "col": 1,
+      "type": "database",
+      "label": "argvalues",
+      "width": 132,
+      "sublabel": "值列表"
+    },
+    {
+      "id": "ids",
+      "lane": "expand",
+      "col": 2,
+      "type": "backend",
+      "label": "ids 命名",
+      "width": 132,
+      "sublabel": "报告可读",
+      "tag": "可读性"
+    },
+    {
+      "id": "cart",
+      "lane": "expand",
+      "col": 3,
+      "type": "backend",
+      "label": "笛卡尔积",
+      "width": 132,
+      "sublabel": "2×3=6 组合"
+    },
+    {
+      "id": "ind",
+      "lane": "expand",
+      "col": 4,
+      "type": "backend",
+      "label": "indirect",
+      "width": 132,
+      "sublabel": "参数走 fixture"
+    },
+    {
+      "id": "cases",
+      "lane": "run",
+      "col": 4,
+      "type": "messagebus",
+      "label": "24 条用例",
+      "width": 132,
+      "sublabel": "独立失败"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "func",
+      "to": "vals",
+      "variant": "default"
+    },
+    {
+      "id": "b",
+      "from": "vals",
+      "to": "ids",
+      "variant": "emphasis",
+      "label": "命名展开"
+    },
+    {
+      "id": "c",
+      "from": "ids",
+      "to": "cart",
+      "variant": "default",
+      "label": "叠加组合"
+    },
+    {
+      "id": "d",
+      "from": "cart",
+      "to": "ind",
+      "variant": "default"
+    },
+    {
+      "id": "f",
+      "from": "ind",
+      "to": "cases",
+      "variant": "emphasis",
+      "label": "矩阵执行"
+    }
+  ]
+}

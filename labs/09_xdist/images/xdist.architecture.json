@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pytest-xdist：主进程分派与 worker 各自为政",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/09_xdist/images/xdist.html"
+  },
+  "components": [
+    {
+      "id": "main",
+      "type": "backend",
+      "label": "pytest 主进程",
+      "sublabel": "收集+分发+汇总",
+      "pos": [
+        160,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "w1",
+      "type": "backend",
+      "label": "Worker 1",
+      "sublabel": "独立进程",
+      "pos": [
+        440,
+        120
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "w2",
+      "type": "backend",
+      "label": "Worker 2",
+      "sublabel": "独立进程",
+      "pos": [
+        440,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "w3",
+      "type": "backend",
+      "label": "Worker N",
+      "sublabel": "按核心数",
+      "pos": [
+        440,
+        360
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "module 全局",
+      "sublabel": "每 worker 独立副本",
+      "pos": [
+        720,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "污染现场"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "main",
+      "to": "w1",
+      "label": "分发用例"
+    },
+    {
+      "id": "b",
+      "from": "main",
+      "to": "w2"
+    },
+    {
+      "id": "c",
+      "from": "main",
+      "to": "w3"
+    },
+    {
+      "id": "d",
+      "from": "w1",
+      "to": "db",
+      "label": "计数器从 0 起",
+      "variant": "dashed"
+    },
+    {
+      "id": "f",
+      "from": "w3",
+      "to": "main",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "实测加速",
+      "items": [
+        "串行 11.8s → 并行 1.9s",
+        "200 条 50ms 用例"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "独立性",
+      "items": [
+        "共享计数器并行必翻车",
+        "fixture 化修复后全绿"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "分层",
+      "items": [
+        "-m smoke 0.3s 秒回",
+        "CI push 只跑冒烟"
+      ]
+    }
+  ]
+}

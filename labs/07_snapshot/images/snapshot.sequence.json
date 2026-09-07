@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "快照测试：比对-红-审查-更新的循环",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/07_snapshot/images/snapshot.html",
+    "viewBox": [
+      1050,
+      597
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "test",
+      "type": "external",
+      "label": "快照用例",
+      "sublabel": "assert == snapshot"
+    },
+    {
+      "id": "rend",
+      "type": "backend",
+      "label": "被测输出",
+      "sublabel": "JSON/HTML"
+    },
+    {
+      "id": "snap",
+      "type": "database",
+      "label": ".ambr 基线",
+      "sublabel": "上次认可版本"
+    },
+    {
+      "id": "human",
+      "type": "external",
+      "label": "人工审查",
+      "sublabel": "看 diff 决策"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 320,
+      "label": "自动比对"
+    },
+    {
+      "from": 340,
+      "to": 470,
+      "label": "人工决策"
+    }
+  ],
+  "messages": [
+    {
+      "from": "test",
+      "to": "rend",
+      "y": 180,
+      "label": "构造输出",
+      "variant": "emphasis"
+    },
+    {
+      "from": "test",
+      "to": "snap",
+      "y": 222,
+      "label": "读取基线",
+      "variant": "emphasis"
+    },
+    {
+      "from": "rend",
+      "to": "snap",
+      "y": 264,
+      "label": "逐行比对",
+      "variant": "default"
+    },
+    {
+      "from": "snap",
+      "to": "test",
+      "y": 306,
+      "label": "不一致 → 红 + diff",
+      "variant": "return"
+    },
+    {
+      "from": "test",
+      "to": "human",
+      "y": 368,
+      "label": "呈现 diff",
+      "variant": "dashed"
+    },
+    {
+      "from": "human",
+      "to": "snap",
+      "y": 410,
+      "label": "合法变更 → --snapshot-update",
+      "variant": "emphasis"
+    },
+    {
+      "from": "snap",
+      "to": "test",
+      "y": 452,
+      "label": "新基线 → 绿",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "test",
+      "from": 160,
+      "to": 330,
+      "type": "external"
+    },
+    {
+      "participant": "snap",
+      "from": 200,
+      "to": 470,
+      "type": "database"
+    }
+  ]
+}

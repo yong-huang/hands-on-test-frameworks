@@ -1,0 +1,157 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "三框架统一矩阵的执行与统计",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/25_comparison/images/comparison.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "drive",
+      "label": "编排"
+    },
+    {
+      "id": "pw",
+      "label": "Playwright"
+    },
+    {
+      "id": "cy",
+      "label": "Cypress"
+    },
+    {
+      "id": "se",
+      "label": "Selenium"
+    }
+  ],
+  "phases": [
+    {
+      "id": "loop",
+      "label": "同一 SUT 同语义 5 用例",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "stat",
+      "label": "统计落盘",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "run",
+    "a",
+    "csv",
+    "rpt"
+  ],
+  "nodes": [
+    {
+      "id": "run",
+      "lane": "drive",
+      "col": 0,
+      "type": "external",
+      "label": "run_all.sh",
+      "width": 132,
+      "sublabel": "ROUNDS 轮"
+    },
+    {
+      "id": "a",
+      "lane": "pw",
+      "col": 1,
+      "type": "backend",
+      "label": "pytest 套件",
+      "width": 132,
+      "sublabel": "Chromium"
+    },
+    {
+      "id": "b",
+      "lane": "cy",
+      "col": 1,
+      "type": "backend",
+      "label": "cypress run",
+      "width": 132,
+      "sublabel": "Electron"
+    },
+    {
+      "id": "c",
+      "lane": "se",
+      "col": 1,
+      "type": "backend",
+      "label": "pytest 套件",
+      "width": 132,
+      "sublabel": "Chrome"
+    },
+    {
+      "id": "csv",
+      "lane": "drive",
+      "col": 2,
+      "type": "database",
+      "label": "results.csv",
+      "width": 132,
+      "sublabel": "耗时/通过/失败"
+    },
+    {
+      "id": "rpt",
+      "lane": "drive",
+      "col": 3,
+      "type": "messagebus",
+      "label": "comparison.md",
+      "width": 132,
+      "sublabel": "场景选型结论"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "run",
+      "to": "a",
+      "variant": "emphasis",
+      "label": "轮 1..N"
+    },
+    {
+      "id": "b",
+      "from": "run",
+      "to": "b",
+      "variant": "default"
+    },
+    {
+      "id": "c",
+      "from": "run",
+      "to": "c",
+      "variant": "default"
+    },
+    {
+      "id": "d",
+      "from": "a",
+      "to": "csv",
+      "variant": "default"
+    },
+    {
+      "id": "f",
+      "from": "b",
+      "to": "csv",
+      "variant": "default"
+    },
+    {
+      "id": "g",
+      "from": "c",
+      "to": "csv",
+      "variant": "default"
+    },
+    {
+      "id": "h",
+      "from": "csv",
+      "to": "rpt",
+      "variant": "default",
+      "label": "数据说话"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pytest 插件的四个介入时机",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/10_plugin/images/plugin.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "coll",
+      "label": "收集期"
+    },
+    {
+      "id": "run",
+      "label": "执行期"
+    },
+    {
+      "id": "finish",
+      "label": "收尾期"
+    },
+    {
+      "id": "out",
+      "label": "产物"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entry",
+      "label": "pytest11 入口点",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "gate",
+      "label": "配置早失败",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "ep",
+    "mark",
+    "hook",
+    "slow",
+    "fin",
+    "sum"
+  ],
+  "nodes": [
+    {
+      "id": "ep",
+      "lane": "coll",
+      "col": 0,
+      "type": "external",
+      "label": "pyproject 入口点",
+      "width": 132,
+      "sublabel": "pip install 即加载"
+    },
+    {
+      "id": "mark",
+      "lane": "coll",
+      "col": 1,
+      "type": "security",
+      "label": "marker 校验",
+      "width": 132,
+      "sublabel": "tier 非法即 UsageError"
+    },
+    {
+      "id": "hook",
+      "lane": "run",
+      "col": 2,
+      "type": "backend",
+      "label": "runtest_makereport",
+      "width": 132,
+      "sublabel": "失败落上下文 JSON",
+      "tag": "核心钩子"
+    },
+    {
+      "id": "slow",
+      "lane": "run",
+      "col": 3,
+      "type": "backend",
+      "label": "慢用例打标",
+      "width": 132,
+      "sublabel": "duration > 阈值"
+    },
+    {
+      "id": "fin",
+      "lane": "finish",
+      "col": 3,
+      "type": "messagebus",
+      "label": "sessionfinish",
+      "width": 132,
+      "sublabel": "写报告 JSON"
+    },
+    {
+      "id": "sum",
+      "lane": "out",
+      "col": 3,
+      "type": "messagebus",
+      "label": "terminal_summary",
+      "width": 132,
+      "sublabel": "官方钩子打印摘要"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "ep",
+      "to": "mark",
+      "variant": "emphasis",
+      "label": "发现插件"
+    },
+    {
+      "id": "b",
+      "from": "mark",
+      "to": "hook",
+      "variant": "emphasis",
+      "label": "通过收集"
+    },
+    {
+      "id": "c",
+      "from": "hook",
+      "to": "slow",
+      "variant": "default",
+      "label": "逐用例记账"
+    },
+    {
+      "id": "d",
+      "from": "slow",
+      "to": "fin",
+      "variant": "default",
+      "label": "会话结束"
+    },
+    {
+      "id": "f",
+      "from": "fin",
+      "to": "sum",
+      "variant": "default",
+      "label": "产出报告"
+    }
+  ]
+}

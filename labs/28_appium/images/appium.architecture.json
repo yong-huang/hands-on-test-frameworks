@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "移动端测试：Appium 链路与 fallback 双路径",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/28_appium/images/appium.html"
+  },
+  "components": [
+    {
+      "id": "ap",
+      "type": "backend",
+      "label": "Appium server",
+      "sublabel": "npm -g appium",
+      "pos": [
+        150,
+        120
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "本机未装"
+    },
+    {
+      "id": "xc",
+      "type": "cloud",
+      "label": "Xcode Simulator",
+      "sublabel": "simctl 不可用",
+      "pos": [
+        150,
+        280
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "环境受阻"
+    },
+    {
+      "id": "ref",
+      "type": "database",
+      "label": "appium_reference.py",
+      "sublabel": "补齐环境即可跑",
+      "pos": [
+        400,
+        200
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "fb",
+      "type": "frontend",
+      "label": "fallback 移动视口",
+      "sublabel": "iPhone 14 描述符+触屏（本机实跑）",
+      "pos": [
+        400,
+        400
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "case",
+      "type": "backend",
+      "label": "3 条触屏用例",
+      "sublabel": "tap 下单/布局/竞态",
+      "pos": [
+        680,
+        400
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "SUT :8928",
+      "sublabel": "同一被测应用",
+      "pos": [
+        680,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "ap",
+      "to": "ref",
+      "label": "理想路径",
+      "variant": "dashed"
+    },
+    {
+      "id": "b",
+      "from": "xc",
+      "to": "ref",
+      "variant": "dashed"
+    },
+    {
+      "id": "c",
+      "from": "ref",
+      "to": "fb",
+      "label": "受阻则切换",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "id": "d",
+      "from": "fb",
+      "to": "case"
+    },
+    {
+      "id": "f",
+      "from": "case",
+      "to": "sut",
+      "label": "tap 交互"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "诚实探测",
+      "items": [
+        "simctl 不可用如实打印",
+        "fallback 按清单约定计入完成"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "fallback 等价性",
+      "items": [
+        "tap=触屏不是鼠标",
+        "视口+UA=真机描述符"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Appium 要点",
+      "items": [
+        "accessibility id 定位首选",
+        "链路长，预留 2 倍时间"
+      ]
+    }
+  ]
+}

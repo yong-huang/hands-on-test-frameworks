@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>慢加载演示页</title>
+<style>body{font-family:-apple-system,sans-serif;max-width:560px;margin:40px auto}
+.box{border:1px solid #ccc;padding:12px;margin:8px 0;border-radius:6px}
+#late-list .box{background:#f6f8fa}</style></head>
+<body>
+<h1>🐢 慢加载演示页（lab 17 专用）</h1>
+<div id="race-box" class="box">竞态按钮：点我之后 1 秒我的文字才会变</div>
+<button id="race-btn">点我触发竞态</button>
+<button id="load-late">加载延迟列表（2 秒后渲染）</button>
+<div id="late-list"></div>
+<script>
+document.getElementById('race-btn').addEventListener('click', async function () {
+  this.textContent = '处理中…'; this.disabled = true;
+  await new Promise(r => setTimeout(r, 1000));          // 1s 后才真正变化
+  document.getElementById('race-box').textContent = '竞态完成：状态已更新 ✅';
+  this.textContent = '再点一次'; this.disabled = false;
+});
+document.getElementById('load-late').addEventListener('click', async () => {
+  await new Promise(r => setTimeout(r, 2000));          // 延迟渲染：2s 后列表才出现
+  document.getElementById('late-list').innerHTML =
+    [1, 2, 3].map(i => `<div class="box">延迟条目 #${i}</div>`).join('');
+});
+</script>
+</body>
+</html>

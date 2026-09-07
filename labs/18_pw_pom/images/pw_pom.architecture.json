@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "POM 分层：选择器只活在 pages/",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/18_pw_pom/images/pw_pom.html"
+  },
+  "components": [
+    {
+      "id": "test",
+      "type": "external",
+      "label": "test_orders_pom",
+      "sublabel": "业务语言用例",
+      "pos": [
+        150,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "fix",
+      "type": "backend",
+      "label": "conftest fixture",
+      "sublabel": "index_page/slow_page",
+      "pos": [
+        400,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "page",
+      "type": "backend",
+      "label": "IndexPage/SlowPage",
+      "sublabel": "选择器唯一居所",
+      "pos": [
+        650,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "收口"
+    },
+    {
+      "id": "br",
+      "type": "frontend",
+      "label": "Playwright page",
+      "sublabel": "浏览器抽象",
+      "pos": [
+        880,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "new",
+      "type": "external",
+      "label": "test_new_feature",
+      "sublabel": "12 行新增用例",
+      "pos": [
+        400,
+        400
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "低成本"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "test",
+      "to": "fix",
+      "label": "注入"
+    },
+    {
+      "id": "b",
+      "from": "fix",
+      "to": "page",
+      "label": "构造"
+    },
+    {
+      "id": "c",
+      "from": "page",
+      "to": "br",
+      "label": "驱动"
+    },
+    {
+      "id": "d",
+      "from": "new",
+      "to": "fix",
+      "label": "复用即写",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "纪律检查",
+      "items": [
+        "grep 泄漏检查进脚本",
+        "tests/ 出现选择器即失败"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "等价重构",
+      "items": [
+        "用例数与断言语义不变",
+        "页面细节全部下沉"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "真实竞态",
+      "items": [
+        "连续下单踩中刷新竞态",
+        "按真实用户节奏写用例"
+      ]
+    }
+  ]
+}

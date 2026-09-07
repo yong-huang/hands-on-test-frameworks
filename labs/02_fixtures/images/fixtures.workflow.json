@@ -1,0 +1,151 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "fixture 的装配：作用域入栈出栈",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/02_fixtures/images/fixtures.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "test",
+      "label": "测试用例"
+    },
+    {
+      "id": "session",
+      "label": "session 级"
+    },
+    {
+      "id": "func",
+      "label": "function 级"
+    },
+    {
+      "id": "teardown",
+      "label": "清理"
+    }
+  ],
+  "phases": [
+    {
+      "id": "setup",
+      "label": "setup 自底向上",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "tear",
+      "label": "teardown 逆序出栈",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "t1",
+    "db",
+    "clean",
+    "factory",
+    "t2",
+    "close"
+  ],
+  "nodes": [
+    {
+      "id": "t1",
+      "lane": "test",
+      "col": 0,
+      "type": "external",
+      "label": "用例 A",
+      "width": 132,
+      "sublabel": "参数声明 db"
+    },
+    {
+      "id": "db",
+      "lane": "session",
+      "col": 1,
+      "type": "database",
+      "label": "FakeDB 连接",
+      "width": 132,
+      "sublabel": "0.2s 只建一次",
+      "tag": "session"
+    },
+    {
+      "id": "clean",
+      "lane": "func",
+      "col": 2,
+      "type": "database",
+      "label": "clean_db 表",
+      "width": 132,
+      "sublabel": "每用例清空",
+      "tag": "function"
+    },
+    {
+      "id": "factory",
+      "lane": "func",
+      "col": 3,
+      "type": "backend",
+      "label": "user_factory",
+      "width": 132,
+      "sublabel": "造 N 个用户"
+    },
+    {
+      "id": "t2",
+      "lane": "test",
+      "col": 3,
+      "type": "external",
+      "label": "用例结束",
+      "width": 132,
+      "sublabel": "断言完成"
+    },
+    {
+      "id": "close",
+      "lane": "teardown",
+      "col": 3,
+      "type": "messagebus",
+      "label": "连接关闭",
+      "width": 132,
+      "sublabel": "会话末尾"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "t1",
+      "to": "db",
+      "variant": "emphasis",
+      "label": "首次请求创建"
+    },
+    {
+      "id": "b",
+      "from": "db",
+      "to": "clean",
+      "variant": "default",
+      "label": "复用连接"
+    },
+    {
+      "id": "c",
+      "from": "clean",
+      "to": "factory",
+      "variant": "default"
+    },
+    {
+      "id": "d",
+      "from": "factory",
+      "to": "t2",
+      "variant": "emphasis",
+      "label": "注入数据"
+    },
+    {
+      "id": "f",
+      "from": "t2",
+      "to": "close",
+      "variant": "dashed",
+      "label": "yield 之后"
+    }
+  ]
+}

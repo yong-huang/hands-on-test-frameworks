@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Selenium Grid：单节点双会话并行",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/24_selenium_advanced/images/selenium_grid.html"
+  },
+  "components": [
+    {
+      "id": "pytest",
+      "type": "backend",
+      "label": "pytest -n 2",
+      "sublabel": "xdist 双进程",
+      "pos": [
+        140,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "grid",
+      "type": "backend",
+      "label": "Grid :4444",
+      "sublabel": "standalone-chrome",
+      "pos": [
+        400,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "docker"
+    },
+    {
+      "id": "c1",
+      "type": "frontend",
+      "label": "Chrome 会话 1",
+      "sublabel": "容器内",
+      "pos": [
+        660,
+        120
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "c2",
+      "type": "frontend",
+      "label": "Chrome 会话 2",
+      "sublabel": "容器内",
+      "pos": [
+        660,
+        360
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "SUT :8924",
+      "sublabel": "宿主机",
+      "pos": [
+        880,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Docker 容器",
+      "wraps": [
+        "grid",
+        "c1",
+        "c2"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "pytest",
+      "to": "grid",
+      "label": "SELENIUM_REMOTE_URL"
+    },
+    {
+      "id": "b",
+      "from": "grid",
+      "to": "c1",
+      "label": "maxSession=2"
+    },
+    {
+      "id": "c",
+      "from": "grid",
+      "to": "c2"
+    },
+    {
+      "id": "d",
+      "from": "c1",
+      "to": "sut",
+      "label": "host.docker.internal",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f",
+      "from": "c2",
+      "to": "sut",
+      "label": "同左"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "实测",
+      "items": [
+        "串行 12.2s → ×2 并行 6.8s",
+        "加速比 1.8x"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "经典坑",
+      "items": [
+        "容器内 127.0.0.1 是容器自己",
+        "SUT 地址必须 host.docker.internal"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "其他",
+      "items": [
+        "data: URL 的 # 要编码",
+        "ActionChains 走原生鼠标事件"
+      ]
+    }
+  ]
+}

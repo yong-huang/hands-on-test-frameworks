@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Pact 契约闭环：consumer 定义，provider 对账",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/15_pact/images/pact.html",
+    "viewBox": [
+      1050,
+      585
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "consumer",
+      "type": "external",
+      "label": "前端 consumer",
+      "sublabel": "frontend_client"
+    },
+    {
+      "id": "mock",
+      "type": "backend",
+      "label": "mock server",
+      "sublabel": "FFI 拉起"
+    },
+    {
+      "id": "pact",
+      "type": "database",
+      "label": "pacts/*.json",
+      "sublabel": "本地文件交换"
+    },
+    {
+      "id": "provider",
+      "type": "backend",
+      "label": "SUT provider",
+      "sublabel": ":8902 真服务"
+    },
+    {
+      "id": "verifier",
+      "type": "security",
+      "label": "Verifier",
+      "sublabel": "退出码即门禁"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 280,
+      "label": "consumer 侧"
+    },
+    {
+      "from": 290,
+      "to": 420,
+      "label": "provider 侧"
+    },
+    {
+      "from": 430,
+      "to": 470,
+      "label": "破坏演练"
+    }
+  ],
+  "messages": [
+    {
+      "from": "consumer",
+      "to": "mock",
+      "y": 170,
+      "label": "按契约发请求",
+      "variant": "emphasis"
+    },
+    {
+      "from": "mock",
+      "to": "consumer",
+      "y": 210,
+      "label": "按期望返回",
+      "variant": "return"
+    },
+    {
+      "from": "consumer",
+      "to": "pact",
+      "y": 250,
+      "label": "write_file 合并",
+      "variant": "emphasis"
+    },
+    {
+      "from": "verifier",
+      "to": "pact",
+      "y": 310,
+      "label": "读取契约",
+      "variant": "default"
+    },
+    {
+      "from": "verifier",
+      "to": "provider",
+      "y": 350,
+      "label": "重放请求",
+      "variant": "emphasis"
+    },
+    {
+      "from": "provider",
+      "to": "verifier",
+      "y": 390,
+      "label": "真实响应",
+      "variant": "return"
+    },
+    {
+      "from": "verifier",
+      "to": "consumer",
+      "y": 440,
+      "label": "改字段 → verify 红",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "mock",
+      "from": 160,
+      "to": 270,
+      "type": "backend"
+    },
+    {
+      "participant": "verifier",
+      "from": 300,
+      "to": 460,
+      "type": "security"
+    }
+  ]
+}

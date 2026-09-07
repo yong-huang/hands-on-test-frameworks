@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Ministore 订单管理</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+  h1 { font-size: 22px; }
+  form, table { width: 100%; }
+  input, button { padding: 8px; margin: 4px 0; font-size: 15px; }
+  input { width: 30%; }
+  table { border-collapse: collapse; margin-top: 16px; }
+  th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+  .status-created { color: #b58900; } .status-paid { color: #268bd2; }
+  .status-shipped { color: #2aa198; } .status-cancelled { color: #dc322f; }
+  #banner { background: #eee; padding: 8px 12px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>🛒 Ministore 订单管理</h1>
+<div id="banner">正在加载配置…</div>
+
+<h2>下单</h2>
+<form id="order-form">
+  <input id="customer" placeholder="客户名" aria-label="客户名" required>
+  <input id="item" placeholder="商品" aria-label="商品" required>
+  <input id="qty" type="number" min="1" value="1" aria-label="数量" required>
+  <input id="price" type="number" min="0" step="0.01" placeholder="单价" aria-label="单价" required>
+  <button type="submit" id="submit-btn">创建订单</button>
+</form>
+
+<h2>订单列表</h2>
+<table>
+  <thead><tr><th>ID</th><th>客户</th><th>商品</th><th>数量</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+  <tbody id="orders"></tbody>
+</table>
+
+<script>
+async function refresh() {
+  const r = await fetch('/api/orders?limit=50');
+  const data = await r.json();
+  document.getElementById('orders').innerHTML = data.items.map(o => `
+    <tr data-id="${o.id}">
+      <td>${o.id}</td><td class="customer">${o.customer}</td>
+      <td>${o.item}</td><td class="qty">${o.qty}</td>
+      <td class="total">¥${(o.qty * o.price).toFixed(2)}</td>
+      <td><span class="status status-${o.status}">${o.status}</span></td>
+      <td><button class="delete-btn" onclick="del(${o.id})">删除</button></td>
+    </tr>`).join('');
+}
+async function loadBanner() {
+  const r = await fetch('/api/slow-config');           // 慢接口：1.5s 后返回
+  document.getElementById('banner').textContent = 'Banner: ' + (await r.json()).banner;
+}
+document.getElementById('order-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const payload = {
+    customer: document.getElementById('customer').value,
+    item: document.getElementById('item').value,
+    qty: Number(document.getElementById('qty').value),
+    price: Number(document.getElementById('price').value),
+  };
+  const r = await fetch('/api/orders', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload),
+  });
+  if (r.status === 201) { e.target.reset(); refresh(); }
+  else alert('下单失败: ' + (await r.json()).detail);
+});
+async function del(id) { await fetch('/api/orders/' + id, {method: 'DELETE'}); refresh(); }
+refresh(); loadBanner();
+</script>
+</body>
+</html>

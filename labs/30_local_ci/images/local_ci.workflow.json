@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "分层流水线：本地 make 与 GitHub Actions 同源",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/30_local_ci/images/local_ci.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "push",
+      "label": "触发"
+    },
+    {
+      "id": "early",
+      "label": "快速层"
+    },
+    {
+      "id": "heavy",
+      "label": "重型层"
+    },
+    {
+      "id": "gate",
+      "label": "门禁"
+    }
+  ],
+  "phases": [
+    {
+      "id": "chain",
+      "label": "needs 链式依赖，失败即阻断",
+      "fromCol": 0,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "push",
+    "unit",
+    "api",
+    "e2e",
+    "perf",
+    "a11y",
+    "art"
+  ],
+  "nodes": [
+    {
+      "id": "push",
+      "lane": "push",
+      "col": 0,
+      "type": "external",
+      "label": "push / act / make",
+      "width": 132,
+      "sublabel": "三种入口同一语义"
+    },
+    {
+      "id": "unit",
+      "lane": "early",
+      "col": 1,
+      "type": "backend",
+      "label": "unit-core + advanced",
+      "width": 132,
+      "sublabel": "纯 pytest 秒级"
+    },
+    {
+      "id": "api",
+      "lane": "early",
+      "col": 2,
+      "type": "backend",
+      "label": "api-tests",
+      "width": 132,
+      "sublabel": "30 条真 HTTP"
+    },
+    {
+      "id": "e2e",
+      "lane": "heavy",
+      "col": 2,
+      "type": "backend",
+      "label": "e2e-playwright",
+      "width": 132,
+      "sublabel": "Chromium 三部曲"
+    },
+    {
+      "id": "perf",
+      "lane": "heavy",
+      "col": 3,
+      "type": "backend",
+      "label": "perf-smoke",
+      "width": 132,
+      "sublabel": "k6 thresholds"
+    },
+    {
+      "id": "a11y",
+      "lane": "heavy",
+      "col": 4,
+      "type": "security",
+      "label": "a11y-security",
+      "width": 132,
+      "sublabel": "axe+ZAP"
+    },
+    {
+      "id": "art",
+      "lane": "gate",
+      "col": 4,
+      "type": "database",
+      "label": "报告 artifact",
+      "width": 132,
+      "sublabel": "ZAP/trace 上传"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "push",
+      "to": "unit",
+      "variant": "emphasis",
+      "label": "第 0 层"
+    },
+    {
+      "id": "b",
+      "from": "unit",
+      "to": "api",
+      "variant": "default",
+      "label": "needs"
+    },
+    {
+      "id": "c",
+      "from": "api",
+      "to": "e2e",
+      "variant": "default",
+      "label": "needs"
+    },
+    {
+      "id": "d",
+      "from": "e2e",
+      "to": "perf",
+      "variant": "default",
+      "label": "needs"
+    },
+    {
+      "id": "f",
+      "from": "perf",
+      "to": "a11y",
+      "variant": "default",
+      "label": "needs"
+    },
+    {
+      "id": "g",
+      "from": "a11y",
+      "to": "art",
+      "variant": "default",
+      "label": "always()"
+    }
+  ]
+}

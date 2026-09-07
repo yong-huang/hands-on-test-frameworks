@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Locust 虚拟用户群与拐点观测",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/26_locust/images/locust.html"
+  },
+  "components": [
+    {
+      "id": "users",
+      "type": "external",
+      "label": "虚拟用户 ×100",
+      "sublabel": "读写混合 3:1（阶梯加压）",
+      "pos": [
+        120,
+        200
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "loc",
+      "type": "backend",
+      "label": "Locust 引擎",
+      "sublabel": "headless + CSV",
+      "pos": [
+        380,
+        200
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "backend",
+      "label": "SUT :8926",
+      "sublabel": "uvicorn + SQLite",
+      "pos": [
+        640,
+        200
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "lock",
+      "type": "database",
+      "label": "SQLite 单写者",
+      "sublabel": "写请求排队（瓶颈根源）",
+      "pos": [
+        880,
+        200
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "拐点"
+    },
+    {
+      "id": "rpt",
+      "type": "messagebus",
+      "label": "报告",
+      "sublabel": "locust.html + bottleneck.md",
+      "pos": [
+        880,
+        360
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "users",
+      "to": "loc",
+      "label": "spawn 10/s"
+    },
+    {
+      "id": "b",
+      "from": "loc",
+      "to": "sut",
+      "label": "HTTP 压力",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c",
+      "from": "sut",
+      "to": "lock",
+      "label": "下单写串行",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "d",
+      "from": "loc",
+      "to": "rpt",
+      "label": "逐档统计",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "场景设计",
+      "items": [
+        "浏览:下单:慢接口 = 3:1:1",
+        "唯一客户名避免冲突"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实测",
+      "items": [
+        "10→100 并发阶梯",
+        "P95 1500ms 被慢接口定锚"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "拐点解释",
+      "items": [
+        "写排队=SQLite 锁",
+        "解法见 lab 14 的 MVCC"
+      ]
+    }
+  ]
+}

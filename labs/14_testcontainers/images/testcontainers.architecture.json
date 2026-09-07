@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "testcontainers：容器随会话起停",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/14_testcontainers/images/testcontainers.html"
+  },
+  "components": [
+    {
+      "id": "py",
+      "type": "backend",
+      "label": "pytest 会话",
+      "sublabel": "session 级 fixture",
+      "pos": [
+        140,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "tc",
+      "type": "backend",
+      "label": "testcontainers",
+      "sublabel": "拉起/等待/销毁",
+      "pos": [
+        380,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "dk",
+      "type": "cloud",
+      "label": "Docker daemon",
+      "sublabel": "已运行的引擎",
+      "pos": [
+        620,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "postgres:16-alpine",
+      "sublabel": "动态端口",
+      "pos": [
+        860,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "自动销毁"
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "pg_store.py",
+      "sublabel": "方言适配层",
+      "pos": [
+        380,
+        400
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "本机 Docker",
+      "wraps": [
+        "dk",
+        "pg"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "py",
+      "to": "tc",
+      "label": "with 块生命周期"
+    },
+    {
+      "id": "b",
+      "from": "tc",
+      "to": "dk",
+      "label": "API 调用"
+    },
+    {
+      "id": "c",
+      "from": "dk",
+      "to": "pg",
+      "label": "run/stop"
+    },
+    {
+      "id": "d",
+      "from": "py",
+      "to": "store",
+      "label": "CRUD"
+    },
+    {
+      "id": "f",
+      "from": "store",
+      "to": "pg",
+      "label": "%s 占位符 + RETURNING"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "生命周期",
+      "items": [
+        "会话开始拉起",
+        "结束自动销毁零残留"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实测差异",
+      "items": [
+        "类型强约束/MVCC 并发",
+        "NUMERIC 定点/RETURNING"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "方言适配",
+      "items": [
+        "psycopg2 无 conn.execute",
+        "必须经 cursor"
+      ]
+    }
+  ]
+}

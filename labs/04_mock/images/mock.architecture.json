@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "通知服务与测试替身",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/04_mock/images/mock.html"
+  },
+  "components": [
+    {
+      "id": "svc",
+      "type": "backend",
+      "label": "NotificationService",
+      "sublabel": "被测业务层",
+      "pos": [
+        420,
+        260
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "smtp",
+      "type": "cloud",
+      "label": "SmtpClient",
+      "sublabel": "真实外部依赖",
+      "pos": [
+        720,
+        260
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "测试中禁用"
+    },
+    {
+      "id": "mock",
+      "type": "security",
+      "label": "MagicMock",
+      "sublabel": "记录调用+断言",
+      "pos": [
+        720,
+        140
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "契约"
+    },
+    {
+      "id": "fake",
+      "type": "database",
+      "label": "InMemoryMailer",
+      "sublabel": "能跑的迷你实现",
+      "pos": [
+        720,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "状态"
+    },
+    {
+      "id": "mp",
+      "type": "security",
+      "label": "monkeypatch",
+      "sublabel": "环境变量注入",
+      "pos": [
+        160,
+        140
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "fz",
+      "type": "messagebus",
+      "label": "freezegun",
+      "sublabel": "冻结 datetime.now",
+      "pos": [
+        160,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "时间"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试进程（无真实网络）",
+      "wraps": [
+        "svc",
+        "mock",
+        "fake",
+        "mp",
+        "fz"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "svc",
+      "to": "smtp",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "top"
+    },
+    {
+      "id": "b",
+      "from": "svc",
+      "to": "mock",
+      "label": "断言调用形状"
+    },
+    {
+      "id": "c",
+      "from": "svc",
+      "to": "fake",
+      "label": "查询 outbox"
+    },
+    {
+      "id": "d",
+      "from": "mp",
+      "to": "svc",
+      "label": "setenv/delenv"
+    },
+    {
+      "id": "f",
+      "from": "fz",
+      "to": "svc",
+      "label": "@freeze_time"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "mock",
+      "items": [
+        "assert_called_once_with",
+        "耦合实现：重构易误红"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "fake",
+      "items": [
+        "outbox 可查询",
+        "故障注入 fail_for 集合"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "时间",
+      "items": [
+        "freezegun 定格日期",
+        "截止逻辑天天可测"
+      ]
+    }
+  ]
+}

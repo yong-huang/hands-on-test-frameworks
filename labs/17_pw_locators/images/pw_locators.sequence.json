@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "竞态按钮的三阶段与 expect 轮询",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/17_pw_locators/images/pw_locators.html",
+    "viewBox": [
+      1050,
+      595
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "用例",
+      "sublabel": "click + expect"
+    },
+    {
+      "id": "btn",
+      "type": "frontend",
+      "label": "竞态按钮",
+      "sublabel": "三态变化"
+    },
+    {
+      "id": "js",
+      "type": "backend",
+      "label": "页面 JS",
+      "sublabel": "1s 后才变终态"
+    },
+    {
+      "id": "expect",
+      "type": "security",
+      "label": "expect 轮询",
+      "sublabel": "到终态为止"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 280,
+      "label": "触发"
+    },
+    {
+      "from": 290,
+      "to": 400,
+      "label": "轮询等待"
+    },
+    {
+      "from": 400,
+      "to": 480,
+      "label": "终态"
+    }
+  ],
+  "messages": [
+    {
+      "from": "user",
+      "to": "btn",
+      "y": 170,
+      "label": "click",
+      "variant": "emphasis"
+    },
+    {
+      "from": "btn",
+      "to": "js",
+      "y": 210,
+      "label": "触发处理",
+      "variant": "default"
+    },
+    {
+      "from": "js",
+      "to": "btn",
+      "y": 250,
+      "label": "文字变 处理中…",
+      "variant": "return"
+    },
+    {
+      "from": "expect",
+      "to": "btn",
+      "y": 310,
+      "label": "轮询：终态到了吗",
+      "variant": "dashed"
+    },
+    {
+      "from": "btn",
+      "to": "expect",
+      "y": 350,
+      "label": "还没有（继续等）",
+      "variant": "return"
+    },
+    {
+      "from": "js",
+      "to": "btn",
+      "y": 410,
+      "label": "1s 后：竞态完成 ✅",
+      "variant": "emphasis"
+    },
+    {
+      "from": "btn",
+      "to": "expect",
+      "y": 450,
+      "label": "匹配成功 → 绿",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "expect",
+      "from": 290,
+      "to": 470,
+      "type": "security"
+    }
+  ]
+}

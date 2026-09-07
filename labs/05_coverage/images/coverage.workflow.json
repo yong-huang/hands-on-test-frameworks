@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "覆盖率与质量门禁的数据流",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/05_coverage/images/coverage.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "src",
+      "label": "被测代码"
+    },
+    {
+      "id": "inst",
+      "label": "插桩执行"
+    },
+    {
+      "id": "rpt",
+      "label": "报告"
+    },
+    {
+      "id": "gate",
+      "label": "门禁"
+    }
+  ],
+  "phases": [
+    {
+      "id": "run",
+      "label": "字节码插桩",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "decide",
+      "label": "阈值判定",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "code",
+    "tests",
+    "trace",
+    "html",
+    "thr",
+    "exit"
+  ],
+  "nodes": [
+    {
+      "id": "code",
+      "lane": "src",
+      "col": 0,
+      "type": "external",
+      "label": "discount.py",
+      "width": 132,
+      "sublabel": "分支密集"
+    },
+    {
+      "id": "tests",
+      "lane": "src",
+      "col": 1,
+      "type": "backend",
+      "label": "基础+补漏用例",
+      "width": 132,
+      "sublabel": "13 条"
+    },
+    {
+      "id": "trace",
+      "lane": "inst",
+      "col": 1,
+      "type": "backend",
+      "label": "coverage.py",
+      "width": 132,
+      "sublabel": "branch=True"
+    },
+    {
+      "id": "html",
+      "lane": "rpt",
+      "col": 2,
+      "type": "messagebus",
+      "label": "HTML/XML 报告",
+      "width": 132,
+      "sublabel": "逐行着色"
+    },
+    {
+      "id": "thr",
+      "lane": "gate",
+      "col": 3,
+      "type": "security",
+      "label": "--cov-fail-under 90",
+      "width": 132,
+      "sublabel": "低于即拦",
+      "tag": "门禁"
+    },
+    {
+      "id": "exit",
+      "lane": "gate",
+      "col": 4,
+      "type": "messagebus",
+      "label": "退出码",
+      "width": 132,
+      "sublabel": "非 0 拦截提交"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "code",
+      "to": "tests",
+      "variant": "default"
+    },
+    {
+      "id": "b",
+      "from": "tests",
+      "to": "trace",
+      "variant": "emphasis",
+      "label": "度量覆盖"
+    },
+    {
+      "id": "c",
+      "from": "trace",
+      "to": "html",
+      "variant": "default",
+      "label": "生成报告"
+    },
+    {
+      "id": "d",
+      "from": "html",
+      "to": "thr",
+      "variant": "default"
+    },
+    {
+      "id": "f",
+      "from": "thr",
+      "to": "exit",
+      "variant": "security",
+      "label": "通过放行 / 不达标拦截"
+    }
+  ]
+}

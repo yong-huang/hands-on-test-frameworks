@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "SUT：FastAPI 订单管理应用",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/11_sut_app/images/sut.html"
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "静态页",
+      "sublabel": "下单/慢加载/登录/admin",
+      "pos": [
+        160,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "FastAPI 路由",
+      "sublabel": "契约冻结 :8899",
+      "pos": [
+        420,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "store.py",
+      "sublabel": "SQLite 数据层",
+      "pos": [
+        680,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "slow",
+      "type": "cloud",
+      "label": "/api/slow-config",
+      "sublabel": "故意 1.5s（lab 17 靶子）",
+      "pos": [
+        420,
+        100
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "等待训练"
+    },
+    {
+      "id": "login",
+      "type": "security",
+      "label": "/api/login",
+      "sublabel": "admin/user 双角色",
+      "pos": [
+        420,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "orders.db",
+      "sublabel": "幂等种子数据",
+      "pos": [
+        680,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "SUT 进程",
+      "wraps": [
+        "api",
+        "store",
+        "slow",
+        "login",
+        "db"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "ui",
+      "to": "api",
+      "label": "fetch JSON"
+    },
+    {
+      "id": "b",
+      "from": "api",
+      "to": "store",
+      "label": "SQL"
+    },
+    {
+      "id": "c",
+      "from": "api",
+      "to": "slow",
+      "variant": "dashed"
+    },
+    {
+      "id": "d",
+      "from": "api",
+      "to": "login",
+      "label": "token",
+      "labelDy": 24
+    },
+    {
+      "id": "f",
+      "from": "store",
+      "to": "db",
+      "label": "读写",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "契约",
+      "items": [
+        "CRUD + 登录 + 慢接口",
+        "后续 19 个实验都测它"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "可测性设计",
+      "items": [
+        "DB 路径环境变量可注入",
+        "种子幂等可重跑"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "教学事故现场",
+      "items": [
+        "慢接口/4xx 分支",
+        "都是故意留的靶子"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "cy.intercept 与 cy.session 的协作",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/22_cypress_advanced/images/cypress_advanced.html",
+    "viewBox": [
+      1050,
+      605
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "spec",
+      "type": "external",
+      "label": "spec",
+      "sublabel": "桩+会话+命令"
+    },
+    {
+      "id": "int",
+      "type": "security",
+      "label": "cy.intercept",
+      "sublabel": "桩/断网/500"
+    },
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "页面",
+      "sublabel": "banner/表单/alert"
+    },
+    {
+      "id": "sess",
+      "type": "database",
+      "label": "cy.session",
+      "sublabel": "登录态缓存"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 290,
+      "label": "网络桩"
+    },
+    {
+      "from": 300,
+      "to": 380,
+      "label": "故障注入"
+    },
+    {
+      "from": 400,
+      "to": 540,
+      "label": "会话与命令"
+    }
+  ],
+  "messages": [
+    {
+      "from": "spec",
+      "to": "int",
+      "y": 160,
+      "label": "注册桩",
+      "variant": "emphasis"
+    },
+    {
+      "from": "spec",
+      "to": "page",
+      "y": 192,
+      "label": "visit /",
+      "variant": "default"
+    },
+    {
+      "from": "int",
+      "to": "page",
+      "y": 228,
+      "label": "MOCKED banner / 断网降级",
+      "variant": "return"
+    },
+    {
+      "from": "spec",
+      "to": "int",
+      "y": 288,
+      "label": "POST 桩 500",
+      "variant": "emphasis"
+    },
+    {
+      "from": "page",
+      "to": "spec",
+      "y": 326,
+      "label": "window:alert 下单失败",
+      "variant": "return"
+    },
+    {
+      "from": "spec",
+      "to": "sess",
+      "y": 392,
+      "label": "cy.login('admin')",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sess",
+      "to": "spec",
+      "y": 428,
+      "label": "同角色只登录一次",
+      "variant": "return"
+    },
+    {
+      "from": "spec",
+      "to": "page",
+      "y": 460,
+      "label": "cy.createOrder 复用",
+      "variant": "dashed"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "int",
+      "from": 160,
+      "to": 380,
+      "type": "security"
+    },
+    {
+      "participant": "sess",
+      "from": 410,
+      "to": 480,
+      "type": "database"
+    }
+  ]
+}

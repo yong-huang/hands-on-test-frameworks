@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Playwright 一次 E2E 的执行链路",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/16_pw_basics/images/pw_basics.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "pytest",
+      "label": "pytest"
+    },
+    {
+      "id": "pw",
+      "label": "Playwright"
+    },
+    {
+      "id": "browser",
+      "label": "浏览器"
+    },
+    {
+      "id": "evidence",
+      "label": "取证"
+    }
+  ],
+  "phases": [
+    {
+      "id": "fix",
+      "label": "page fixture",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "act",
+      "label": "动作+断言",
+      "fromCol": 2,
+      "toCol": 2,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "pt",
+    "pw",
+    "wait",
+    "br",
+    "expect",
+    "trace"
+  ],
+  "nodes": [
+    {
+      "id": "pt",
+      "lane": "pytest",
+      "col": 0,
+      "type": "external",
+      "label": "pytest-playwright",
+      "width": 132,
+      "sublabel": "page fixture"
+    },
+    {
+      "id": "pw",
+      "lane": "pw",
+      "col": 1,
+      "type": "backend",
+      "label": "定位器",
+      "width": 132,
+      "sublabel": "get_by_role 优先"
+    },
+    {
+      "id": "wait",
+      "lane": "pw",
+      "col": 2,
+      "type": "backend",
+      "label": "自动等待",
+      "width": 132,
+      "sublabel": "可交互即动作",
+      "tag": "零 sleep"
+    },
+    {
+      "id": "br",
+      "lane": "browser",
+      "col": 2,
+      "type": "frontend",
+      "label": "Chromium",
+      "width": 132,
+      "sublabel": "真实页面"
+    },
+    {
+      "id": "expect",
+      "lane": "browser",
+      "col": 3,
+      "type": "backend",
+      "label": "web-first 断言",
+      "width": 132,
+      "sublabel": "expect 重试"
+    },
+    {
+      "id": "trace",
+      "lane": "evidence",
+      "col": 3,
+      "type": "database",
+      "label": "trace.zip",
+      "width": 132,
+      "sublabel": "时间旅行回放"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "pt",
+      "to": "pw",
+      "variant": "emphasis",
+      "label": "注入"
+    },
+    {
+      "id": "b",
+      "from": "pw",
+      "to": "wait",
+      "variant": "default"
+    },
+    {
+      "id": "c",
+      "from": "wait",
+      "to": "br",
+      "variant": "emphasis",
+      "label": "驱动"
+    },
+    {
+      "id": "d",
+      "from": "br",
+      "to": "expect",
+      "variant": "default"
+    },
+    {
+      "id": "f",
+      "from": "expect",
+      "to": "trace",
+      "variant": "dashed",
+      "label": "失败/全程留痕"
+    }
+  ]
+}

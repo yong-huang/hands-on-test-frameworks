@@ -1,0 +1,157 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "a11y 与安全双基线扫描",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/29_a11y_security/images/a11y_security.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "sut",
+      "label": "SUT"
+    },
+    {
+      "id": "axe",
+      "label": "axe 无障碍"
+    },
+    {
+      "id": "zap",
+      "label": "ZAP 安全"
+    },
+    {
+      "id": "docs",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "scan",
+      "label": "双扫描器并行",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "fix",
+      "label": "修复与记录",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "page",
+    "axe",
+    "zap",
+    "warn",
+    "rpt"
+  ],
+  "nodes": [
+    {
+      "id": "page",
+      "lane": "sut",
+      "col": 0,
+      "type": "external",
+      "label": "三个页面",
+      "width": 132,
+      "sublabel": "index/login/slow"
+    },
+    {
+      "id": "axe",
+      "lane": "axe",
+      "col": 1,
+      "type": "security",
+      "label": "axe-core 规则",
+      "width": 132,
+      "sublabel": "critical/serious=0 门禁"
+    },
+    {
+      "id": "found",
+      "lane": "axe",
+      "col": 2,
+      "type": "database",
+      "label": "实测违例",
+      "width": 132,
+      "sublabel": "label 缺失（critical）",
+      "tag": "已修复"
+    },
+    {
+      "id": "zap",
+      "lane": "zap",
+      "col": 2,
+      "type": "security",
+      "label": "ZAP baseline",
+      "width": 132,
+      "sublabel": "docker 被动扫+爬虫"
+    },
+    {
+      "id": "warn",
+      "lane": "zap",
+      "col": 3,
+      "type": "messagebus",
+      "label": "7 条 WARN",
+      "width": 132,
+      "sublabel": "安全头缺失，不阻断"
+    },
+    {
+      "id": "rpt",
+      "lane": "docs",
+      "col": 4,
+      "type": "messagebus",
+      "label": "报告入 docs",
+      "width": 132,
+      "sublabel": "zap_report.html + 前后对比"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "page",
+      "to": "axe",
+      "variant": "emphasis",
+      "label": "注入规则"
+    },
+    {
+      "id": "b",
+      "from": "axe",
+      "to": "found",
+      "variant": "emphasis",
+      "label": "扫出真问题"
+    },
+    {
+      "id": "h",
+      "from": "axe",
+      "to": "zap",
+      "variant": "dashed",
+      "label": "互不替代"
+    },
+    {
+      "id": "c",
+      "from": "zap",
+      "to": "warn",
+      "variant": "default",
+      "label": "基线扫描"
+    },
+    {
+      "id": "f",
+      "from": "warn",
+      "to": "rpt",
+      "variant": "dashed",
+      "label": "清单入 docs"
+    },
+    {
+      "id": "g",
+      "from": "found",
+      "to": "rpt",
+      "variant": "dashed",
+      "label": "修复前后对比"
+    }
+  ]
+}

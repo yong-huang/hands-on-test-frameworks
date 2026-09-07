@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "route 拦截：请求永远到不了真后端",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/19_pw_network/images/pw_network.html",
+    "viewBox": [
+      1050,
+      605
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "页面 JS",
+      "sublabel": "fetch /api/*"
+    },
+    {
+      "id": "route",
+      "type": "security",
+      "label": "page.route",
+      "sublabel": "中间人"
+    },
+    {
+      "id": "be",
+      "type": "backend",
+      "label": "真后端",
+      "sublabel": "可挂可不开"
+    },
+    {
+      "id": "state",
+      "type": "database",
+      "label": "storageState",
+      "sublabel": "admin/user 双会话"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 330,
+      "label": "桩与降级"
+    },
+    {
+      "from": 340,
+      "to": 430,
+      "label": "故障注入"
+    },
+    {
+      "from": 440,
+      "to": 480,
+      "label": "会话"
+    }
+  ],
+  "messages": [
+    {
+      "from": "page",
+      "to": "route",
+      "y": 170,
+      "label": "fetch /api/slow-config",
+      "variant": "emphasis"
+    },
+    {
+      "from": "route",
+      "to": "page",
+      "y": 210,
+      "label": "fulfill 5ms mock",
+      "variant": "return"
+    },
+    {
+      "from": "page",
+      "to": "route",
+      "y": 260,
+      "label": "fetch /api/**",
+      "variant": "default"
+    },
+    {
+      "from": "route",
+      "to": "page",
+      "y": 300,
+      "label": "abort → 优雅降级",
+      "variant": "return"
+    },
+    {
+      "from": "page",
+      "to": "route",
+      "y": 360,
+      "label": "POST /api/orders",
+      "variant": "emphasis"
+    },
+    {
+      "from": "route",
+      "to": "page",
+      "y": 400,
+      "label": "500 → 下单失败 alert",
+      "variant": "return"
+    },
+    {
+      "from": "state",
+      "to": "page",
+      "y": 460,
+      "label": "注入 token/role，双角色不串号",
+      "variant": "dashed"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "route",
+      "from": 160,
+      "to": 430,
+      "type": "security"
+    }
+  ]
+}

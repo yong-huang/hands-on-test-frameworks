@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "WebDriver 协议：每步都是一次 HTTP",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/23_selenium_basics/images/selenium_basics.html",
+    "viewBox": [
+      1050,
+      605
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "py",
+      "type": "external",
+      "label": "pytest 用例",
+      "sublabel": "selenium 绑定"
+    },
+    {
+      "id": "drv",
+      "type": "backend",
+      "label": "chromedriver",
+      "sublabel": "驱动自动下载"
+    },
+    {
+      "id": "br",
+      "type": "frontend",
+      "label": "Chrome",
+      "sublabel": "headless"
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "SUT",
+      "sublabel": ":8923"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 250,
+      "label": "会话建立"
+    },
+    {
+      "from": 260,
+      "to": 380,
+      "label": "元素定位"
+    },
+    {
+      "from": 390,
+      "to": 490,
+      "label": "等待策略对决"
+    }
+  ],
+  "messages": [
+    {
+      "from": "py",
+      "to": "drv",
+      "y": 170,
+      "label": "POST /session",
+      "variant": "emphasis"
+    },
+    {
+      "from": "drv",
+      "to": "br",
+      "y": 210,
+      "label": "启动浏览器",
+      "variant": "emphasis"
+    },
+    {
+      "from": "py",
+      "to": "drv",
+      "y": 272,
+      "label": "find_element",
+      "variant": "default"
+    },
+    {
+      "from": "drv",
+      "to": "br",
+      "y": 300,
+      "label": "协议命令（同步阻塞）",
+      "variant": "default"
+    },
+    {
+      "from": "br",
+      "to": "sut",
+      "y": 340,
+      "label": "页面加载 2s 延迟",
+      "variant": "dashed"
+    },
+    {
+      "from": "py",
+      "to": "drv",
+      "y": 400,
+      "label": "无等待 find → NoSuchElementException",
+      "variant": "return"
+    },
+    {
+      "from": "py",
+      "to": "drv",
+      "y": 460,
+      "label": "WebDriverWait(10) 轮询 → 稳定",
+      "variant": "emphasis"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "drv",
+      "from": 160,
+      "to": 490,
+      "type": "backend"
+    }
+  ]
+}

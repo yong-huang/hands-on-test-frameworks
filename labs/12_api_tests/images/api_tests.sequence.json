@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "一条 API 用例的完整生命周期",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/12_api_tests/images/api_tests.html",
+    "viewBox": [
+      1050,
+      605
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "case",
+      "type": "external",
+      "label": "用例",
+      "sublabel": "30 条之一"
+    },
+    {
+      "id": "fac",
+      "type": "backend",
+      "label": "order_factory",
+      "sublabel": "自造自清"
+    },
+    {
+      "id": "cli",
+      "type": "frontend",
+      "label": "httpx client",
+      "sublabel": "session 级复用"
+    },
+    {
+      "id": "sut",
+      "type": "backend",
+      "label": "SUT :8901",
+      "sublabel": "独立空库"
+    }
+  ],
+  "segments": [
+    {
+      "from": 163,
+      "to": 250,
+      "label": "造数"
+    },
+    {
+      "from": 259,
+      "to": 403,
+      "label": "请求与断言"
+    },
+    {
+      "from": 432,
+      "to": 499,
+      "label": "清场"
+    }
+  ],
+  "messages": [
+    {
+      "from": "case",
+      "to": "fac",
+      "y": 162,
+      "label": "造 3 条订单",
+      "variant": "emphasis"
+    },
+    {
+      "from": "fac",
+      "to": "sut",
+      "y": 201,
+      "label": "POST /api/orders ×3",
+      "variant": "emphasis"
+    },
+    {
+      "from": "case",
+      "to": "cli",
+      "y": 249,
+      "label": "GET /api/orders?limit=2",
+      "variant": "default"
+    },
+    {
+      "from": "cli",
+      "to": "sut",
+      "y": 287,
+      "label": "HTTP",
+      "variant": "default"
+    },
+    {
+      "from": "sut",
+      "to": "cli",
+      "y": 325,
+      "label": "200 + X-Total-Count",
+      "variant": "return"
+    },
+    {
+      "from": "cli",
+      "to": "case",
+      "y": 364,
+      "label": "pydantic 校验 + 断言",
+      "variant": "return"
+    },
+    {
+      "from": "case",
+      "to": "fac",
+      "y": 421,
+      "label": "teardown",
+      "variant": "dashed"
+    },
+    {
+      "from": "fac",
+      "to": "sut",
+      "y": 460,
+      "label": "DELETE ×3 清场",
+      "variant": "dashed"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "fac",
+      "from": 153,
+      "to": 479,
+      "type": "backend"
+    },
+    {
+      "participant": "cli",
+      "from": 239,
+      "to": 383,
+      "type": "frontend"
+    }
+  ]
+}

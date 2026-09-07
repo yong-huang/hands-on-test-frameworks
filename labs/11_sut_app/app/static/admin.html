@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>Admin 控制台</title></head>
+<body style="font-family:-apple-system,sans-serif;max-width:480px;margin:60px auto">
+<h1>🛠 Admin 控制台</h1>
+<div id="stats">加载中…</div>
+<script>
+(async () => {
+  const token = localStorage.getItem('token');
+  const r = await fetch('/api/admin/stats', {headers: {Authorization: 'Bearer ' + token}});
+  document.getElementById('stats').textContent = r.ok
+    ? '总订单数: ' + (await r.json()).total_orders
+    : '访问被拒（需要 admin 登录态）：HTTP ' + r.status;
+})();
+</script>
+</body>
+</html>

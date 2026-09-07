@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Cypress 架构：测试活在浏览器里",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/21_cypress_basics/images/cypress_basics.html"
+  },
+  "components": [
+    {
+      "id": "spec",
+      "type": "backend",
+      "label": "orders.cy.js",
+      "sublabel": "describe/it",
+      "pos": [
+        140,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "proxy",
+      "type": "security",
+      "label": "Cypress 代理层",
+      "sublabel": "命令注入/流量接管",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "br",
+      "type": "frontend",
+      "label": "Electron 浏览器",
+      "sublabel": "测试与页面同进程",
+      "pos": [
+        640,
+        240
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "原生体验"
+    },
+    {
+      "id": "auto",
+      "type": "backend",
+      "label": "自动等待",
+      "sublabel": "should 自带重试",
+      "pos": [
+        390,
+        100
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "runner",
+      "type": "messagebus",
+      "label": "运行器",
+      "sublabel": "cypress open / run",
+      "pos": [
+        390,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "调试利器"
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "SUT :8921",
+      "sublabel": "被测应用",
+      "pos": [
+        640,
+        380
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "spec",
+      "to": "proxy",
+      "label": "cy.* 命令链"
+    },
+    {
+      "id": "b",
+      "from": "proxy",
+      "to": "br"
+    },
+    {
+      "id": "c",
+      "from": "auto",
+      "to": "br",
+      "variant": "dashed"
+    },
+    {
+      "id": "d",
+      "from": "runner",
+      "to": "spec",
+      "label": "headless/open"
+    },
+    {
+      "id": "f",
+      "from": "br",
+      "to": "sut",
+      "label": "HTTP",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "第一印象",
+      "items": [
+        "测试跑在浏览器内",
+        "链式命令+内置重试"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "对比 Playwright",
+      "items": [
+        "同 SUT 同 3 用例",
+        "调试体验是招牌"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "取舍",
+      "items": [
+        "单域/同源限制",
+        "Electron 单内核"
+      ]
+    }
+  ]
+}

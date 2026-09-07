@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>登录</title>
+<style>body{font-family:-apple-system,sans-serif;max-width:360px;margin:60px auto}
+input,button{display:block;width:100%;padding:10px;margin:8px 0;font-size:15px}
+#msg{color:#b58900}</style></head>
+<body>
+<h1>🔐 登录 Ministore</h1>
+<form id="f">
+  <input id="username" placeholder="用户名（admin / user）" aria-label="用户名">
+  <input id="password" type="password" placeholder="密码（admin123 / user123）" aria-label="密码">
+  <button id="login-btn" type="submit">登录</button>
+</form>
+<div id="msg"></div>
+<script>
+document.getElementById('f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const r = await fetch('/api/login', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value,
+    }),
+  });
+  if (r.ok) {
+    const data = await r.json();
+    localStorage.setItem('token', data.token);        // lab 19 storageState 复用的素材
+    localStorage.setItem('role', data.role);
+    document.getElementById('msg').textContent = `登录成功，角色 ${data.role}，token 已写入 localStorage`;
+  } else {
+    document.getElementById('msg').textContent = '登录失败：' + (await r.json()).detail;
+  }
+});
+</script>
+</body>
+</html>

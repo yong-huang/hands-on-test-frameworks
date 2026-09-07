@@ -1,0 +1,167 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "数据层集成测试：两种隔离策略",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/13_db_tests/images/db_tests.html",
+    "viewBox": [
+      1100,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "case",
+      "label": "数据层用例"
+    },
+    {
+      "id": "fresh",
+      "label": "fresh 策略"
+    },
+    {
+      "id": "trunc",
+      "label": "truncate 策略"
+    },
+    {
+      "id": "conc",
+      "label": "并发实测"
+    }
+  ],
+  "phases": [
+    {
+      "id": "mark",
+      "label": "mark.isolation 切换",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "lock",
+      "label": "database is locked",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "case",
+    "f",
+    "t",
+    "raw",
+    "lock",
+    "ok"
+  ],
+  "nodes": [
+    {
+      "id": "case",
+      "lane": "case",
+      "col": 0,
+      "type": "external",
+      "label": "10 条用例",
+      "width": 132,
+      "sublabel": "直打 store.py"
+    },
+    {
+      "id": "f",
+      "lane": "fresh",
+      "col": 1,
+      "type": "database",
+      "label": "全新库文件",
+      "width": 132,
+      "sublabel": "每用例一个",
+      "tag": "最干净"
+    },
+    {
+      "id": "t",
+      "lane": "trunc",
+      "col": 2,
+      "type": "database",
+      "label": "共享库+截表",
+      "width": 132,
+      "sublabel": "DELETE FROM",
+      "tag": "最快"
+    },
+    {
+      "id": "raw",
+      "lane": "conc",
+      "col": 3,
+      "type": "backend",
+      "label": "裸 SQLite 写者",
+      "width": 132,
+      "sublabel": "BEGIN IMMEDIATE"
+    },
+    {
+      "id": "lock",
+      "lane": "conc",
+      "col": 4,
+      "type": "security",
+      "label": "写锁冲突",
+      "width": 132,
+      "sublabel": "必现 locked",
+      "tag": "实测"
+    },
+    {
+      "id": "ok",
+      "lane": "conc",
+      "col": 5,
+      "type": "messagebus",
+      "label": "应用层串行化",
+      "width": 132,
+      "sublabel": "20 线程全成功"
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "from": "case",
+      "to": "f",
+      "variant": "emphasis",
+      "label": "策略 A"
+    },
+    {
+      "id": "b",
+      "from": "case",
+      "to": "t",
+      "variant": "emphasis",
+      "label": "策略 B"
+    },
+    {
+      "id": "g",
+      "from": "f",
+      "to": "t",
+      "variant": "default",
+      "label": "策略对账"
+    },
+    {
+      "id": "h",
+      "from": "t",
+      "to": "raw",
+      "variant": "default",
+      "label": "并发实测"
+    },
+    {
+      "id": "c",
+      "from": "raw",
+      "to": "lock",
+      "variant": "security",
+      "label": "不串行化"
+    },
+    {
+      "id": "i",
+      "from": "lock",
+      "to": "ok",
+      "variant": "default",
+      "label": "锁退让后成功"
+    },
+    {
+      "id": "d",
+      "from": "case",
+      "to": "ok",
+      "variant": "default",
+      "label": "store 写锁"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# coverage 配置：branch=True 打开分支覆盖率（比行覆盖严格得多）
+[run]
+branch = True
+source = discount
+omit =
+    tests/*
+
+# 排除规则：这些模式的行不算覆盖目标（防御性代码/类型桩是常态）
+[report]
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
+    raise NotImplementedError
+    if __name__ == .__main__.:
