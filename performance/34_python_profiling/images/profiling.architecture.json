@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "剖析闭环：采样 → 归因 → 修复 → 对比",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/34_python_profiling/images/profiling.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 施压",
+      "sublabel": "5 VU × 60s 同场景",
+      "pos": [
+        90,
+        230
+      ],
+      "size": [
+        120,
+        60
+      ]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "shop 容器",
+      "sublabel": "uvicorn 单进程（被测）",
+      "pos": [
+        300,
+        230
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "pyspy",
+      "type": "backend",
+      "label": "py-spy 伴生容器",
+      "sublabel": "--pid=shop · --idle 采样",
+      "pos": [
+        520,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "免 root"
+    },
+    {
+      "id": "flame",
+      "type": "messagebus",
+      "label": "火焰图",
+      "sublabel": "md5 / sleep / 51×RTT 现形",
+      "pos": [
+        740,
+        90
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "fix",
+      "type": "backend",
+      "label": "修复重建",
+      "sublabel": "JOIN · 预计算 · 砍 sleep",
+      "pos": [
+        520,
+        370
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "cmp",
+      "type": "messagebus",
+      "label": "A/B 对比",
+      "sublabel": "P95 131.9 → 11.6ms",
+      "pos": [
+        740,
+        370
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "-91%"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "shop",
+      "label": "读写 2:1",
+      "variant": "emphasis"
+    },
+    {
+      "id": "b",
+      "from": "pyspy",
+      "to": "shop",
+      "label": "共享 PID namespace",
+      "variant": "dashed"
+    },
+    {
+      "id": "c",
+      "from": "pyspy",
+      "to": "flame",
+      "label": "50Hz 采样"
+    },
+    {
+      "id": "d",
+      "from": "flame",
+      "to": "fix",
+      "label": "函数级归因",
+      "labelDy": -22
+    },
+    {
+      "id": "e",
+      "from": "fix",
+      "to": "shop",
+      "label": "重建镜像",
+      "variant": "dashed"
+    },
+    {
+      "id": "f",
+      "from": "fix",
+      "to": "cmp",
+      "label": "同场景复测",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两条剖析轴",
+      "items": [
+        "CPU：recommend_score 的 md5 热点",
+        "off-CPU：sleep 占线程 + 51 次 RTT"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "macOS 绕行",
+      "items": [
+        "py-spy 要 root → Linux 侧采样",
+        "wheel 离线装，流程零外网"
+      ]
+    }
+  ]
+}

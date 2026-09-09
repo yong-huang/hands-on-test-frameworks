@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "并发旋钮矩阵实验：两个旋钮两种命运",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/38_concurrency_tuning/images/tuning.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 矩阵探针",
+      "sublabel": "50/200 VU × 每格 40s",
+      "pos": [
+        90,
+        230
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "shop × workers",
+      "sublabel": "1/2/4 进程 × 各自连接池",
+      "pos": [
+        330,
+        110
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "+63%"
+    },
+    {
+      "id": "short",
+      "type": "backend",
+      "label": "shorturl × GOMAXPROCS",
+      "sublabel": "1/2/4 P，实测无感",
+      "pos": [
+        330,
+        350
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "IO 密集无感"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "连接预算 4×10=40",
+      "pos": [
+        600,
+        230
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "rpt",
+      "type": "messagebus",
+      "label": "最优工作点",
+      "sublabel": "饱和区挑 P95 最低 · 连接预算",
+      "pos": [
+        820,
+        230
+      ],
+      "size": [
+        140,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "shop",
+      "label": "读多写少"
+    },
+    {
+      "id": "b",
+      "from": "k6",
+      "to": "short",
+      "label": "跳转为主",
+      "variant": "dashed"
+    },
+    {
+      "id": "c",
+      "from": "shop",
+      "to": "pg",
+      "label": "每进程一池"
+    },
+    {
+      "id": "d",
+      "from": "pg",
+      "to": "rpt",
+      "variant": "dashed"
+    },
+    {
+      "id": "e",
+      "from": "short",
+      "to": "rpt",
+      "label": "数据说话"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "矩阵结论",
+      "items": [
+        "shop：4 workers +63%（2526 RPS）",
+        "shorturl：GOMAXPROCS 无感（<1%）"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "隐藏账单",
+      "items": [
+        "连接池是每进程的",
+        "workers × 池上限 ≤ max_connections"
+      ]
+    }
+  ]
+}

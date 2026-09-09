@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "开放 vs 封闭：两种负载模型怎么骗过（或暴露）P95",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/32_load_modeling/images/modeling.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 引擎",
+      "sublabel": "同一套场景动作，两种执行器",
+      "pos": [100, 230],
+      "size": [132, 60]
+    },
+    {
+      "id": "closed",
+      "type": "backend",
+      "label": "封闭执行器 · VU 池",
+      "sublabel": "收到响应才发下一单",
+      "pos": [380, 110],
+      "size": [150, 60]
+    },
+    {
+      "id": "open",
+      "type": "backend",
+      "label": "开放执行器 · 到达率",
+      "sublabel": "恒定速率，互不等待",
+      "pos": [380, 350],
+      "size": [150, 60]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "perf-shop",
+      "sublabel": "SUT 变慢时两模型行为分岔",
+      "pos": [680, 230],
+      "size": [140, 60],
+      "tag": "lab 31 靶场"
+    },
+    {
+      "id": "rpt",
+      "type": "messagebus",
+      "label": "对比报告",
+      "sublabel": "docs/modeling.md 配对表",
+      "pos": [920, 230],
+      "size": [132, 60]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "closed",
+      "label": "10/50/100 VU"
+    },
+    {
+      "id": "b",
+      "from": "k6",
+      "to": "open",
+      "label": "50/150/300 it/s"
+    },
+    {
+      "id": "c",
+      "from": "closed",
+      "to": "shop",
+      "label": "变慢→自节流，P95 被低估",
+      "variant": "dashed",
+      "labelDy": 22
+    },
+    {
+      "id": "d",
+      "from": "open",
+      "to": "shop",
+      "label": "变慢→排队，延迟如实入账",
+      "variant": "emphasis",
+      "labelDy": -22
+    },
+    {
+      "id": "e",
+      "from": "shop",
+      "to": "rpt",
+      "label": "最近吞吐配对"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Coordinated Omission",
+      "items": [
+        "压测端与 SUT 合谋少发请求",
+        "容量结论以开放模型为准"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "尖峰场景",
+      "items": [
+        "30→400→30 it/s 阶梯",
+        "突刺期延迟/错误率可复现顶起"
+      ]
+    }
+  ]
+}

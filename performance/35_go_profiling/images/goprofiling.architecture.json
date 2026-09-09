@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pprof 闭环：runtime 自报家门，benchmark 终审",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/35_go_profiling/images/goprofiling.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 施压",
+      "sublabel": "跳转:创建 ≈ 9:1",
+      "pos": [
+        65,
+        230
+      ],
+      "size": [
+        120,
+        60
+      ]
+    },
+    {
+      "id": "short",
+      "type": "backend",
+      "label": "shorturl 容器",
+      "sublabel": "runtime 内建采样器",
+      "pos": [
+        275,
+        230
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "tag": "/debug/pprof"
+    },
+    {
+      "id": "pprof",
+      "type": "backend",
+      "label": "go tool pprof",
+      "sublabel": "CPU 25s + alloc_space",
+      "pos": [
+        505,
+        90
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "attr",
+      "type": "messagebus",
+      "label": "归因",
+      "sublabel": "Sprintf 风暴 · 线性扫",
+      "pos": [
+        725,
+        90
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "bench",
+      "type": "messagebus",
+      "label": "go test -benchmem",
+      "sublabel": "ns/op · B/op · allocs/op",
+      "pos": [
+        505,
+        370
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "判决书"
+    },
+    {
+      "id": "fix",
+      "type": "backend",
+      "label": "修复重建",
+      "sublabel": "map · byte-slice · RWMutex",
+      "pos": [
+        725,
+        370
+      ],
+      "size": [
+        140,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "short",
+      "label": "负载",
+      "variant": "emphasis"
+    },
+    {
+      "id": "b",
+      "from": "pprof",
+      "to": "short",
+      "label": "HTTP 拉取 profile",
+      "variant": "dashed"
+    },
+    {
+      "id": "c",
+      "from": "pprof",
+      "to": "attr",
+      "label": "top/火焰图"
+    },
+    {
+      "id": "d",
+      "from": "bench",
+      "to": "short",
+      "label": "同尺复测",
+      "variant": "dashed"
+    },
+    {
+      "id": "e",
+      "from": "attr",
+      "to": "fix",
+      "label": "对号修复",
+      "labelDy": 20,
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "f",
+      "from": "fix",
+      "to": "bench",
+      "label": "前后对比",
+      "labelDy": -20
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "实测判决",
+      "items": [
+        "GenCode 1025 → 2 allocs（-100%）",
+        "Redirect 3702 → 116 ns/op（32x）"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "两根独立的轴",
+      "items": [
+        "allocs 低 ≠ 快（分配 vs 延迟）",
+        "CPU/heap profile 分开看"
+      ]
+    }
+  ]
+}

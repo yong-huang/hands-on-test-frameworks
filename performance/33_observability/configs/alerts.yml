@@ -1,0 +1,27 @@
+# 告警规则：P95 超 SLO(500ms) 持续 15s 即触发。
+# shop 的直方图名是 http_request_duration_highr_seconds（instrumentator 默认），
+# shorturl 是 http_request_duration_seconds——用 or 兼顾两家口径
+groups:
+  - name: golden-signals
+    rules:
+      - alert: HighP95Latency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[30s])) by (le)) > 0.5
+          or
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_highr_seconds_bucket[30s])) by (le)) > 0.5
+        for: 15s
+        labels:
+          severity: page
+        annotations:
+          summary: "P95 超过 SLO 500ms"
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status!~"2.."}[1m]))
+          / sum(rate(http_requests_total[1m])) > 0.05
+        for: 30s
+        labels:
+          severity: page
+        annotations:
+          summary: "错误率超过 5%"

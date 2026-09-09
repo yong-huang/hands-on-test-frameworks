@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "性能靶场拓扑：双 SUT + 基线压测",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/31_perf_baseline/images/testbed.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 基线压测",
+      "sublabel": "5 VU × 30s × 两服务",
+      "pos": [
+        100,
+        230
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "perf-shop :19331",
+      "sublabel": "FastAPI · 缺陷 D1-D3",
+      "pos": [
+        380,
+        140
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "带病上线"
+    },
+    {
+      "id": "short",
+      "type": "backend",
+      "label": "shorturl :19332",
+      "sublabel": "Go · 缺陷 D4-D6",
+      "pos": [
+        380,
+        310
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "带病上线"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres 16",
+      "sublabel": "双库 shop/shorturl · 缺索引 D7",
+      "pos": [
+        660,
+        225
+      ],
+      "size": [
+        132,
+        60
+      ],
+      "tag": "项目 6 素材"
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 7",
+      "sublabel": "空载待命",
+      "pos": [
+        660,
+        80
+      ],
+      "size": [
+        132,
+        60
+      ]
+    },
+    {
+      "id": "rpt",
+      "type": "messagebus",
+      "label": "基线报告",
+      "sublabel": "docs/baseline.md 五指标",
+      "pos": [
+        100,
+        360
+      ],
+      "size": [
+        132,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "shop",
+      "label": "读写≈2:1",
+      "variant": "emphasis"
+    },
+    {
+      "id": "b",
+      "from": "k6",
+      "to": "short",
+      "label": "跳转:创建≈9:1"
+    },
+    {
+      "id": "c",
+      "from": "shop",
+      "to": "pg",
+      "label": "每页 51 条 SQL",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "d",
+      "from": "short",
+      "to": "pg",
+      "label": "5000 短链"
+    },
+    {
+      "id": "e",
+      "from": "shop",
+      "to": "redis",
+      "label": "未接入（项目 7）",
+      "variant": "dashed"
+    },
+    {
+      "id": "f",
+      "from": "k6",
+      "to": "rpt",
+      "label": "summary-export",
+      "variant": "dashed",
+      "labelDy": 34,
+      "labelDx": 84
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "基线快照",
+      "items": [
+        "shop P95 130.7ms 被慢调用锚定",
+        "shorturl P95 3.6ms 错误率 0%"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "缺陷纪律",
+      "items": [
+        "7 处缺陷答案锁在 SECRET_DEFS.md",
+        "破案后登记 P95 变化"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "生命周期",
+      "items": [
+        "apply 起栈 / observe 出报告",
+        "clean 删卷归零"
+      ]
+    }
+  ]
+}

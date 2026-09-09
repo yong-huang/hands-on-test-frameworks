@@ -1,0 +1,41 @@
+# 监控栈：叠加在 lab 31 靶场网络上（不重复起 SUT）
+# 用法：docker compose -f docker-compose.monitor.yml up -d
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./configs/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "19090:9090"
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./configs/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./configs/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "13000:3000"
+    depends_on:
+      - prometheus
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    environment:
+      DATA_SOURCE_NAME: postgresql://shop:shop@postgres:5432/shop?sslmode=disable
+    ports:
+      - "19187:9187"
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.61.0
+    command: ["-redis.addr", "redis:6379"]
+    ports:
+      - "19121:9121"
+
+networks:
+  default:
+    name: 31_perf_baseline_default
+    external: true

@@ -1,0 +1,11 @@
+# 性能预算：门禁的判定基准（相对基线的允许退化幅度）
+
+[shop]
+p95_regression_max = 0.25   # P95 相对基线退化不得超过 25%
+error_rate_max = 0.02       # 错误率绝对值不得超过 2%
+rps_drop_max = 0.15         # 吞吐下降不得超过 15%
+
+[shorturl]
+p95_regression_max = 0.25
+error_rate_max = 0.02
+rps_drop_max = 0.15

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "缓存三档开关与三大问题防线",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/37_caching/images/caching.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 四种打靶姿势",
+      "sublabel": "热点只读 / 坏 id / 集火 / 等过期",
+      "pos": [90, 230],
+      "size": [140, 60]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "shop Cache-Aside",
+      "sublabel": "singleflight · 锁内回填",
+      "pos": [330, 230],
+      "size": [140, 60],
+      "tag": "三档开关"
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 7",
+      "sublabel": "TTL ±20% 抖动 · 空值缓存",
+      "pos": [580, 120],
+      "size": [140, 60]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres 16",
+      "sublabel": "回源计数 = pg_stat 差值",
+      "pos": [580, 350],
+      "size": [140, 60]
+    },
+    {
+      "id": "rpt",
+      "type": "messagebus",
+      "label": "实验报告",
+      "sublabel": "97.6% · 305 · 109 · 20/s",
+      "pos": [820, 230],
+      "size": [140, 60],
+      "tag": "docs/caching.md"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    { "id": "a", "from": "k6", "to": "shop", "label": "四种施压", "variant": "emphasis" },
+    { "id": "b", "from": "shop", "to": "redis", "label": "命中 97.6%" },
+    { "id": "c", "from": "shop", "to": "pg", "label": "miss 才回源", "variant": "dashed", "labelDy": 20 },
+    { "id": "d", "from": "shop", "to": "rpt", "label": "on vs hardened", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "削峰成绩",
+      "items": [
+        "穿透 11968 → 305 次",
+        "击穿 554 → 109 次",
+        "雪崩峰值 402 → 20/s"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "锁内回填",
+      "items": [
+        "回填在锁外 = singleflight 失效",
+        "用击穿实验验证才算写完"
+      ]
+    }
+  ]
+}

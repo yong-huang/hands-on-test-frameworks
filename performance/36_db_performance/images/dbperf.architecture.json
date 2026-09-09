@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "数据库性能三层证据链",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/36_db_performance/images/dbperf.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 负载",
+      "sublabel": "20/100 VU 两档",
+      "pos": [
+        90,
+        230
+      ],
+      "size": [
+        120,
+        60
+      ]
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "shop 连接池",
+      "sublabel": "POOL_MAX_SIZE 10→40",
+      "pos": [
+        290,
+        230
+      ],
+      "size": [
+        130,
+        60
+      ],
+      "tag": "打满实验"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres 16",
+      "sublabel": "stock 15万行 · 计划器改主意",
+      "pos": [
+        540,
+        230
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "144x"
+    },
+    {
+      "id": "stat",
+      "type": "messagebus",
+      "label": "pg_stat_statements",
+      "sublabel": "排行定嫌疑 · 瓶颈转移",
+      "pos": [
+        760,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "explain",
+      "type": "messagebus",
+      "label": "EXPLAIN ANALYZE",
+      "sublabel": "7.79ms → 0.054ms",
+      "pos": [
+        760,
+        230
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "activity",
+      "type": "messagebus",
+      "label": "pg_stat_activity",
+      "sublabel": "活跃连接峰值 10→40",
+      "pos": [
+        760,
+        370
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "shop",
+      "label": "100 VU",
+      "variant": "emphasis"
+    },
+    {
+      "id": "b",
+      "from": "shop",
+      "to": "pg",
+      "label": "池上限=并发闸门"
+    },
+    {
+      "id": "c",
+      "from": "pg",
+      "to": "stat"
+    },
+    {
+      "id": "d",
+      "from": "pg",
+      "to": "explain"
+    },
+    {
+      "id": "e",
+      "from": "pg",
+      "to": "activity",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "验收数据",
+      "items": [
+        "JOIN mean 11.16 → 0.03ms（370x）",
+        "池钳制解除：活跃连接 10 → 40"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "瓶颈转移",
+      "items": [
+        "UPDATE stock 21ms 成新头号",
+        "死元组膨胀 + 热点行锁"
+      ]
+    }
+  ]
+}
