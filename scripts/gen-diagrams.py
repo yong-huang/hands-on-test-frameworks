@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""生成 29 份 Archify 图源 IR（labs 01-30，00 工具类实验不配图）。
+"""生成 29 份架构图图源 IR（labs 01-30，00 工具类实验不配图；调 Archify 技能校验并渲染）。
 
 类型映射：workflow=过程流、sequence=交互时序、architecture=组件拓扑。
 中文标注、showcase 质量档、节点 ≤ 12、一条主路径。

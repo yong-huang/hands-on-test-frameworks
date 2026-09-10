@@ -3,7 +3,7 @@
 > 把 [test_frameworks.md](test_frameworks.md) 的 30 项目清单落成**全部可真实跑通**的动手系列：
 > pytest 生态（单测/参数化/性质测试）→ API/DB/契约 → Playwright → Cypress/Selenium 三国杀 →
 > 性能（Locust/k6）→ 移动端 → a11y/安全 → 本地 CI 终极串联。
-> 每个实验 = **主演示脚本**（apply/observe/clean 生命周期）+ **编号 README** + **Archify 交互架构图三件套**。
+> 每个实验 = **主演示脚本**（apply/observe/clean 生命周期）+ **编号 README** + **交互式架构图三件套**。
 > 共享被测应用 SUT（实验 11 造的 FastAPI 订单管理），同目标才好对比。
 > 全程免费：只用开源工具本地跑，不碰任何付费 SaaS。
 
@@ -81,7 +81,7 @@ hands-on-test-frameworks/
 ├── .github/workflows/tests.yml# 六层 CI workflow
 ├── scripts/
 │   ├── load_resources.sh      # 共享环境准备（幂等）
-│   └── gen-diagrams.py        # Archify 图源生成器（29 张图）
+│   └── gen-diagrams.py        # 架构图图源生成器（29 张图，调 Archify 技能渲染）
 └── labs/
     └── NN_short_name/         # 30 个实验，结构完全一致
         ├── README.md          # 编号章节 + 交互图链接
