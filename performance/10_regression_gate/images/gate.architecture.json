@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "回归门禁闭环：🟢 基线 → 🔴 注入 → 🟢 修复",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/10_regression_gate/images/gate.html"
+  },
+  "components": [
+    {
+      "id": "k6",
+      "type": "external",
+      "label": "k6 门禁场景",
+      "sublabel": "5VU×30s × 两服务",
+      "pos": [
+        100,
+        140
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "base",
+      "type": "database",
+      "label": "固化基线",
+      "sublabel": "当前健康版快照",
+      "pos": [
+        330,
+        40
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "gate",
+      "type": "backend",
+      "label": "regression_gate",
+      "sublabel": "预算判定 · exit code",
+      "pos": [
+        560,
+        140
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "CI 语义"
+    },
+    {
+      "id": "inject",
+      "type": "backend",
+      "label": "注入回归",
+      "sublabel": "还原三缺陷 → 132ms",
+      "pos": [
+        330,
+        330
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "🔴 实测"
+    },
+    {
+      "id": "fix",
+      "type": "backend",
+      "label": "恢复修复版",
+      "sublabel": "12.6ms → 回绿",
+      "pos": [
+        560,
+        330
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "🟢 实测"
+    },
+    {
+      "id": "cap",
+      "type": "messagebus",
+      "label": "容量评估报告",
+      "sublabel": "拐点/饱和点/扩容建议",
+      "pos": [
+        790,
+        230
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "🏁 终交付物"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "k6",
+      "to": "base",
+      "label": "采基线",
+      "variant": "dashed"
+    },
+    {
+      "id": "b",
+      "from": "k6",
+      "to": "gate",
+      "label": "当前轮结果",
+      "variant": "emphasis",
+      "labelDy": 16,
+      "labelDx": 30
+    },
+    {
+      "id": "c",
+      "from": "base",
+      "to": "gate",
+      "label": "预算对比"
+    },
+    {
+      "id": "d",
+      "from": "gate",
+      "to": "inject",
+      "label": "🔴 击穿预算"
+    },
+    {
+      "id": "e",
+      "from": "inject",
+      "to": "fix",
+      "label": "修复验证",
+      "labelDy": 22
+    },
+    {
+      "id": "f",
+      "from": "gate",
+      "to": "cap",
+      "label": "全系列汇总",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "门禁三连实测",
+      "items": [
+        "🟢 14.1ms → 🔴 132.1ms（+836%）",
+        "修复后 🟢 12.6ms"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "样本量守门",
+      "items": [
+        "请求 <100 拒绝判定",
+        "统计显著性是可信度的一半"
+      ]
+    }
+  ]
+}

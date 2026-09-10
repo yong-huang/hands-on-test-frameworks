@@ -30,5 +30,5 @@ logs/
 badcase/__pycache__/
 contexts/
 ministore-report.json
-performance/31_perf_baseline/shorturl/shorturl
+performance/01_perf_baseline/shorturl/shorturl
 .py-spy-pkgs/

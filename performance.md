@@ -59,7 +59,7 @@
 |:---|:---|
 | **行数** | ~400 行 |
 | **核心知识点** | docker compose 编排、FastAPI 服务、Go net/http 服务、SLI/SLO 定义、RED 方法、k6 smoke 场景、基线报告 |
-| **产出模块** | `performance/31_perf_baseline/`（perf-shop + shorturl + compose + k6 基线脚本 + 报告模板） |
+| **产出模块** | `performance/01_perf_baseline/`（perf-shop + shorturl + compose + k6 基线脚本 + 报告模板） |
 | **技术栈** | Python 3.13 ✅、Go ✅、k6 ✅、Docker Compose ✅（均本机实测已装） |
 | **⚠️ 风险** | 两个 SUT 各埋 3-4 处性能缺陷但先不告诉自己在哪，留给项目 4-9 揪出；缺陷清单写进 `SECRET_DEFS.md`（做完对应项目才能看） |
 | **验收标准** | `docker compose up -d` 一条命令起全栈且 `/health` 两服务均 200；基线报告含 RPS/P50/P95/P99/错误率五指标 × 两服务各一份 |
@@ -68,7 +68,7 @@
 > `我要开始性能工程项目「双 SUT 靶场搭建 + 基线压测」。请给我完整代码约 400 行：FastAPI 商店 API（商品列表/下单，内埋 3 处性能缺陷）+ Go 短链服务（转码+Postgres 读写，内埋 3 处缺陷），docker compose 编排含 Postgres/Redis，各自暴露 /metrics 与 /health，k6 smoke 基线脚本与五指标报告模板，附 SECRET_DEFS.md 缺陷清单。只输出代码。`
 
 **完成日期**：2026-09-08
-**踩坑记录**：见 `performance/31_perf_baseline/README.md` §4.4——postgres 健康检查竞态（改种子 count 检查）、init 脚本角色权限（OWNER 转移 + 别吞 rows.Err()）、本机 893x 被 OrbStack 占用（宿主侧改 1933x）、镜像加速器间歇 EOF（vendor + 重试）
+**踩坑记录**：见 `performance/01_perf_baseline/README.md` §4.4——postgres 健康检查竞态（改种子 count 检查）、init 脚本角色权限（OWNER 转移 + 别吞 rows.Err()）、本机 893x 被 OrbStack 占用（宿主侧改 1933x）、镜像加速器间歇 EOF（vendor + 重试）
 
 ---
 
@@ -78,7 +78,7 @@
 |:---|:---|
 | **行数** | ~250 行 |
 | **核心知识点** | 封闭模型（VU）vs 开放模型（constant-arrival-rate）、思考时间、ramping/spike/soak 场景、Coordinated Omission、读写比建模 |
-| **产出模块** | `performance/32_load_modeling/`（六套 k6 场景 + 模型对比报告） |
+| **产出模块** | `performance/02_load_modeling/`（六套 k6 场景 + 模型对比报告） |
 | **技术栈** | k6 ✅、locust（pip 安装） |
 | **前置** | 项目 1 |
 | **验收标准** | 同一 SUT 同目标 RPS 下开放/封闭两模型 P95 差异有实测数据且报告里能解释差异来源；spike 场景在 Grafana/报告里复现一次突刺 |
@@ -87,7 +87,7 @@
 > `我要开始性能工程项目「负载建模：开放 vs 封闭模型」。请给我完整代码约 250 行：对 perf-shop 写 k6 封闭模型（ramping-vus）与开放模型（constant-arrival-rate）各一套、思考时间版本、spike 场景，Locust 等效场景一套，附模型对比报告模板（含 Coordinated Omission 解释章节）。只输出代码。`
 
 **完成日期**：2026-09-08
-**踩坑记录**：locust 新版 `success()` 不吃布尔参数（去掉 catch_response）；其 CSV 分位数单位是 ms 别二次换算；开放模型迭代内不要加思考时间；同吞吐 ~170 req/s 下开放 P95 比封闭高 3587ms，CO 实锤（详见 performance/32_load_modeling/docs/modeling.md）
+**踩坑记录**：locust 新版 `success()` 不吃布尔参数（去掉 catch_response）；其 CSV 分位数单位是 ms 别二次换算；开放模型迭代内不要加思考时间；同吞吐 ~170 req/s 下开放 P95 比封闭高 3587ms，CO 实锤（详见 performance/02_load_modeling/docs/modeling.md）
 
 ---
 
@@ -101,7 +101,7 @@
 |:---|:---|
 | **行数** | ~300 行 |
 | **核心知识点** | Prometheus 数据模型、prometheus-fastapi-instrumentator、Go /metrics、Grafana 面板、USE 方法、Four Golden Signals、告警规则 |
-| **产出模块** | `performance/33_observability/`（监控栈 compose + Grafana 面板 JSON + 告警规则 + USE 面板） |
+| **产出模块** | `performance/03_observability/`（监控栈 compose + Grafana 面板 JSON + 告警规则 + USE 面板） |
 | **技术栈** | Prometheus/Grafana Docker 镜像（arm64 官方）⚠️ 开工探活 |
 | **前置** | 项目 1、2 |
 | **⚠️ 风险** | macOS Docker Desktop 拿不到宿主机级指标（cAdvisor 局限）→ 全部用容器/进程级 exporter（含 postgres_exporter、redis_exporter），学习目标不变 |
@@ -111,7 +111,7 @@
 > `我要开始性能工程项目「监控栈与黄金信号」。请给我完整代码约 300 行：Prometheus + Grafana + postgres/redis exporter 的 compose 编排，FastAPI 接入 prometheus-fastapi-instrumentator、Go 服务接入 prometheus/client_golang，黄金信号 Grafana 面板 JSON，P95 超 SLO 告警规则，附验证命令。只输出代码。`
 
 **完成日期**：2026-09-08
-**踩坑记录**：macOS Docker Desktop 无宿主机级指标（进程级指标替代，目标不变）；promhttp handler 标签需 MustCurryWith 显式指定；告警 for:15s 防抖后 t+20s 才首次 firing；实测双响 HighP95Latency+HighErrorRate，黄金信号联动数据入册（performance/33_observability/docs/golden.md）
+**踩坑记录**：macOS Docker Desktop 无宿主机级指标（进程级指标替代，目标不变）；promhttp handler 标签需 MustCurryWith 显式指定；告警 for:15s 防抖后 t+20s 才首次 firing；实测双响 HighP95Latency+HighErrorRate，黄金信号联动数据入册（performance/03_observability/docs/golden.md）
 
 ---
 
@@ -125,7 +125,7 @@
 |:---|:---|
 | **行数** | ~200 行 |
 | **核心知识点** | py-spy 采样原理与火焰图、cProfile 统计式剖析、GIL 与同步阻塞、修复前后对比方法论 |
-| **产出模块** | `performance/34_python_profiling/`（剖析脚本 + 火焰图 + 修复 diff + 对比报告） |
+| **产出模块** | `performance/04_python_profiling/`（剖析脚本 + 火焰图 + 修复 diff + 对比报告） |
 | **技术栈** | py-spy（pip 安装，arm64 支持）⚠️ 开工探活 |
 | **前置** | 项目 1、3 |
 | **验收标准** | 火焰图指到具体热点函数名且与 SECRET_DEFS.md 缺陷对上；修复后同场景 P95 改善 ≥30%（同一 k6 脚本两次跑，数据入报告） |
@@ -144,7 +144,7 @@
 |:---|:---|
 | **行数** | ~180 行 |
 | **核心知识点** | net/http/pprof、CPU profile 与 heap profile、allocs 分析、go tool pprof 火焰图、内存逃逸 |
-| **产出模块** | `performance/35_go_profiling/`（剖析脚本 + 火焰图 + 修复 diff + 对比报告） |
+| **产出模块** | `performance/05_go_profiling/`（剖析脚本 + 火焰图 + 修复 diff + 对比报告） |
 | **技术栈** | Go pprof（标准库，零安装）✅ |
 | **前置** | 项目 1、3 |
 | **验收标准** | pprof top/火焰图定位到 shorturl 热点函数；修复后单请求 allocs 下降 ≥40%（benchstat 或 before/after 数据入报告） |
@@ -163,7 +163,7 @@
 |:---|:---|
 | **行数** | ~250 行 |
 | **核心知识点** | 慢查询日志、EXPLAIN ANALYZE、索引设计、Seq Scan vs Index Scan、SQLAlchemy/Go 连接池参数、连接池打满症状 |
-| **产出模块** | `performance/36_db_performance/`（慢 SQL 清单 + EXPLAIN 证据 + 索引迁移 + 连接池调参记录） |
+| **产出模块** | `performance/06_db_performance/`（慢 SQL 清单 + EXPLAIN 证据 + 索引迁移 + 连接池调参记录） |
 | **技术栈** | Postgres 16 Docker 镜像、pg_stat_statements |
 | **前置** | 项目 1、3 |
 | **验收标准** | 至少一条慢 SQL 有 EXPLAIN 证据显示 Seq Scan→Index Scan 且耗时数量级下降；用压测复现一次连接池打满（报错/排队），调参后消除并记录参数依据 |
@@ -186,7 +186,7 @@
 |:---|:---|
 | **行数** | ~300 行 |
 | **核心知识点** | Cache-Aside 模式、命中率统计、缓存穿透/击穿/雪崩、TTL 抖动、singleflight（Go）/请求合并、空值缓存 |
-| **产出模块** | `performance/37_caching/`（缓存层实现 + 三大问题复现脚本 + 防护代码 + 命中率面板） |
+| **产出模块** | `performance/07_caching/`（缓存层实现 + 三大问题复现脚本 + 防护代码 + 命中率面板） |
 | **技术栈** | Redis 7 Docker 镜像、redis_exporter ✅（项目 3 已接） |
 | **前置** | 项目 3、6 |
 | **验收标准** | 热点读场景命中率 >90% 有 Grafana 面板数据；逐一复现穿透/击穿/雪崩（脚本+曲线证据），防护后击穿场景 DB QPS 尖峰被抹平（数据入报告） |
@@ -205,7 +205,7 @@
 |:---|:---|
 | **行数** | ~250 行 |
 | **核心知识点** | uvicorn workers 与 GIL、Go GOMAXPROCS 与 goroutine 池、并发×资源矩阵实验、最优工作点、过饱和症状（上下文切换/排队） |
-| **产出模块** | `performance/38_concurrency_tuning/`（矩阵实验脚本 + 结果表 + 最优配置） |
+| **产出模块** | `performance/08_concurrency_tuning/`（矩阵实验脚本 + 结果表 + 最优配置） |
 | **前置** | 项目 2、4、5 |
 | **验收标准** | 产出 worker 数×目标 RPS 矩阵数据表（两 SUT 各一张）；最优配置比默认配置吞吐提升 ≥20% 或同吞吐 P95 下降 ≥25%（数据入报告） |
 
@@ -227,7 +227,7 @@
 |:---|:---|
 | **行数** | ~200 行 |
 | **核心知识点** | soak 测试设计、Prometheus 内存趋势判读、pprof heap 差分、goroutine 泄漏定位、tracemalloc（选做） |
-| **产出模块** | `performance/39_soak_leak/`（soak 场景 + 泄漏注入开关 + 差分分析脚本 + 定位报告） |
+| **产出模块** | `performance/09_soak_leak/`（soak 场景 + 泄漏注入开关 + 差分分析脚本 + 定位报告） |
 | **前置** | 项目 3、5 |
 | **⚠️ 风险** | 真实 soak 需 12h+ → 用加速配方：泄漏率调大 + 1h 短 soak 判趋势，方法论不变；长 soak 可过夜后台跑 |
 | **验收标准** | 注入泄漏版 1h soak 内存曲线单调上升被复现（Grafana 截图）；pprof heap 差分/goroutine 数定位到具体分配点与 SECRET_DEFS.md 对上；修复后同配方曲线平稳 |
@@ -246,7 +246,7 @@
 |:---|:---|
 | **行数** | ~350 行 |
 | **核心知识点** | 性能基线自动对比（k6 thresholds + 统计显著性）、性能预算、CI 门禁语义、性能拐点与饱和点、容量规划、调优报告写作 |
-| **产出模块** | `performance/40_regression_gate/`（对比脚本 + 门禁配置 + CI workflow + 双 SUT 容量评估报告） |
+| **产出模块** | `performance/10_regression_gate/`（对比脚本 + 门禁配置 + CI workflow + 双 SUT 容量评估报告） |
 | **技术栈** | k6 ✅（thresholds 进阶用法）、GitHub Actions 免费额度或 act 本地验证 |
 | **前置** | 项目 1-9 全部 |
 | **验收标准** | 人为注入一处性能回归（还原项目 4 的缺陷）后 CI 门禁自动红且报告指出退化指标；最终容量评估报告含双 SUT 拐点/饱和点数据、扩容建议、项目 1-9 全部 before/after 指标汇总表 |
@@ -255,7 +255,7 @@
 > `我要开始性能工程项目「性能回归门禁 + 容量评估报告」，这是终极串联项目。请给我完整代码约 350 行：基线保存与 k6 结果自动对比脚本（含 P95 退化阈值判定）、性能预算配置、CI workflow（复用本仓库 labs/30_local_ci 的分层思路，性能门禁接在其后）、双 SUT 容量评估报告模板（拐点/饱和点/扩容建议/全程 before-after 汇总表）。只输出代码。`
 
 **完成日期**：2026-09-08
-**踩坑记录**：手写 YAML 解析器 strip 掉缩进致预算键全错层（换 stdlib tomllib，预算改 TOML）；门禁基线不得污染 31 号实验的历史基线（分目录固化）；健康检查精确值 5000 语义修复后回归；实测三连：🟢 14.1ms → 注入 🔴 132.1ms（+836%，还连累 shorturl +87%）→ 修复 🟢 12.6ms
+**踩坑记录**：手写 YAML 解析器 strip 掉缩进致预算键全错层（换 stdlib tomllib，预算改 TOML）；门禁基线不得污染 01 号实验的历史基线（分目录固化）；健康检查精确值 5000 语义修复后回归；实测三连：🟢 14.1ms → 注入 🔴 132.1ms（+836%，还连累 shorturl +87%）→ 修复 🟢 12.6ms
 
 ---
 

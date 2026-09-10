@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "监控栈拓扑：抓取 4 路，黄金信号一屏对照",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/performance/03_observability/images/observability.html"
+  },
+  "components": [
+    {
+      "id": "prom",
+      "type": "backend",
+      "label": "Prometheus :19090",
+      "sublabel": "5s 抓取 + 告警规则评估",
+      "pos": [
+        420,
+        230
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "规则引擎"
+    },
+    {
+      "id": "shop",
+      "type": "backend",
+      "label": "shop /metrics",
+      "sublabel": "QPS + 高精度直方图",
+      "pos": [
+        120,
+        80
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "short",
+      "type": "backend",
+      "label": "shorturl /metrics",
+      "sublabel": "HTTP 直方图 + go_ 进程指标",
+      "pos": [
+        120,
+        180
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "pge",
+      "type": "database",
+      "label": "postgres-exporter",
+      "sublabel": "pg_stat_database 事务/锁",
+      "pos": [
+        120,
+        280
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "rdse",
+      "type": "database",
+      "label": "redis-exporter",
+      "sublabel": "命中/未命中（项目 7 预热）",
+      "pos": [
+        120,
+        380
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "graf",
+      "type": "messagebus",
+      "label": "Grafana :13000",
+      "sublabel": "黄金信号面板同屏联动",
+      "pos": [
+        740,
+        110
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "alert",
+      "type": "messagebus",
+      "label": "HighP95 / HighError",
+      "sublabel": "SLO 500ms · for 15s",
+      "pos": [
+        740,
+        360
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "实测双响"
+    }
+  ],
+  "boundaries": [],
+  "connections": [
+    {
+      "id": "a",
+      "from": "prom",
+      "to": "shop",
+      "label": "pull 5s",
+      "variant": "dashed",
+      "labelDy": 18
+    },
+    {
+      "id": "b",
+      "from": "prom",
+      "to": "short",
+      "variant": "dashed"
+    },
+    {
+      "id": "c",
+      "from": "prom",
+      "to": "pge",
+      "variant": "dashed"
+    },
+    {
+      "id": "d",
+      "from": "prom",
+      "to": "rdse",
+      "variant": "dashed"
+    },
+    {
+      "id": "e",
+      "from": "graf",
+      "to": "prom",
+      "label": "PromQL 即时查询"
+    },
+    {
+      "id": "f",
+      "from": "prom",
+      "to": "alert",
+      "label": "超阈值 → firing",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "四条联动曲线",
+      "items": [
+        "流量 RPS / 延迟 P95 / 错误率 / 资源",
+        "压测窗口实测 121 RPS · P95 4.4s · CPU 1.06 核"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "macOS 限制",
+      "items": [
+        "Docker Desktop 无宿主机级指标",
+        "用容器/进程级 exporter 替代"
+      ]
+    }
+  ]
+}

@@ -119,4 +119,4 @@ macOS（Apple Silicon 实测）/ Python 3.11+ / Node 20+ / Docker（14、24、29
 ## 🔬 性能工程系列（10/10 全部跑通）
 
 [performance.md](performance.md) 定义了独立的 10 项目性能工程清单（观测/剖析/调优/容量），
-实验从 [performance/31_perf_baseline](performance/31_perf_baseline) 起编号，与上面 30 个框架实验互补不重叠。
+实验在 [performance/](performance/) 内从 [01_perf_baseline](performance/01_perf_baseline) 起独立编号（01-10），与上面 30 个框架实验互补不重叠。
