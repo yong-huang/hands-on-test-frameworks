@@ -85,7 +85,7 @@ assert page.evaluate("document.documentElement.scrollWidth") <= page.evaluate("w
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: Appium 和 Espresso/XCUITest 的关系？** Appium 是协议层翻译官，
   底层仍驱动 XCUITest/uiautomator2——多语言通用，但多一层延迟。

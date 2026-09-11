@@ -81,7 +81,7 @@ v =  # Docker 是唯一硬前置：docker info 先体检
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: testcontainers 和 docker-compose 起依赖有什么区别？** 前者生命周期绑定
   测试会话、端口动态分配、并发安全；compose 面向长驻环境，测试要自己清理。

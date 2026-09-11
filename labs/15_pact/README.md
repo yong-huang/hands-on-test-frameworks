@@ -85,7 +85,7 @@ Verifier("ministore-api").add_source(f).add_transport(url=...).verify()
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 契约测试和集成测试怎么分工？** 集成测试验证"两边一起干活"，慢而全；
   契约测试验证"接口预期一致"，快而准，可各自 CI 独立跑。

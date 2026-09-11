@@ -89,7 +89,7 @@ python3 regression_gate.py shop && python3 regression_gate.py shorturl
 └── images/               # 图三件套
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 性能回归门禁放在 CI 哪个阶段？** 合并到主干之前跑短场景（smoke 级
   预算判定）；全量容量评估放 nightly。门禁要快，否则没人等它。

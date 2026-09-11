@@ -42,7 +42,7 @@ bash scripts/load_resources.sh check
   环境受阻时 fallback 也算完成（清单原文如此）。
 - **GitHub Actions**（lab 30）：push 到 GitHub 才有云端流水线；本地用 `act` 复跑。
 
-## 4. 面试要点
+## 4. 深入要点
 
 - **Q: 测试环境管理最容易踩的坑？** 依赖污染——全局 pip 装一圈后版本互相踩。用 venv 隔离、
   锁定版本、CI 里每次全新安装，是三条基本功。

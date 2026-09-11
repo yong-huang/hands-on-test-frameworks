@@ -97,7 +97,7 @@ go test -bench . -benchmem -run XXX -count 1
 └── images/                 # 图三件套
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: pprof 的 CPU profile 原理？** runtime 每 10ms（默认 100Hz）对运行中的
   goroutine 采样一次用户态栈，聚合出自我时间/累计时间——采样式，开销极低。

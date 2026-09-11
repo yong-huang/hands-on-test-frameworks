@@ -94,7 +94,7 @@ go tool pprof -top -sample_index=alloc_space -diff_base=t0.pb.gz t1.pb.gz
 泄漏开关本体在 `../01_perf_baseline/shorturl/main.go` 的 `maybeLeak()`
 （LEAK_MODE 环境变量，默认 off）。
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 浸泡测试时长怎么定？** 看泄漏率与告警阈值的乘积：泄漏率越小微象，
   越要长窗口。加速配方的思想是把泄漏率调大换时间，**趋势形状**才是判据。

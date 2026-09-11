@@ -92,7 +92,7 @@ docker run --rm --pid=container:$SHOP_CONTAINER --cap-add SYS_PTRACE \
 └── images/                  # 图三件套
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: py-spy 和 cProfile 怎么选？** py-spy 采样式、零侵入、可挂生产进程、
   能看 off-CPU；cProfile 统计式、有 30%+ 开销、只能看单进程函数调用。

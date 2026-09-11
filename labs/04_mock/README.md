@@ -79,7 +79,7 @@ monkeypatch.setenv("SMTP_HOST", "smtp.staging")          # 自动还原的环境
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: mock/stub/spy/fake 的差别？** stub 喂值、spy 记录、mock 记录+断言、fake 能跑。
   pytest 语境下 MagicMock 覆盖前三，fake 自建。

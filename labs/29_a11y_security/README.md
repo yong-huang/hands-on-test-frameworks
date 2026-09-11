@@ -78,7 +78,7 @@ docker run --rm -v "$PWD/docs:/zap/wrk" -t zaproxy/zap-stable \
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: a11y 自动化能替代人工测试吗？** 不能—— axe 覆盖约 30-40% 的 WCAG
   问题（规则可判定的部分），键盘导航/读屏体验必须人工；自动化管回归。

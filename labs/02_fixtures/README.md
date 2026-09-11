@@ -84,7 +84,7 @@ def db():
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: session 和 function 作用域怎么选？** 按"建一次的成本 × 脏的风险"权衡；
   连接类贵而不脏的上 session，数据类易脏的留 function 并在 teardown 复位。

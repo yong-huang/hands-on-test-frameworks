@@ -69,7 +69,7 @@ pytest --trace on     # 出错即进入 Playwright inspector
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: Playwright 的自动等待覆盖什么？** 元素可见、稳定、可接收事件、启用状态；
   断言层面要主动用 web-first expect 才有重试语义。

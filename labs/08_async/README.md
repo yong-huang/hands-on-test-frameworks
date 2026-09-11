@@ -80,7 +80,7 @@ AsyncRetryClient(transport=..., sleeper=asyncio.sleep, clock=lambda: now())
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 怎么测指数退避而不真等？** 注入 sleeper，断言"名义退避序列"，
   真实耗时断言兜底防回归成真睡。

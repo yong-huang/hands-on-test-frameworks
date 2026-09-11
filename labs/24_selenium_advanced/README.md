@@ -85,7 +85,7 @@ ActionChains(d).click_and_hold(a).move_to_element(b).release().perform()
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: Grid 并行度怎么定？** maxSession 与机器核/内存匹配；每个 Chrome 吃
   0.5-1GB，shm_size 要给足（2g 起）。

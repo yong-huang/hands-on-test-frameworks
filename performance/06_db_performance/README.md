@@ -100,7 +100,7 @@ EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT ...;
 └── images/                # 图三件套
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 怎么找到最该优化的 SQL？** pg_stat_statements 按 total（总量）与
   mean（单条）两个视角各看一遍：总量高的是优化收益，单条高的是用户体验。

@@ -88,7 +88,7 @@ suppress_health_check=[HealthCheck.too_slow] # 慢策略静默（谨慎使用）
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: property-based 能替代手写用例吗？** 不能替代，是互补：手写锁"已知关键样本"，
   性质锁"全输入域规律"，@example 负责把战果固化。

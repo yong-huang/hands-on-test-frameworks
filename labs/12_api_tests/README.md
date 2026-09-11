@@ -81,7 +81,7 @@ OrderOut.model_validate(r.json())            # schema 锁
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: API 测试和 E2E 的边界？** API 测试只管接口契约（无 UI）；E2E 管
   用户路径（有浏览器）。同一 SUT，两层互补。

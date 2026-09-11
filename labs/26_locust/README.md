@@ -71,7 +71,7 @@ locust -f locustfile.py --headless --users 100 --spawn-rate 10 \
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: RPS 和并发用户什么关系？** RPS ≈ 并发 × 1/(响应时间+思考时间)——
   响应时间劣化时 RPS 增长放缓甚至回落，这就是拐点的数学形态。

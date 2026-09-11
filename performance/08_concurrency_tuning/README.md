@@ -104,7 +104,7 @@ GOMAXPROCS=2 docker compose up -d shorturl
 └── images/                # 图三件套
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: uvicorn 的 workers 怎么定？** 起点是容器 CPU 核数；用矩阵实验在
   目标并发下实测 RPS/P95，收益归零即停。同时乘上每进程连接池算 PG 连接账。

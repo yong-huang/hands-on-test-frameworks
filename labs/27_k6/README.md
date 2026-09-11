@@ -77,7 +77,7 @@ export const options = {
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: thresholds 和断言（checks）的区别？** checks 统计成功率不决定退出码；
   thresholds 决定退出码——CI 门禁必须用后者。

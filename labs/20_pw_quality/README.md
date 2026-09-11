@@ -85,7 +85,7 @@ playwright show-trace test-results/<case>/trace.zip
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 三核矩阵的成本怎么控制？** 冒烟进矩阵、全量回归挑核；PR 跑 Chromium、
   夜间跑满矩阵；利用 `pytest-xdist` 把矩阵并行化。

@@ -79,7 +79,7 @@ cy.wait('@broken')                 // 等拦截的请求发生
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: intercept 和 Playwright route 的差异？** 能力同级；Cypress 桩跑在浏览器
   网络栈内、可配合 wait 精确断言"请求发生过"；PW 更自由（可改可转发）。

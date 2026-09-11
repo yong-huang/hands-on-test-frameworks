@@ -84,7 +84,7 @@ packages = ["pytest_ministore_report"]   # 平铺布局必须显式声明
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: conftest 和插件怎么选？** 单项目用 conftest；跨项目/需版本化分发用插件。
 - **Q: hookwrapper 和普通钩子的区别？** wrapper 包裹原实现（yield 前后插逻辑、

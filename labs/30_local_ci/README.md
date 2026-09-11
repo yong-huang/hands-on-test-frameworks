@@ -81,7 +81,7 @@ jobs:
 Makefile                             # make quality / unit / api / e2e / perf / a11y / clean
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 流水线怎么分层？** 按反馈速度×失败概率排：最快最稳的最先；
   用 needs 表达依赖，让"红灯"尽量早出现在便宜的层。

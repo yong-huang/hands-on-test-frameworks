@@ -109,7 +109,7 @@ BASE=http://localhost:19331 k6 run --summary-export reports/smoke_shop.json k6/s
 └── images/                 # 图三件套（json 图源 / html 交互版 / svg 内嵌版）
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 基线为什么固定 5 VU 而不是压满？** 基线的职责是提供可复现的对照系；
   压满会撞拐点，抖动放大，修复效果淹没在噪声里。找拐点是另一场景（项目 2）。

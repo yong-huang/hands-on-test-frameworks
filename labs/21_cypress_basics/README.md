@@ -71,7 +71,7 @@ module.exports = defineConfig({
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: Cypress 为什么不能多标签/多域？** 同进程同源的安全模型决定；
   跨域需实验性 `cy.origin`。

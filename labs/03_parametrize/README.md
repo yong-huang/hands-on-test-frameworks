@@ -85,7 +85,7 @@ with pytest.raises(ConfigError, match="重复键"):
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: 参数化和 fixture 各自适合什么场景？** 参数化是"同逻辑不同数据"；
   fixture 是"同数据不同逻辑"。需要两者时用 indirect 桥接。

@@ -82,7 +82,7 @@ browser.new_context(storage_state=".auth/admin.json")
 └── images/
 ```
 
-## 7. 面试要点
+## 7. 深入要点
 
 - **Q: mock 后端后 E2E 还算端到端吗？** 分层看：前端交互层是端到端（浏览器→
   网络层→UI），业务正确性由真链路套件保障——两者互补，按目标选层。
