@@ -76,12 +76,16 @@ make quality                                       # 全量流水线（lab 30）
 ```
 hands-on-test-frameworks/
 ├── README.md                  # 本文件
-├── test_frameworks.md         # 原始 30 项目清单（来源）
 ├── Makefile                   # make quality 一键流水线（lab 30）
 ├── .github/workflows/tests.yml# 六层 CI workflow
+├── docs/
+│   ├── test_frameworks.md     # 原始 30 项目清单（来源）
+│   └── performance.md         # 性能工程 10 项目清单（来源）
 ├── scripts/
 │   ├── load_resources.sh      # 共享环境准备（幂等）
 │   └── gen-diagrams.py        # 架构图图源生成器（29 张图，调 Archify 技能渲染）
+├── performance/
+│   └── NN_short_name/         # 10 个性能工程实验，结构同 labs
 └── labs/
     └── NN_short_name/         # 30 个实验，结构完全一致
         ├── README.md          # 编号章节 + 交互图链接
