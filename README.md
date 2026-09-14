@@ -1,6 +1,6 @@
 # 🧪 hands-on-test-frameworks：30 个小项目吃透 pytest / Playwright / Cypress / Selenium
 
-> 把 [test_frameworks.md](test_frameworks.md) 的 30 项目清单落成**全部可真实跑通**的动手系列：
+> 把 [test_frameworks.md](docs/test_frameworks.md) 的 30 项目清单落成**全部可真实跑通**的动手系列：
 > pytest 生态（单测/参数化/性质测试）→ API/DB/契约 → Playwright → Cypress/Selenium 三国杀 →
 > 性能（Locust/k6）→ 移动端 → a11y/安全 → 本地 CI 终极串联。
 > 每个实验 = **主演示脚本**（apply/observe/clean 生命周期）+ **编号 README** + **交互式架构图三件套**。
@@ -113,10 +113,10 @@ macOS（Apple Silicon 实测）/ Python 3.11+ / Node 20+ / Docker（14、24、29
 
 ## 📝 来源与许可
 
-学习路线与项目定义来自 [test_frameworks.md](test_frameworks.md)；
+学习路线与项目定义来自 [test_frameworks.md](docs/test_frameworks.md)；
 实验实现与脚本为系列配套产物。LICENSE 待定（默认保留所有权利，如需 MIT 请告知）。
 
 ## 🔬 性能工程系列（10/10 全部跑通）
 
-[performance.md](performance.md) 定义了独立的 10 项目性能工程清单（观测/剖析/调优/容量），
+[performance.md](docs/performance.md) 定义了独立的 10 项目性能工程清单（观测/剖析/调优/容量），
 实验在 [performance/](performance/) 内从 [01_perf_baseline](performance/01_perf_baseline) 起独立编号（01-10），与上面 30 个框架实验互补不重叠。
