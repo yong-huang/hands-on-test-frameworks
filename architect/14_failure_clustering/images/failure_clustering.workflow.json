@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "失败聚类：50 条红归并成 3 个根因",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/14_failure_clustering/images/failure_clustering.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "in", "label": "失败流入" },
+    { "id": "engine", "label": "聚类引擎" },
+    { "id": "out", "label": "根因产出" }
+  ],
+  "phases": [
+    { "id": "src", "label": "失败集", "fromCol": 0, "toCol": 0 },
+    { "id": "finger", "label": "指纹与合并", "fromCol": 1, "toCol": 2 },
+    { "id": "emit", "label": "先修排序", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["failures", "normalize", "merge", "rank"],
+  "nodes": [
+    { "id": "failures", "lane": "in", "col": 0, "type": "external", "label": "50 条失败", "width": 110, "sublabel": "3 个真实根因+噪声" },
+    { "id": "normalize", "lane": "engine", "col": 1, "type": "backend", "label": "指纹归一化", "width": 120, "sublabel": "数字/路径/hex→占位" },
+    { "id": "merge", "lane": "engine", "col": 2, "type": "backend", "label": "相似度合并", "width": 110, "sublabel": "difflib ≥0.85" },
+    { "id": "rank", "lane": "out", "col": 3, "type": "frontend", "label": "先修排序", "width": 100, "sublabel": "37/11/2" },
+    { "id": "report", "lane": "out", "col": 4, "type": "frontend", "label": "纯度验收", "width": 100, "sublabel": "100% ≥80%" }
+  ],
+  "edges": [
+    { "from": "failures", "to": "normalize", "variant": "default" },
+    { "from": "normalize", "to": "merge", "variant": "default" },
+    { "from": "merge", "to": "rank", "variant": "default" },
+    { "from": "rank", "to": "report", "variant": "default" }
+  ]
+}

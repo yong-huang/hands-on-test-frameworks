@@ -2,7 +2,11 @@
 # 快速通道：make unit / api / e2e / perf / a11y 逐层单独跑
 PY := .venv/bin/python
 
-.PHONY: quality unit api e2e perf a11y clean
+.PHONY: quality unit api e2e perf a11y architect-report clean
+
+# architect 27：效能全景看板（聚合 architect/ 各项目产物，缺失自动轻量生成）
+architect-report:
+	cd architect/27_panorama_board && ./panorama_board.sh apply && ./panorama_board.sh observe
 
 quality: unit api e2e perf a11y
 	@echo ""

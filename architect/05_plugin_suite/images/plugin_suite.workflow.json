@@ -1,0 +1,145 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "qa_kit 公司级插件：entry point 挂载与三条能力钩子",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/05_plugin_suite/images/plugin_suite.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "install",
+      "label": "安装期"
+    },
+    {
+      "id": "hook",
+      "label": "运行期（pytest 钩子）"
+    },
+    {
+      "id": "out",
+      "label": "产物"
+    }
+  ],
+  "phases": [
+    {
+      "id": "mount",
+      "label": "零侵入挂载",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "run",
+      "label": "钩子介入",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "产物输出",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "entrypoint",
+    "protocol",
+    "makereport",
+    "sessionfinish",
+    "artifacts"
+  ],
+  "nodes": [
+    {
+      "id": "entrypoint",
+      "lane": "install",
+      "col": 0,
+      "type": "external",
+      "label": "pip install -e",
+      "width": 132,
+      "sublabel": "entry point=pytest11"
+    },
+    {
+      "id": "ini",
+      "lane": "install",
+      "col": 1,
+      "type": "database",
+      "label": "ini/CLI 配置",
+      "width": 132,
+      "sublabel": "不配置=零行为"
+    },
+    {
+      "id": "protocol",
+      "lane": "hook",
+      "col": 1,
+      "type": "backend",
+      "label": "runtest_protocol",
+      "width": 140,
+      "sublabel": "计时+分层计数"
+    },
+    {
+      "id": "makereport",
+      "lane": "hook",
+      "col": 2,
+      "type": "backend",
+      "label": "makereport",
+      "width": 120,
+      "sublabel": "失败落 evidence"
+    },
+    {
+      "id": "sessionfinish",
+      "lane": "hook",
+      "col": 3,
+      "type": "backend",
+      "label": "sessionfinish",
+      "width": 130,
+      "sublabel": "慢用例排行汇总"
+    },
+    {
+      "id": "artifacts",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "三件产物",
+      "width": 132,
+      "sublabel": "evidence/排行JSON/分层统计"
+    }
+  ],
+  "edges": [
+    {
+      "from": "entrypoint",
+      "to": "protocol",
+      "variant": "default"
+    },
+    {
+      "from": "ini",
+      "to": "protocol",
+      "variant": "dashed"
+    },
+    {
+      "from": "protocol",
+      "to": "makereport",
+      "variant": "default"
+    },
+    {
+      "from": "makereport",
+      "to": "sessionfinish",
+      "variant": "default"
+    },
+    {
+      "from": "sessionfinish",
+      "to": "artifacts",
+      "variant": "default"
+    },
+    {
+      "from": "ini",
+      "to": "sessionfinish",
+      "variant": "dashed"
+    }
+  ]
+}

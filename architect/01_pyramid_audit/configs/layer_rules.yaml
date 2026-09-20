@@ -1,0 +1,72 @@
+# =============================================================================
+# layer_rules.yaml — 分层审计的「声明式真相」
+#
+# audit.py 只认这份配置，不在代码里内嵌任何 lab 知识：
+#   想改分层口径（比如把 29 挪进 UI 层）、想关掉某个 lab 的计时资格，
+#   改这里就行——规则即配置，工具只负责执行与算账。
+#
+# 字段说明：
+#   layer      归属层：unit / integration / e2e / outside（塔外：非功能与流水线）
+#   counter    用例计数器：pytest(--collect-only 精确到参数化展开) /
+#              cypress(正则数 it()/specify()，未含动态生成) / locust(@task 数) /
+#              k6(场景脚本数) / none(无用例资产)
+#   timed      是否纳入实测计时（v1 口径：仅 pytest 栈；cypress 等只计数）
+#   service    计时前置服务端口（探测不通就如实跳过，不硬跑）
+#   pytest_args 计时运行时的附加 pytest 参数
+#   note / skip_reason / expected_fail  报告里如实展示的人类说明
+# =============================================================================
+meta:
+  repo_root: ../..                      # 相对本配置文件的仓库根
+  sut_base_url: http://127.0.0.1:8899   # 主 SUT；audit 会注入 SUT_BASE_URL/SUT_URL 环境变量
+  reference:                            # 测试金字塔参考数量占比（教科书值，判定基准）
+    unit: 70
+    integration: 20
+    e2e: 10
+
+layers:
+  unit:
+    label: 单元层（pytest）
+    desc: 进程内验证一个函数/一个模块，不碰网络与磁盘服务
+  integration:
+    label: 接口/集成层（API/DB/契约）
+    desc: 对运行中的服务或真实依赖（DB/容器/契约）验证模块间协作
+  e2e:
+    label: UI E2E 层
+    desc: 浏览器驱动真实用户路径，最接近真实但最贵最脆
+  outside:
+    label: 塔外·非功能与流水线
+    desc: 性能/a11y/安全/CI——金字塔不画它们，但体系离不开它们
+
+# ---- 每个 lab 的归类与资格（编号即 labs/ 目录名）----
+labs:
+  00_env_check:       { layer: outside, counter: none,   timed: false, note: 环境体检工具体，无用例 }
+  01_pytest_basics:   { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 断言回溯演示含 1 条故意失败 }
+  02_fixtures:        { layer: unit, counter: pytest, timed: true }
+  03_parametrize:     { layer: unit, counter: pytest, timed: true }
+  04_mock:            { layer: unit, counter: pytest, timed: true }
+  05_coverage:        { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 覆盖率门禁演示含故意失败用例 }
+  06_hypothesis:      { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 收缩演示含故意失败的性质用例 }
+  07_snapshot:        { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 快照破坏→红→更新演示含故意失败 }
+  08_async:           { layer: unit, counter: pytest, timed: true }
+  09_xdist:           { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 并行污染翻车演示含故意失败 }
+  10_plugin:          { layer: unit, counter: pytest, timed: true, expected_fail: true, note: 失败留现场插件的演示用例（test_failing_case） }
+  11_sut_app:         { layer: integration, counter: pytest, timed: true, service: 8899, note: SUT 自测冒烟，对运行中服务 }
+  12_api_tests:       { layer: integration, counter: pytest, timed: true, service: 8899 }
+  13_db_tests:        { layer: integration, counter: pytest, timed: true, note: 进程内直连 SUT 数据层(sqlite)，无需起服务 }
+  14_testcontainers:  { layer: integration, counter: pytest, timed: true, docker: true, timeout: 600, note: 首跑可能拉 Postgres 镜像 }
+  15_pact:            { layer: integration, counter: pytest, timed: true, note: 仅 consumer 侧 pytest 可收集；provider 验证是脚本不在用例数内 }
+  16_pw_basics:       { layer: e2e, counter: pytest, timed: true, service: 8899, pytest_args: "--base-url http://127.0.0.1:8899 --browser chromium" }
+  17_pw_locators:     { layer: e2e, counter: pytest, timed: true, service: 8899, expected_fail: true, note: 反模式 sleep 必挂演示, pytest_args: "--base-url http://127.0.0.1:8899 --browser chromium" }
+  18_pw_pom:          { layer: e2e, counter: pytest, timed: true, service: 8899, pytest_args: "--base-url http://127.0.0.1:8899 --browser chromium" }
+  19_pw_network:      { layer: e2e, counter: pytest, timed: true, service: 8899, pytest_args: "--base-url http://127.0.0.1:8899 --browser chromium" }
+  20_pw_quality:      { layer: e2e, counter: pytest, timed: true, service: 8899, expected_fail: true, note: 刻意写错的反例用例（test_deliberately_wrong）, pytest_args: "--base-url http://127.0.0.1:8899 --browser chromium" }
+  21_cypress_basics:  { layer: e2e, counter: cypress, timed: false, service: 8921, skip_reason: cypress 栈 v1 只计数不计时（需 npx cypress run + 独立 8921 实例） }
+  22_cypress_advanced: { layer: e2e, counter: cypress, timed: false, service: 8921, skip_reason: 同 21，cypress 栈只计数 }
+  23_selenium_basics: { layer: e2e, counter: pytest, timed: false, service: 8923, skip_reason: 需 lab 自带 8923 静态服务器，v1 计时口径未纳入 }
+  24_selenium_advanced: { layer: e2e, counter: pytest, timed: false, service: 8924, skip_reason: 需 8924 SUT 实例，v1 计时口径未纳入 }
+  25_comparison:      { layer: e2e, counter: cypress, timed: false, service: 8921, note: 三框架对比实验；py 侧 pw/sel 套件非 test_*.py 不入收集器 }
+  26_locust:          { layer: outside, counter: locust, timed: false, note: 性能负载资产，塔外单列 }
+  27_k6:              { layer: outside, counter: k6, timed: false, note: 性能场景即代码，塔外单列 }
+  28_appium:          { layer: e2e, counter: pytest, timed: false, service: 8928, note: 移动端 fallback 用例（Appium→Playwright 视口） }
+  29_a11y_security:   { layer: outside, counter: pytest, timed: false, service: 8929, note: a11y/安全是非功能横切，塔外单列 }
+  30_local_ci:        { layer: outside, counter: none, timed: false, note: 流水线资产，无用例 }

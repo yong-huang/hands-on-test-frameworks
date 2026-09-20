@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "效能全景看板：一条命令聚合全部证据",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/27_panorama_board/images/panorama_board.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "in", "label": "兄弟项目产物" },
+    { "id": "engine", "label": "聚合引擎" },
+    { "id": "out", "label": "全景产出" }
+  ],
+  "phases": [
+    { "id": "src", "label": "六路产物", "fromCol": 0, "toCol": 0 },
+    { "id": "collect", "label": "采集与生成", "fromCol": 1, "toCol": 2 },
+    { "id": "emit", "label": "看板与验收", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["sources", "collectors", "render", "verify"],
+  "nodes": [
+    { "id": "sources", "lane": "in", "col": 0, "type": "database", "label": "01/02/03/13/20/22 产物", "width": 165, "sublabel": "JSON 即接口契约" },
+    { "id": "collectors", "lane": "engine", "col": 1, "type": "backend", "label": "六路采集器", "width": 120, "sublabel": "缺失自动轻量生成" },
+    { "id": "honest", "lane": "engine", "col": 2, "type": "security", "label": "缺失明示", "width": 100, "sublabel": "no-auto 只读模式" },
+    { "id": "render", "lane": "out", "col": 3, "type": "frontend", "label": "HTML 全景", "width": 100, "sublabel": "6 面板 11 指标" },
+    { "id": "verify", "lane": "out", "col": 4, "type": "security", "label": "≥8 指标验收", "width": 110, "sublabel": "make 入口一键" }
+  ],
+  "edges": [
+    { "from": "sources", "to": "collectors", "variant": "default" },
+    { "from": "collectors", "to": "honest", "variant": "dashed" },
+    { "from": "collectors", "to": "render", "variant": "default" },
+    { "from": "render", "to": "verify", "variant": "default" }
+  ]
+}

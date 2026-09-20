@@ -1,0 +1,15 @@
+# Ephemeral 环境模板：每个 PR 一套全隔离实例（网络/容器/数据目录全带 PR 编号）
+# 用法：PR_ID=101 PORT=18801 docker compose -p env-pr-101 -f configs/compose.yaml up -d --wait
+services:
+  sut:
+    image: sut-ephemeral:latest
+    container_name: env-pr-${PR_ID}
+    ports:
+      - "${PORT}:8000"
+    volumes:
+      - ./data-pr-${PR_ID}:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15

@@ -1,0 +1,130 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Ephemeral 环境工厂：一份镜像 N 套隔离环境",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/16_env_factory/images/env_factory.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "factory",
+      "label": "工厂层"
+    },
+    {
+      "id": "env",
+      "label": "实例层（每 PR 一套）"
+    },
+    {
+      "id": "teardown",
+      "label": "销毁层"
+    }
+  ],
+  "phases": [
+    {
+      "id": "build",
+      "label": "构建一次",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "run",
+      "label": "并行实例",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "destroy",
+      "label": "用完即焚",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "image",
+    "env101",
+    "verify",
+    "down"
+  ],
+  "nodes": [
+    {
+      "id": "image",
+      "lane": "factory",
+      "col": 0,
+      "type": "database",
+      "label": "SUT 镜像",
+      "width": 110,
+      "sublabel": "构建一次"
+    },
+    {
+      "id": "env101",
+      "lane": "env",
+      "col": 1,
+      "type": "backend",
+      "label": "PR-101 :18801",
+      "width": 120,
+      "sublabel": "独立容器+数据目录"
+    },
+    {
+      "id": "env102",
+      "lane": "env",
+      "col": 2,
+      "type": "backend",
+      "label": "PR-102 :18802",
+      "width": 120,
+      "sublabel": "克隆自同镜像"
+    },
+    {
+      "id": "verify",
+      "lane": "env",
+      "col": 3,
+      "type": "security",
+      "label": "隔离断言",
+      "width": 100,
+      "sublabel": "101 有单 102 为 0"
+    },
+    {
+      "id": "down",
+      "lane": "teardown",
+      "col": 4,
+      "type": "frontend",
+      "label": "down -v 即焚",
+      "width": 110,
+      "sublabel": "0 容器 0 卷 0 目录"
+    }
+  ],
+  "edges": [
+    {
+      "from": "image",
+      "to": "env101",
+      "variant": "default"
+    },
+    {
+      "from": "env101",
+      "to": "env102",
+      "variant": "dashed"
+    },
+    {
+      "from": "env101",
+      "to": "verify",
+      "variant": "default"
+    },
+    {
+      "from": "env102",
+      "to": "verify",
+      "variant": "dashed"
+    },
+    {
+      "from": "verify",
+      "to": "down",
+      "variant": "default"
+    }
+  ]
+}

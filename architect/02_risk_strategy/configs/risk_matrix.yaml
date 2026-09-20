@@ -1,0 +1,73 @@
+# =============================================================================
+# risk_matrix.yaml — 风险模型（打分规则 + 等级策略）
+#
+# 方法论：风险 = 重要性(影响) × 失效概率。两个因子分开打分再相乘，
+# 避免「高频但无关紧要」和「低频但一挂就死」被同一个数糊过去：
+#   重要性   importance = impact 定级（1-5）
+#   失效概率 probability = (基础频率 + 历史缺陷加成) × 变更放大，封顶 5
+#   风险分   risk = importance × probability（1-25）→ 落入 P0-P3 等级带
+# 改任何一条规则或输入，重跑即得新策略——策略是推导出来的，不是抄来的。
+# =============================================================================
+scale:
+  freq:     { high: 5, medium: 3, low: 1 }
+  impact:   { critical: 5, major: 3, minor: 1 }
+  churn:    { high: 1.5, medium: 1.2, low: 1.0 }
+
+probability:
+  defect_boost_per_case: 0.5   # 每个历史缺陷的概率加成
+  defect_boost_cap: 2.0        # 加成封顶：历史不等于永远，别让老黄历一票定终身
+  clamp: [1, 5]                # 概率限定在 1-5，保证乘积落在 25 分制内
+
+bands:                          # 等级带：下限含，分数 ≥ min 即入带（从高到低匹配）
+  P0: { min: 16 }
+  P1: { min: 9 }
+  P2: { min: 4 }
+  P3: { min: 1 }
+
+# 各等级的测试策略：层级 × 用例类型 × 优先级 × 准出标准（准出标准即门禁语言）
+band_policy:
+  P0:
+    label: 最高风险
+    layers: [unit, integration, e2e]
+    case_types:
+      unit: 业务规则全分支（含异常路径），mock 外部依赖
+      integration: API 边界 + 异常码 + 数据一致性；有契约则契约先行
+      e2e: 关键用户路径 ≥1 条，常驻流水线冒烟层
+    priority: P0（阻塞发布）
+    exit_criteria:
+      - 新增/变更代码行覆盖率 ≥90%
+      - 接口边界与异常路径用例 100% 通过
+      - E2E 关键路径冒烟全绿，失败即回滚
+      - 缺陷逃逸率目标 <2%
+  P1:
+    label: 高风险
+    layers: [unit, integration]
+    case_types:
+      unit: 核心规则 + 边界值
+      integration: 正常路径 + 主要异常码
+    priority: P1
+    exit_criteria:
+      - 新增/变更代码行覆盖率 ≥80%
+      - 接口正常路径 + 主要异常码用例通过
+      - 缺陷逃逸率目标 <5%
+  P2:
+    label: 中风险
+    layers: [unit]
+    case_types:
+      unit: 主路径 + 明显边界（抽样足够）
+    priority: P2
+    exit_criteria:
+      - 单元主路径用例通过
+      - 变更时按 diff 决定是否加测（对应清单项目 4/12）
+  P3:
+    label: 低风险
+    layers: []
+    case_types: {}
+    priority: P3（按需抽查）
+    exit_criteria:
+      - 不设门禁；上线后靠合成探针兜底（对应清单项目 19）
+
+layer_names:
+  unit: 单元层
+  integration: 接口/集成层
+  e2e: UI E2E 层

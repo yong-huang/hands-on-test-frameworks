@@ -1,0 +1,169 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "测试资产分层审计管线",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/01_pyramid_audit/images/pyramid_audit.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "审计引擎"
+    },
+    {
+      "id": "out",
+      "label": "画像产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "家底与口径",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "measure",
+      "label": "计数与实测",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "judge",
+      "label": "画像与建议",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "assets",
+    "counters",
+    "junit",
+    "profile",
+    "verdict",
+    "recs"
+  ],
+  "nodes": [
+    {
+      "id": "assets",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "labs/ 30 个实验",
+      "width": 132,
+      "sublabel": "418 用例 · 6 种技术栈"
+    },
+    {
+      "id": "rules",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "layer_rules.yaml",
+      "width": 132,
+      "sublabel": "规则即配置，工具不内嵌"
+    },
+    {
+      "id": "sut",
+      "lane": "engine",
+      "col": 0,
+      "type": "external",
+      "label": "SUT 服务 :8899",
+      "width": 132,
+      "sublabel": "apply 步拉起 + 健康轮询"
+    },
+    {
+      "id": "counters",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "四类计数器",
+      "width": 132,
+      "sublabel": "collect-only / it() / @task"
+    },
+    {
+      "id": "junit",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "实测计时 + junit-xml",
+      "width": 132,
+      "sublabel": "标准产物解析，不猜输出格式"
+    },
+    {
+      "id": "profile",
+      "lane": "out",
+      "col": 3,
+      "type": "backend",
+      "label": "三层画像",
+      "width": 132,
+      "sublabel": "数量占比 + 耗时占比"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 4,
+      "type": "backend",
+      "label": "形状判定",
+      "width": 132,
+      "sublabel": "金字塔 / 过渡 / 冰淇淋"
+    },
+    {
+      "id": "recs",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "重分层建议",
+      "width": 132,
+      "sublabel": "每条带证据数字与落地映射"
+    }
+  ],
+  "edges": [
+    {
+      "from": "assets",
+      "to": "counters",
+      "variant": "default"
+    },
+    {
+      "from": "rules",
+      "to": "counters",
+      "variant": "dashed"
+    },
+    {
+      "from": "counters",
+      "to": "junit",
+      "variant": "default"
+    },
+    {
+      "from": "sut",
+      "to": "junit",
+      "variant": "dashed"
+    },
+    {
+      "from": "junit",
+      "to": "profile",
+      "variant": "default"
+    },
+    {
+      "from": "profile",
+      "to": "verdict",
+      "variant": "default"
+    },
+    {
+      "from": "verdict",
+      "to": "recs",
+      "variant": "default"
+    }
+  ]
+}

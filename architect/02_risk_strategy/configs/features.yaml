@@ -1,0 +1,101 @@
+# =============================================================================
+# features.yaml — 功能风险清单（输入）
+#
+# 真实团队的常态：存量功能（有 covered_by 资产）+ 迭代新增（covered_by 为空）。
+# 四个风险输入字段是打分的唯一来源，全部可从需求文档/缺陷库/发布记录里拿到：
+#   freq     使用频率      high / medium / low        （监控或埋点可查）
+#   impact   失败影响      critical / major / minor   （业务方定级）
+#   defects_90d 近 90 天历史缺陷数                     （缺陷库可查）
+#   churn    变更频率      high / medium / low        （git churn 统计）
+# covered_by 指向本仓库 labs/ 里已存在的用例资产——策略缺口就是从这里对照出来的。
+# =============================================================================
+features:
+  - id: order_create
+    name: 创建订单
+    desc: 下单核心链路：参数校验 → 金额计算 → 落库（SUT 已上线）
+    freq: high
+    impact: critical
+    defects_90d: 6
+    churn: high
+    covered_by: [labs/12_api_tests, labs/16_pw_basics, labs/21_cypress_basics]
+
+  - id: order_list
+    name: 订单列表查询
+    desc: 分页列表 + X-Total-Count 计数（SUT 已上线）
+    freq: high
+    impact: major
+    defects_90d: 2
+    churn: low
+    covered_by: [labs/12_api_tests, labs/16_pw_basics]
+
+  - id: order_delete
+    name: 删除订单
+    desc: 删单幂等性与 404 语义（SUT 已上线）
+    freq: medium
+    impact: critical
+    defects_90d: 1
+    churn: medium
+    covered_by: [labs/12_api_tests]
+
+  - id: login
+    name: 登录鉴权
+    desc: /login.html 登录页与鉴权逻辑（SUT 已上线，页面存在但零测试）
+    freq: high
+    impact: critical
+    defects_90d: 1
+    churn: low
+    covered_by: []
+
+  - id: amount_calc
+    name: 金额计算
+    desc: qty×price 汇总与边界（0/负数/溢出）（SUT 隐含逻辑，零测试）
+    freq: medium
+    impact: major
+    defects_90d: 4
+    churn: high
+    covered_by: []
+
+  - id: status_flow
+    name: 订单状态流转
+    desc: 迭代新增：created → paid → shipped 状态机
+    freq: medium
+    impact: critical
+    defects_90d: 3
+    churn: medium
+    covered_by: []
+
+  - id: slow_page
+    name: 慢加载演示页
+    desc: /slow.html 教学页（加载等待训练用）
+    freq: low
+    impact: minor
+    defects_90d: 0
+    churn: low
+    covered_by: [labs/17_pw_locators, labs/23_selenium_basics]
+
+  - id: admin_page
+    name: Admin 后台页
+    desc: /admin.html 管理页（内部低频使用，无任何测试）
+    freq: low
+    impact: major
+    defects_90d: 2
+    churn: low
+    covered_by: []
+
+  - id: export
+    name: 订单数据导出
+    desc: 迭代新增：CSV 导出（规划中，风险输入来自产品评估）
+    freq: low
+    impact: minor
+    defects_90d: 0
+    churn: medium
+    covered_by: []
+
+  - id: health
+    name: 健康检查端点
+    desc: /api/health 轮询探针（高频但失败影响小）
+    freq: high
+    impact: minor
+    defects_90d: 0
+    churn: low
+    covered_by: [labs/11_sut_app]

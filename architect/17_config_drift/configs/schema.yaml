@@ -1,0 +1,19 @@
+# 配置 schema：必填项/类型/合法值 + 「预期差异」声明
+# expected_diff: 这些字段本来就应随环境不同——差异不是漂移
+# invariant:     这些字段三环境必须一致——出现差异即疑似漂移（重点审查对象）
+required:
+  database.url:      { type: str }
+  database.pool_size: { type: int, min: 1 }
+  database.timeout_s: { type: int, min: 1, max: 60 }
+  redis.url:         { type: str, pattern: "^redis://" }
+  redis.timeout_ms:  { type: int, min: 10, max: 10000 }
+  api.base_url:      { type: str, pattern: "^https?://" }
+  api.rate_limit_rps: { type: int, min: 1 }
+  logging.level:     { type: str, enum: [DEBUG, INFO, WARNING, ERROR] }
+  features.new_checkout: { type: bool }
+  features.dark_mode: { type: bool }
+  retry.max_attempts: { type: int, min: 1, max: 10 }
+  retry.backoff_ms:  { type: int, min: 10 }
+expected_diff: [database.url, database.pool_size, redis.url, api.base_url,
+                api.rate_limit_rps, logging.level, features.new_checkout, features.dark_mode]
+invariant: [database.timeout_s, redis.timeout_ms, retry.max_attempts, retry.backoff_ms]

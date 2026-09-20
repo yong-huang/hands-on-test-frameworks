@@ -1,0 +1,55 @@
+# =============================================================================
+# gate_rules.yaml — 订单应用发布门禁（规则即配置）
+#
+# 每条规则 = 指标采集器 + 比较符 + 阈值 + 是否 required：
+#   required: true  且无数据 → 门禁直接 FAIL（不许盲过）
+#   required: false 且无数据 → 如实标注「未采集」，不挡发布但进报告
+# 阈值来源：清单项目 2 策略文档的准出标准（P0 功能行覆盖 ≥90% 就是这条 coverage_total）
+# =============================================================================
+meta:
+  name: 订单应用发布门禁
+  coverage_suite: ../../labs/13_db_tests     # 覆盖率与绿榜的采集套件（进程内直连 SUT 数据层）
+  coverage_target: store                     # 被度量的模块（SUT 数据层）
+
+rules:
+  - id: coverage_total
+    desc: SUT 数据层行覆盖率
+    metric: suite_run          # 由同一次套件运行产出
+    field: coverage_pct
+    op: ">="
+    threshold: 90
+    required: true
+
+  - id: tests_green
+    desc: 门禁套件全绿（0 failed / 0 error）
+    metric: suite_run
+    field: green
+    op: is_true
+    threshold: true
+    required: true
+
+  - id: severe_defects
+    desc: Sev1/Sev2 未关闭缺陷数
+    metric: defects            # 读 configs/defects.yaml（缺陷库导出的替身）
+    field: open_severe
+    op: "<="
+    threshold: 0
+    required: true
+
+  - id: flaky_rate
+    desc: 主干 flaky 用例率（%）
+    metric: report             # 读下游报告：architect/13_flaky_platform/reports/flaky.json
+    source: ../../architect/13_flaky_platform/reports/flaky.json
+    field: flaky_rate_pct
+    op: "<="
+    threshold: 2
+    required: false            # 项目 13 未完成前允许「未采集」
+
+  - id: perf_p95_ms
+    desc: 下单接口 P95 延迟 (ms)
+    metric: report             # 读下游报告：architect/20_load_model/reports/capacity.json
+    source: ../../architect/20_load_model/reports/capacity.json
+    field: p95_ms_at_watermark
+    op: "<="
+    threshold: 800
+    required: false            # 项目 20 未完成前允许「未采集」

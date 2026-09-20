@@ -1,0 +1,12 @@
+# SUT 下单 API 规格（生成器的输入；boundary 即边界维度清单）
+endpoint: POST /api/orders
+fields:
+  customer: { type: str, required: true, boundary: [空串, 缺失] }
+  item:     { type: str, required: true, boundary: [缺失] }
+  qty:      { type: int, required: true, min: 1, boundary: [正常值, 零, 负数] }
+  price:    { type: float, required: true, boundary: [正常值, 零] }
+success: 201
+validation_error: 422
+related:
+  - { endpoint: "GET /api/orders/{id}", success: 200, missing: 404 }
+  - { endpoint: "DELETE /api/orders/{id}", success: 204, missing: 404 }

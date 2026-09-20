@@ -1,0 +1,126 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "压测模型：业务流量推导 + 多档实测容量",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/20_load_model/images/load_model.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "业务输入"
+    },
+    {
+      "id": "engine",
+      "label": "模型与实测"
+    },
+    {
+      "id": "out",
+      "label": "容量结论"
+    }
+  ],
+  "phases": [
+    {
+      "id": "derive",
+      "label": "推导目标",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "probe",
+      "label": "多档探测",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "emit",
+      "label": "容量与水位",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "business",
+    "derive",
+    "k6gen",
+    "k6probe",
+    "capacity"
+  ],
+  "nodes": [
+    {
+      "id": "business",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "业务参数",
+      "width": 110,
+      "sublabel": "DAU/人均/峰值系数"
+    },
+    {
+      "id": "derive",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "TPS 推导",
+      "width": 100,
+      "sublabel": "均值×4×2=93"
+    },
+    {
+      "id": "k6gen",
+      "lane": "engine",
+      "col": 2,
+      "type": "frontend",
+      "label": "k6 场景生成",
+      "width": 110,
+      "sublabel": "推导写进注释"
+    },
+    {
+      "id": "k6probe",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "三档恒定速率",
+      "width": 120,
+      "sublabel": "46/92/185 实测"
+    },
+    {
+      "id": "capacity",
+      "lane": "out",
+      "col": 4,
+      "type": "backend",
+      "label": "容量判定",
+      "width": 100,
+      "sublabel": "容量185/水位111"
+    }
+  ],
+  "edges": [
+    {
+      "from": "business",
+      "to": "derive",
+      "variant": "default"
+    },
+    {
+      "from": "derive",
+      "to": "k6gen",
+      "variant": "default"
+    },
+    {
+      "from": "k6gen",
+      "to": "k6probe",
+      "variant": "default"
+    },
+    {
+      "from": "k6probe",
+      "to": "capacity",
+      "variant": "default"
+    }
+  ]
+}

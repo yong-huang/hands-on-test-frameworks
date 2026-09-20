@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "YAML DSL 用例引擎：一条用例的执行旅程",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/06_dsl_engine/images/dsl_engine.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "声明层（YAML）"
+    },
+    {
+      "id": "engine",
+      "label": "引擎层"
+    },
+    {
+      "id": "out",
+      "label": "反馈层"
+    }
+  ],
+  "phases": [
+    {
+      "id": "load",
+      "label": "加载与替换",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "run",
+      "label": "请求与提取",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "judge",
+      "label": "断言与定位",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "cases",
+    "subst",
+    "request",
+    "extract",
+    "validate",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "cases",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "cases.yaml",
+      "width": 132,
+      "sublabel": "10 条用例+变量表"
+    },
+    {
+      "id": "subst",
+      "lane": "engine",
+      "col": 0,
+      "type": "backend",
+      "label": "变量替换",
+      "width": 120,
+      "sublabel": "${var} 类型保留"
+    },
+    {
+      "id": "request",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "HTTP 执行",
+      "width": 110,
+      "sublabel": "httpx→SUT"
+    },
+    {
+      "id": "extract",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "响应提取",
+      "width": 110,
+      "sublabel": "迷你 jsonpath"
+    },
+    {
+      "id": "validate",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "断言器",
+      "width": 100,
+      "sublabel": "eq/contains/len"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "逐条结果",
+      "width": 110,
+      "sublabel": "失败定位 YAML:行"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cases",
+      "to": "subst",
+      "variant": "default"
+    },
+    {
+      "from": "subst",
+      "to": "request",
+      "variant": "default"
+    },
+    {
+      "from": "request",
+      "to": "extract",
+      "variant": "default"
+    },
+    {
+      "from": "extract",
+      "to": "validate",
+      "variant": "default"
+    },
+    {
+      "from": "validate",
+      "to": "report",
+      "variant": "default"
+    }
+  ]
+}

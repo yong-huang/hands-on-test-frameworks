@@ -1,0 +1,126 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "架构演进方案：主张、证据与复核闭环",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/28_evolution_plan/images/evolution_plan.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "方案层"
+    },
+    {
+      "id": "engine",
+      "label": "证据层"
+    },
+    {
+      "id": "out",
+      "label": "复核产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "plan",
+      "label": "主张",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "prove",
+      "label": "证据与复核",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "路线与答辩",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "plan",
+    "verify",
+    "claims",
+    "roadmap",
+    "qa"
+  ],
+  "nodes": [
+    {
+      "id": "plan",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "演进方案 v1.0",
+      "width": 120,
+      "sublabel": "审计/架构/路线"
+    },
+    {
+      "id": "verify",
+      "lane": "engine",
+      "col": 1,
+      "type": "security",
+      "label": "30 条证据复核",
+      "width": 125,
+      "sublabel": "LIVE 重跑+PROOF 结构"
+    },
+    {
+      "id": "claims",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "主张-证据映射",
+      "width": 120,
+      "sublabel": "100% 通过即 FAIL 兜底"
+    },
+    {
+      "id": "roadmap",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "90 天路线",
+      "width": 105,
+      "sublabel": "映射 18 个真实产物"
+    },
+    {
+      "id": "qa",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "答辩 30 问",
+      "width": 105,
+      "sublabel": "每问指向证据"
+    }
+  ],
+  "edges": [
+    {
+      "from": "plan",
+      "to": "verify",
+      "variant": "default"
+    },
+    {
+      "from": "verify",
+      "to": "claims",
+      "variant": "default"
+    },
+    {
+      "from": "claims",
+      "to": "roadmap",
+      "variant": "default"
+    },
+    {
+      "from": "roadmap",
+      "to": "qa",
+      "variant": "default"
+    }
+  ]
+}

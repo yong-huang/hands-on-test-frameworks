@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "安全左移门禁：SCA+SAST+DAST 三层汇总",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/22_security_gate/images/security_gate.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "扫描对象"
+    },
+    {
+      "id": "layers",
+      "label": "三层扫描"
+    },
+    {
+      "id": "out",
+      "label": "门禁汇总"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "对象",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "scan",
+      "label": "并行扫描",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "gate",
+      "label": "裁决",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "deps",
+    "sca",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "deps",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "依赖清单",
+      "width": 110,
+      "sublabel": "精确 pin"
+    },
+    {
+      "id": "code",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "SUT 源码",
+      "width": 100,
+      "sublabel": "labs/11 app"
+    },
+    {
+      "id": "runtime",
+      "lane": "in",
+      "col": 2,
+      "type": "external",
+      "label": "运行中 SUT",
+      "width": 110,
+      "sublabel": ":8899"
+    },
+    {
+      "id": "sca",
+      "lane": "layers",
+      "col": 1,
+      "type": "security",
+      "label": "SCA pip-audit",
+      "width": 120,
+      "sublabel": "CVE 库比对"
+    },
+    {
+      "id": "sast",
+      "lane": "layers",
+      "col": 2,
+      "type": "security",
+      "label": "SAST bandit",
+      "width": 115,
+      "sublabel": "高危必拦"
+    },
+    {
+      "id": "dast",
+      "lane": "layers",
+      "col": 3,
+      "type": "backend",
+      "label": "轻量 DAST",
+      "width": 105,
+      "sublabel": "安全头/裸奔页面"
+    },
+    {
+      "id": "gate",
+      "lane": "out",
+      "col": 4,
+      "type": "security",
+      "label": "安全门禁",
+      "width": 100,
+      "sublabel": "三层汇总 PASS/FAIL"
+    }
+  ],
+  "edges": [
+    {
+      "from": "deps",
+      "to": "sca",
+      "variant": "default"
+    },
+    {
+      "from": "code",
+      "to": "sast",
+      "variant": "default"
+    },
+    {
+      "from": "runtime",
+      "to": "dast",
+      "variant": "default"
+    },
+    {
+      "from": "sca",
+      "to": "gate",
+      "variant": "default"
+    },
+    {
+      "from": "sast",
+      "to": "gate",
+      "variant": "dashed"
+    },
+    {
+      "from": "dast",
+      "to": "gate",
+      "variant": "dashed"
+    }
+  ]
+}

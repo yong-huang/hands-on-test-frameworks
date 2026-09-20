@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "混沌实验：注入→断言→恢复 四阶段时间线",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/21_fault_injection/images/fault_injection.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "chaos",
+      "label": "故障注入层"
+    },
+    {
+      "id": "defense",
+      "label": "防御组件（被验证）"
+    },
+    {
+      "id": "out",
+      "label": "实验产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "p0",
+      "label": "基线",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "p12",
+      "label": "延迟/错误注入",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "p3",
+      "label": "恢复与报告",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "proxy",
+    "resilient",
+    "asserts",
+    "timeline",
+    "verdict"
+  ],
+  "nodes": [
+    {
+      "id": "proxy",
+      "lane": "chaos",
+      "col": 0,
+      "type": "backend",
+      "label": "故障代理 :8904",
+      "width": 130,
+      "sublabel": "延迟/503/拒绝 热切换"
+    },
+    {
+      "id": "sut",
+      "lane": "chaos",
+      "col": 1,
+      "type": "external",
+      "label": "SUT :8899",
+      "width": 100,
+      "sublabel": "上游依赖"
+    },
+    {
+      "id": "resilient",
+      "lane": "defense",
+      "col": 1,
+      "type": "backend",
+      "label": "重试+熔断+降级",
+      "width": 140,
+      "sublabel": "三件套行为契约"
+    },
+    {
+      "id": "asserts",
+      "lane": "defense",
+      "col": 2,
+      "type": "security",
+      "label": "阶段断言",
+      "width": 100,
+      "sublabel": "有界/兜底/自愈"
+    },
+    {
+      "id": "timeline",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "实验时间线",
+      "width": 110,
+      "sublabel": "注入→熔断→恢复"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "四阶段全过",
+      "width": 100,
+      "sublabel": "降级可验证"
+    }
+  ],
+  "edges": [
+    {
+      "from": "proxy",
+      "to": "resilient",
+      "variant": "default"
+    },
+    {
+      "from": "sut",
+      "to": "proxy",
+      "variant": "dashed"
+    },
+    {
+      "from": "resilient",
+      "to": "asserts",
+      "variant": "default"
+    },
+    {
+      "from": "asserts",
+      "to": "timeline",
+      "variant": "default"
+    },
+    {
+      "from": "timeline",
+      "to": "verdict",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "自愈定位器：策略链、档案记忆与诚实边界",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/09_self_healing/images/self_healing.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "input",
+      "label": "输入"
+    },
+    {
+      "id": "chain",
+      "label": "策略链"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "改版页面",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "try",
+      "label": "逐级尝试",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "emit",
+      "label": "记忆与报告",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "page",
+    "css",
+    "role",
+    "archive",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "page",
+      "lane": "input",
+      "col": 0,
+      "type": "external",
+      "label": "改版页面 ×5",
+      "width": 120,
+      "sublabel": "id/class 全变"
+    },
+    {
+      "id": "css",
+      "lane": "chain",
+      "col": 1,
+      "type": "backend",
+      "label": "css(原定位)",
+      "width": 110,
+      "sublabel": "首选，命中不算愈"
+    },
+    {
+      "id": "role",
+      "lane": "chain",
+      "col": 2,
+      "type": "backend",
+      "label": "role/文本链",
+      "width": 110,
+      "sublabel": "ARIA 语义兜底"
+    },
+    {
+      "id": "archive",
+      "lane": "chain",
+      "col": 4,
+      "type": "database",
+      "label": "定位档案",
+      "width": 110,
+      "sublabel": "自愈结果记忆"
+    },
+    {
+      "id": "honest",
+      "lane": "chain",
+      "col": 3,
+      "type": "security",
+      "label": "拒绝误愈",
+      "width": 110,
+      "sublabel": "语义全毁=红"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "自愈报告",
+      "width": 110,
+      "sublabel": "改版自愈率 1.0"
+    }
+  ],
+  "edges": [
+    {
+      "from": "page",
+      "to": "css",
+      "variant": "default"
+    },
+    {
+      "from": "css",
+      "to": "role",
+      "variant": "default"
+    },
+    {
+      "from": "role",
+      "to": "archive",
+      "variant": "default"
+    },
+    {
+      "from": "role",
+      "to": "honest",
+      "variant": "dashed"
+    },
+    {
+      "from": "archive",
+      "to": "report",
+      "variant": "default"
+    },
+    {
+      "from": "honest",
+      "to": "report",
+      "variant": "dashed"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+# 指标字典：每个指标必须有 公式 + 来源 + 反 gaming 说明——没有这三样的指标不该存在
+metrics:
+  - id: layered_ratio
+    name: 自动化分层比例
+    formula: 单元/集成/E2E 各层用例数 ÷ 总用例数
+    source: ../../architect/01_pyramid_audit/reports/pyramid.json
+    field: layers
+    anti_gaming: 分母是全部用例——删 E2E 用例抬比例会被总数戳穿
+  - id: total_cases
+    name: 用例总规模
+    formula: COUNT(all collected test cases)
+    source: ../../architect/01_pyramid_audit/reports/pyramid.json
+    field: total.cases
+    anti_gaming: 用 collect-only 精确计数，不是文件数估计
+  - id: shape
+    name: 金字塔形状判定
+    formula: E2E ≤10% 且单元 ≥60% → 金字塔；单元<E2E → 冰淇淋
+    source: ../../architect/01_pyramid_audit/reports/pyramid.json
+    field: shape.verdict
+    anti_gaming: 判定规则固定在 01 工具内，看板只展示不修饰
+  - id: flaky_rate
+    name: flaky 用例率
+    formula: 同 commit 多轮重跑结果不一致的用例数 ÷ 总用例数
+    source: ../../architect/13_flaky_platform/reports/flaky.json
+    field: flaky_rate_pct
+    anti_gaming: 由 10 轮重跑实测得出，不是「印象中挺稳定」
+  - id: coverage
+    name: SUT 数据层行覆盖率
+    formula: 门禁套件运行的行覆盖（coverage_total 实测值）
+    source: ../../architect/03_quality_gate/reports/gate.json
+    field: rules[0].measured
+    anti_gaming: 度量对象与套件写死在门禁配置（labs/13 × store）
+  - id: gate_verdict
+    name: 发布门禁状态
+    formula: required 规则全部 PASS → PASS，否则 FAIL
+    source: ../../architect/03_quality_gate/reports/gate.json
+    field: verdict
+    anti_gaming: 无数据 = FAIL（不许盲过），语义在 03 引擎内固化

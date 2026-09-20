@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "风险驱动的测试策略生成管线",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/02_risk_strategy/images/risk_strategy.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "打分引擎"
+    },
+    {
+      "id": "out",
+      "label": "策略产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "输入与模型",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "score",
+      "label": "打分与分级",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "缺口与文档",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "features",
+    "scorer",
+    "bander",
+    "gap",
+    "doc"
+  ],
+  "nodes": [
+    {
+      "id": "features",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "功能清单 ×10",
+      "width": 132,
+      "sublabel": "频率/影响/缺陷/变更"
+    },
+    {
+      "id": "matrix",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "risk_matrix.yaml",
+      "width": 132,
+      "sublabel": "权重+等级带+准出"
+    },
+    {
+      "id": "scorer",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "打分器",
+      "width": 132,
+      "sublabel": "重要性×失效概率→25分制"
+    },
+    {
+      "id": "bander",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "等级策略映射",
+      "width": 140,
+      "sublabel": "P0-P3 层级/用例/门禁"
+    },
+    {
+      "id": "gap",
+      "lane": "out",
+      "col": 3,
+      "type": "backend",
+      "label": "缺口对照",
+      "width": 132,
+      "sublabel": "目标层级 vs labs 资产"
+    },
+    {
+      "id": "doc",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "策略文档",
+      "width": 132,
+      "sublabel": "总览/明细/缺口 MD+JSON"
+    }
+  ],
+  "edges": [
+    {
+      "from": "features",
+      "to": "scorer",
+      "variant": "default"
+    },
+    {
+      "from": "matrix",
+      "to": "scorer",
+      "variant": "dashed"
+    },
+    {
+      "from": "scorer",
+      "to": "bander",
+      "variant": "default"
+    },
+    {
+      "from": "bander",
+      "to": "gap",
+      "variant": "default"
+    },
+    {
+      "from": "gap",
+      "to": "doc",
+      "variant": "default"
+    }
+  ]
+}

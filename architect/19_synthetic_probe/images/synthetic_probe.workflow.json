@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "合成监控探针：定时事务、连续失败告警与恢复消除",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/19_synthetic_probe/images/synthetic_probe.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "run", "label": "探针运行期" },
+    { "id": "alert", "label": "告警状态机" },
+    { "id": "out", "label": "产出" }
+  ],
+  "phases": [
+    { "id": "tick", "label": "周期执行", "fromCol": 0, "toCol": 0 },
+    { "id": "decide", "label": "告警判定", "fromCol": 1, "toCol": 2 },
+    { "id": "emit", "label": "时序与报告", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["clock", "txn", "statemachine", "sqlite", "report"],
+  "nodes": [
+    { "id": "clock", "lane": "run", "col": 0, "type": "external", "label": "定时器", "width": 100, "sublabel": "周期 1s" },
+    { "id": "txn", "lane": "run", "col": 1, "type": "backend", "label": "三条合成事务", "width": 135, "sublabel": "健康/登录页/下单链路" },
+    { "id": "statemachine", "lane": "alert", "col": 2, "type": "security", "label": "连续失败告警机", "width": 140, "sublabel": "连挂2触发 1成消除" },
+    { "id": "sqlite", "lane": "alert", "col": 3, "type": "database", "label": "时序+告警状态", "width": 130, "sublabel": "进程重启状态不丢" },
+    { "id": "report", "lane": "out", "col": 4, "type": "frontend", "label": "探针报告", "width": 100, "sublabel": "成功率/延迟/告警史" }
+  ],
+  "edges": [
+    { "from": "clock", "to": "txn", "variant": "default" },
+    { "from": "txn", "to": "statemachine", "variant": "default" },
+    { "from": "statemachine", "to": "sqlite", "variant": "default" },
+    { "from": "sqlite", "to": "report", "variant": "default" }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "增量覆盖率卡点：拦截、整改与豁免留痕",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/24_coverage_gate/images/coverage_gate.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "PR 输入"
+    },
+    {
+      "id": "engine",
+      "label": "卡点引擎"
+    },
+    {
+      "id": "out",
+      "label": "裁决与豁免"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "diff 与覆盖",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "judge",
+      "label": "增量裁决",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "exempt",
+      "label": "拦截或豁免",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "gitdiff",
+    "diffcov",
+    "bot",
+    "exemption"
+  ],
+  "nodes": [
+    {
+      "id": "gitdiff",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "git diff",
+      "width": 110,
+      "sublabel": "新增行号"
+    },
+    {
+      "id": "cov",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "覆盖 JSON",
+      "width": 105,
+      "sublabel": "套件行级覆盖"
+    },
+    {
+      "id": "diffcov",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "增量覆盖率",
+      "width": 115,
+      "sublabel": "新增∩已覆盖/新增"
+    },
+    {
+      "id": "bot",
+      "lane": "engine",
+      "col": 2,
+      "type": "frontend",
+      "label": "CI bot 评论",
+      "width": 115,
+      "sublabel": "未覆盖行+建议"
+    },
+    {
+      "id": "exemption",
+      "lane": "out",
+      "col": 3,
+      "type": "security",
+      "label": "豁免状态机",
+      "width": 115,
+      "sublabel": "申请→审批→留痕"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 4,
+      "type": "security",
+      "label": "BLOCK/PASS",
+      "width": 105,
+      "sublabel": "放行带豁免徽章"
+    }
+  ],
+  "edges": [
+    {
+      "from": "gitdiff",
+      "to": "diffcov",
+      "variant": "default"
+    },
+    {
+      "from": "cov",
+      "to": "diffcov",
+      "variant": "dashed"
+    },
+    {
+      "from": "diffcov",
+      "to": "bot",
+      "variant": "default"
+    },
+    {
+      "from": "bot",
+      "to": "exemption",
+      "variant": "default"
+    },
+    {
+      "from": "exemption",
+      "to": "verdict",
+      "variant": "default"
+    }
+  ]
+}

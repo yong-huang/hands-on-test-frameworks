@@ -1,0 +1,33 @@
+# 10 个逃逸缺陷案例：全部取材于 labs/ 的教学翻车点（真实踩过的坑才有分析价值）
+# 四维归因：漏测层 / 环境 / 数据 / 时序
+cases:
+  - { id: ESC-01, title: 前端改版导致 40 条 E2E 全红，线上功能正常, lab: labs/17_pw_locators,
+      layer: 时序, detail: 定位器绑死 class，改版即碎——脆弱性伪装成质量问题,
+      improvement: { action: 引入自愈定位策略链+定位档案, maps_to: architect/09_self_healing } }
+  - { id: ESC-02, title: 并发下单触发 database is locked 未被测试发现, lab: labs/13_db_tests,
+      layer: 时序, detail: 单线程测试永远测不出写锁冲突,
+      improvement: { action: 集成层补并发注入实验, maps_to: architect/21_fault_injection } }
+  - { id: ESC-03, title: sleep 等待不足偶发超时，被当 flaky 重跑掩盖, lab: labs/17_pw_locators,
+      layer: 时序, detail: 固定 sleep 是竞态温床，重跑只是推迟暴露,
+      improvement: { action: flaky 检测与隔离平台阻断重跑文化, maps_to: architect/13_flaky_platform } }
+  - { id: ESC-04, title: 覆盖率 90% 但金额边界全漏，线上 0 元下单, lab: labs/05_coverage,
+      layer: 漏测层, detail: 总覆盖率好看≠边界覆盖，规格边界无用例,
+      improvement: { action: 增量覆盖率卡点+LLM 边界用例生成进审核池, maps_to: architect/24_coverage_gate } }
+  - { id: ESC-05, title: 并行执行后订单数对不上，误报缺陷三次, lab: labs/09_xdist,
+      layer: 数据, detail: 用例共享全库数据窗口，并行即互相污染,
+      improvement: { action: 数据工厂命名空间+用例级生命周期清理, maps_to: architect/07_data_factory } }
+  - { id: ESC-06, title: 快照漂移被直接 --update 跳过，坏渲染上线, lab: labs/07_snapshot,
+      layer: 漏测层, detail: 快照更新无评审，等于关闭了断言,
+      improvement: { action: 快照 diff 纳入评审+质量门禁, maps_to: architect/03_quality_gate } }
+  - { id: ESC-07, title: provider 改字段名，consumer 上线即崩, lab: labs/15_pact,
+      layer: 漏测层, detail: 单对契约靠人肉记着跑，版本发布没人验,
+      improvement: { action: 契约版本矩阵+can-i-deploy 自动拦截, maps_to: architect/15_contract_matrix } }
+  - { id: ESC-08, title: 压测达标但上线即超时（空库 vs 百万行）, lab: labs/26_locust,
+      layer: 环境, detail: 空库压测的查询计划与生产天差地别,
+      improvement: { action: 流量建模+容量结论带数据量前提, maps_to: architect/20_load_model } }
+  - { id: ESC-09, title: staging 重试次数被手改，测试结论不可迁移, lab: labs/12_api_tests,
+      layer: 环境, detail: 配置漂移无检测，环境差异吃掉测试意义,
+      improvement: { action: 配置矩阵+invariant 漂移检测, maps_to: architect/17_config_drift } }
+  - { id: ESC-10, title: 一次提交挂 80 条用例，人肉排查 4 小时, lab: labs/01_pytest_basics,
+      layer: 漏测层, detail: 失败没有聚类，根因淹没在逐条 traceback 里,
+      improvement: { action: 失败指纹聚类+先修排序, maps_to: architect/14_failure_clustering } }

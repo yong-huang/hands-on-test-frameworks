@@ -1,0 +1,6 @@
+# 缺陷库导出替身（真实团队从 Jira/禅道拉取）
+# severity: Sev1(致命)/Sev2(严重)/Sev3(一般)；status: open/closed
+# 门禁只数 Sev1/Sev2 且 open 的缺陷——「带着严重缺陷上线」是质量红线
+defects:
+  - { id: BUG-101, severity: Sev3, status: open,    summary: 列表分页在大数据量下偏慢 }
+  - { id: BUG-098, severity: Sev3, status: closed,  summary: 慢加载页样式抖动 }

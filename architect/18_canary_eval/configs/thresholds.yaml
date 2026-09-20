@@ -1,0 +1,12 @@
+# 灰度判定阈值：绝对红线 + 相对比率 双判定（面试标准答案：两者缺一不可）
+# 绝对：canary 自身不能烂到哪去；相对：canary 不能比 baseline 差太多
+absolute:
+  error_rate_max: 0.02        # canary 错误率红线 2%
+  p95_ms_max: 800             # canary P95 红线 800ms
+relative:
+  error_rate_ratio_max: 3.0   # canary 错误率 ≤ baseline ×3（加 0.5% 松弛防小样本抖动）
+  error_rate_slack: 0.005
+  p95_ratio_max: 1.5          # canary P95 ≤ baseline ×1.5
+sample:
+  n_requests: 60              # 每侧采样数
+  mix: { health: 0.5, list: 0.3, create: 0.2 }   # 读多写少的生产流量形状

@@ -1,0 +1,145 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "录制回放式挡板：从真依赖到离线磁带",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/08_mock_server/images/mock_server.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "record",
+      "label": "录制期（在线）"
+    },
+    {
+      "id": "replay",
+      "label": "回放期（断网）"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "rec",
+      "label": "录制",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "play",
+      "label": "回放与验证",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "emit",
+      "label": "统计",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "proxy",
+    "tape",
+    "replayer",
+    "stats"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "record",
+      "col": 0,
+      "type": "frontend",
+      "label": "结账客户端",
+      "width": 120,
+      "sublabel": "超时走降级分支"
+    },
+    {
+      "id": "gateway",
+      "lane": "record",
+      "col": 2,
+      "type": "external",
+      "label": "假支付网关",
+      "width": 120,
+      "sublabel": "录制后即被杀掉"
+    },
+    {
+      "id": "proxy",
+      "lane": "record",
+      "col": 1,
+      "type": "backend",
+      "label": "挡板·录制",
+      "width": 110,
+      "sublabel": "转发+写磁带"
+    },
+    {
+      "id": "tape",
+      "lane": "replay",
+      "col": 2,
+      "type": "database",
+      "label": "磁带 cassette",
+      "width": 120,
+      "sublabel": "可手工编辑超时"
+    },
+    {
+      "id": "replayer",
+      "lane": "replay",
+      "col": 3,
+      "type": "backend",
+      "label": "挡板·回放",
+      "width": 110,
+      "sublabel": "未命中=599"
+    },
+    {
+      "id": "stats",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "命中率统计",
+      "width": 110,
+      "sublabel": "hits/misses/recorded"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "proxy",
+      "variant": "default"
+    },
+    {
+      "from": "proxy",
+      "to": "gateway",
+      "variant": "dashed"
+    },
+    {
+      "from": "proxy",
+      "to": "tape",
+      "variant": "default"
+    },
+    {
+      "from": "tape",
+      "to": "replayer",
+      "variant": "default"
+    },
+    {
+      "from": "replayer",
+      "to": "client",
+      "variant": "dashed"
+    },
+    {
+      "from": "replayer",
+      "to": "stats",
+      "variant": "default"
+    }
+  ]
+}

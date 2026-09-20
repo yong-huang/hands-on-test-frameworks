@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "LLM 用例生成评测：双模式生成 + 四维量尺",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/25_llm_eval/images/llm_eval.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "gen",
+      "label": "生成层"
+    },
+    {
+      "id": "eval",
+      "label": "评测层（量尺）"
+    },
+    {
+      "id": "out",
+      "label": "判定"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "规格与生成",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "measure",
+      "label": "真实执行",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "decide",
+      "label": "四维判定",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "spec",
+    "generate",
+    "execute",
+    "score",
+    "verdict"
+  ],
+  "nodes": [
+    {
+      "id": "spec",
+      "lane": "gen",
+      "col": 0,
+      "type": "database",
+      "label": "API 规格+边界",
+      "width": 130,
+      "sublabel": "生成器的真值来源"
+    },
+    {
+      "id": "llm",
+      "lane": "gen",
+      "col": 1,
+      "type": "cloud",
+      "label": "LLM（可选）",
+      "width": 105,
+      "sublabel": "OpenAI 兼容接口"
+    },
+    {
+      "id": "generate",
+      "lane": "gen",
+      "col": 2,
+      "type": "backend",
+      "label": "mock 模板生成",
+      "width": 125,
+      "sublabel": "离线确定性默认"
+    },
+    {
+      "id": "execute",
+      "lane": "eval",
+      "col": 2,
+      "type": "backend",
+      "label": "真实执行",
+      "width": 100,
+      "sublabel": "打真 SUT"
+    },
+    {
+      "id": "score",
+      "lane": "eval",
+      "col": 3,
+      "type": "backend",
+      "label": "四维打分",
+      "width": 100,
+      "sublabel": "可执行/断言/边界/重复"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 4,
+      "type": "security",
+      "label": "审核池判定",
+      "width": 110,
+      "sublabel": "≥80% 且重复≤20%"
+    }
+  ],
+  "edges": [
+    {
+      "from": "spec",
+      "to": "generate",
+      "variant": "default"
+    },
+    {
+      "from": "llm",
+      "to": "generate",
+      "variant": "dashed"
+    },
+    {
+      "from": "generate",
+      "to": "execute",
+      "variant": "default"
+    },
+    {
+      "from": "execute",
+      "to": "score",
+      "variant": "default"
+    },
+    {
+      "from": "score",
+      "to": "verdict",
+      "variant": "default"
+    }
+  ]
+}

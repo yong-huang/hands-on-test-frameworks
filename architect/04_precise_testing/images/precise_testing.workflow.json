@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "精准测试原型：变更行反查最小回归集",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/04_precise_testing/images/precise_testing.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "core",
+      "label": "推荐引擎"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "档案与变更",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "match",
+      "label": "反查与推荐",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "报告与接入",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "gitdiff",
+    "match",
+    "recommend",
+    "report",
+    "ci"
+  ],
+  "nodes": [
+    {
+      "id": "gitdiff",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "git diff",
+      "width": 132,
+      "sublabel": "变更行（新行号）"
+    },
+    {
+      "id": "archive",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "覆盖档案",
+      "width": 132,
+      "sublabel": "--cov-context=test"
+    },
+    {
+      "id": "match",
+      "lane": "core",
+      "col": 1,
+      "type": "backend",
+      "label": "行级上下文匹配",
+      "width": 140,
+      "sublabel": "变更行 → 覆盖用例"
+    },
+    {
+      "id": "recommend",
+      "lane": "core",
+      "col": 2,
+      "type": "backend",
+      "label": "最小回归集",
+      "width": 120,
+      "sublabel": "10 → 2 省 80%"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "推荐报告",
+      "width": 132,
+      "sublabel": "MD+JSON+复现命令"
+    },
+    {
+      "id": "ci",
+      "lane": "out",
+      "col": 4,
+      "type": "external",
+      "label": "流水线接入",
+      "width": 120,
+      "sublabel": "PR 只跑推荐集"
+    }
+  ],
+  "edges": [
+    {
+      "from": "gitdiff",
+      "to": "match",
+      "variant": "default"
+    },
+    {
+      "from": "archive",
+      "to": "match",
+      "variant": "dashed"
+    },
+    {
+      "from": "match",
+      "to": "recommend",
+      "variant": "default"
+    },
+    {
+      "from": "recommend",
+      "to": "report",
+      "variant": "default"
+    },
+    {
+      "from": "report",
+      "to": "ci",
+      "variant": "default"
+    }
+  ]
+}

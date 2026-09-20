@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "契约平台化：版本矩阵与 can-i-deploy",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/15_contract_matrix/images/contract_matrix.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "契约与候选版本"
+    },
+    {
+      "id": "engine",
+      "label": "矩阵验证"
+    },
+    {
+      "id": "out",
+      "label": "发布判定"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "契约生成",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "verify",
+      "label": "逐对验证",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "decide",
+      "label": "矩阵与发布",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "consumer",
+    "matrix",
+    "table",
+    "candeploy"
+  ],
+  "nodes": [
+    {
+      "id": "consumer",
+      "lane": "in",
+      "col": 0,
+      "type": "frontend",
+      "label": "consumer 测试",
+      "width": 120,
+      "sublabel": "生成 pacts/*.json"
+    },
+    {
+      "id": "v1",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "v1 真 SUT",
+      "width": 100,
+      "sublabel": ":8899 主干"
+    },
+    {
+      "id": "v2",
+      "lane": "in",
+      "col": 2,
+      "type": "external",
+      "label": "v2 破坏变体",
+      "width": 110,
+      "sublabel": ":8902 改字段名"
+    },
+    {
+      "id": "matrix",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "逐对验证",
+      "width": 100,
+      "sublabel": "pact×版本"
+    },
+    {
+      "id": "table",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "兼容性矩阵",
+      "width": 110,
+      "sublabel": "绿红一目了然"
+    },
+    {
+      "id": "candeploy",
+      "lane": "out",
+      "col": 4,
+      "type": "security",
+      "label": "can-i-deploy",
+      "width": 110,
+      "sublabel": "全绿才放行"
+    }
+  ],
+  "edges": [
+    {
+      "from": "consumer",
+      "to": "matrix",
+      "variant": "default"
+    },
+    {
+      "from": "v1",
+      "to": "matrix",
+      "variant": "dashed"
+    },
+    {
+      "from": "v2",
+      "to": "matrix",
+      "variant": "default"
+    },
+    {
+      "from": "matrix",
+      "to": "table",
+      "variant": "default"
+    },
+    {
+      "from": "table",
+      "to": "candeploy",
+      "variant": "default"
+    }
+  ]
+}

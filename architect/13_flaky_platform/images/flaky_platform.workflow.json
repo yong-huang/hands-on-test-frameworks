@@ -1,0 +1,126 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "flaky 治理闭环：检测、隔离、联动、摘牌",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/13_flaky_platform/images/flaky_platform.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "detect",
+      "label": "检测期（10 轮重跑）"
+    },
+    {
+      "id": "gate",
+      "label": "门禁期（每次 CI）"
+    },
+    {
+      "id": "ops",
+      "label": "运维期（人）"
+    }
+  ],
+  "phases": [
+    {
+      "id": "find",
+      "label": "发现",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "guard",
+      "label": "隔离与联动",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "fix",
+      "label": "修复与摘牌",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "rounds",
+    "flakyjson",
+    "quarantine",
+    "gate",
+    "remove"
+  ],
+  "nodes": [
+    {
+      "id": "rounds",
+      "lane": "detect",
+      "col": 0,
+      "type": "backend",
+      "label": "同 commit N 轮",
+      "width": 130,
+      "sublabel": "结果不一致=flaky"
+    },
+    {
+      "id": "flakyjson",
+      "lane": "detect",
+      "col": 1,
+      "type": "database",
+      "label": "flaky.json",
+      "width": 110,
+      "sublabel": "喂项目 3 门禁"
+    },
+    {
+      "id": "quarantine",
+      "lane": "gate",
+      "col": 2,
+      "type": "database",
+      "label": "quarantine 清单",
+      "width": 135,
+      "sublabel": "失败不挡但亮灯"
+    },
+    {
+      "id": "gate",
+      "lane": "gate",
+      "col": 3,
+      "type": "security",
+      "label": "flaky 感知门禁",
+      "width": 130,
+      "sublabel": "3 过/2 隔离/0 阻断"
+    },
+    {
+      "id": "remove",
+      "lane": "ops",
+      "col": 4,
+      "type": "frontend",
+      "label": "修复后摘牌",
+      "width": 110,
+      "sublabel": "恢复全量监视"
+    }
+  ],
+  "edges": [
+    {
+      "from": "rounds",
+      "to": "flakyjson",
+      "variant": "default"
+    },
+    {
+      "from": "flakyjson",
+      "to": "quarantine",
+      "variant": "default"
+    },
+    {
+      "from": "quarantine",
+      "to": "gate",
+      "variant": "default"
+    },
+    {
+      "from": "gate",
+      "to": "remove",
+      "variant": "dashed"
+    }
+  ]
+}

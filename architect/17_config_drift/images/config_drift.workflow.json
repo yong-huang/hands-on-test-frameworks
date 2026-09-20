@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "配置漂移检测：先声明合法差异，剩下的才叫漂移",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/17_config_drift/images/config_drift.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "in", "label": "输入" },
+    { "id": "engine", "label": "检测引擎" },
+    { "id": "out", "label": "裁决" }
+  ],
+  "phases": [
+    { "id": "src", "label": "三环境配置", "fromCol": 0, "toCol": 0 },
+    { "id": "check", "label": "校验与对比", "fromCol": 1, "toCol": 2 },
+    { "id": "emit", "label": "矩阵与拦截", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["profiles", "validate", "diff", "report"],
+  "nodes": [
+    { "id": "profiles", "lane": "in", "col": 0, "type": "database", "label": "dev/staging/prod-like", "width": 165, "sublabel": "三环境配置" },
+    { "id": "schema", "lane": "in", "col": 1, "type": "database", "label": "schema.yaml", "width": 110, "sublabel": "必填/类型/白名单" },
+    { "id": "validate", "lane": "engine", "col": 1, "type": "security", "label": "schema 校验", "width": 110, "sublabel": "缺字段点名报错" },
+    { "id": "diff", "lane": "engine", "col": 2, "type": "backend", "label": "逐字段 diff", "width": 105, "sublabel": "预期差异vs漂移" },
+    { "id": "report", "lane": "out", "col": 3, "type": "frontend", "label": "矩阵报告", "width": 100, "sublabel": "逐字段分类" },
+    { "id": "gate", "lane": "out", "col": 4, "type": "security", "label": "退出码", "width": 90, "sublabel": "strict 可加严" }
+  ],
+  "edges": [
+    { "from": "profiles", "to": "validate", "variant": "default" },
+    { "from": "schema", "to": "validate", "variant": "dashed" },
+    { "from": "validate", "to": "diff", "variant": "default" },
+    { "from": "diff", "to": "report", "variant": "default" },
+    { "from": "report", "to": "gate", "variant": "default" }
+  ]
+}

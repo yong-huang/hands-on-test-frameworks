@@ -1,0 +1,74 @@
+# =============================================================================
+# cases.yaml — 订单接口 DSL 用例（10 条，贴着 SUT 真实行为写）
+#
+# 一条用例 = name + request + extract + validate；变量用 ${var}，
+# 内置 ${__uuid}；提取与断言路径是迷你 jsonpath（$.a.b[0]），
+# 响应信封固定四个根：$.status_code / $.headers.* / $.json.* / $.text
+# 断言失败时报错定位到本文件的 case 名称所在行——平台用户不该去翻 traceback。
+# =============================================================================
+config:
+  name: 订单接口 DSL 冒烟
+  base_url: http://127.0.0.1:8899
+
+variables:
+  customer: "DSL用户-${__uuid}"
+
+testcases:
+  - name: 创建订单返回201
+    request: { method: POST, url: /api/orders,
+               json: { customer: "${customer}", item: "DSL商品", qty: 2, price: 9.9 } }
+    extract: { order_id: "$.json.id" }
+    validate:
+      - { eq: ["$.status_code", 201] }
+      - { eq: ["$.json.customer", "${customer}"] }
+
+  - name: 创建响应带Location头
+    request: { method: POST, url: /api/orders,
+               json: { customer: "${customer}", item: "DSL商品", qty: 1, price: 1.0 } }
+    extract: { order_id: "$.json.id" }
+    validate:
+      - { contains: ["$.headers.location", "/api/orders/"] }
+
+  - name: 查询创建的订单
+    request: { method: GET, url: "/api/orders/${order_id}" }
+    validate:
+      - { eq: ["$.status_code", 200] }
+      - { eq: ["$.json.id", "${order_id}"] }
+
+  - name: 列表分页limit生效
+    request: { method: GET, url: "/api/orders?limit=2" }
+    validate:
+      - { eq: ["$.status_code", 200] }
+      - { len_le: ["$.json.items", 2] }
+      - { exists: ["$.json.total"] }
+
+  - name: 列表带总数响应头
+    request: { method: GET, url: /api/orders }
+    validate:
+      - { contains: ["$.headers.x-total-count", ""] }   # 存在即可（contains 空串恒真，键缺失才失败）
+
+  - name: 状态流转created到paid
+    request: { method: PATCH, url: "/api/orders/${order_id}", json: { status: paid } }
+    validate:
+      - { eq: ["$.status_code", 200] }
+      - { eq: ["$.json.status", "paid"] }
+
+  - name: 补丁不存在的订单404
+    request: { method: PATCH, url: /api/orders/999999, json: { status: paid } }
+    validate:
+      - { eq: ["$.status_code", 404] }
+
+  - name: 删除订单204
+    request: { method: DELETE, url: "/api/orders/${order_id}" }
+    validate:
+      - { eq: ["$.status_code", 204] }
+
+  - name: 删除后查询404
+    request: { method: GET, url: "/api/orders/${order_id}" }
+    validate:
+      - { eq: ["$.status_code", 404] }
+
+  - name: 重复删除404
+    request: { method: DELETE, url: "/api/orders/${order_id}" }
+    validate:
+      - { eq: ["$.status_code", 404] }

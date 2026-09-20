@@ -1,0 +1,144 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "静态增量选择：AST 依赖图的两条路线对比",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/12_incremental_selector/images/incremental_selector.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "静态引擎"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "变更与图谱",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "walk",
+      "label": "反向可达",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "选择与对比",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "diff",
+    "bfs",
+    "select",
+    "compare"
+  ],
+  "nodes": [
+    {
+      "id": "diff",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "git diff",
+      "width": 110,
+      "sublabel": "变更文件"
+    },
+    {
+      "id": "registry",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "AST import 图",
+      "width": 120,
+      "sublabel": "88 模块 42 测试"
+    },
+    {
+      "id": "bfs",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "反向 BFS",
+      "width": 100,
+      "sublabel": "谁 import 了变更"
+    },
+    {
+      "id": "select",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "测试集筛选",
+      "width": 110,
+      "sublabel": "4 条+理由链"
+    },
+    {
+      "id": "runtime",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "运行时路线",
+      "width": 110,
+      "sublabel": "项目 4: 2 条"
+    },
+    {
+      "id": "compare",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "双路线对比",
+      "width": 115,
+      "sublabel": "超集vs精确子集"
+    }
+  ],
+  "edges": [
+    {
+      "from": "diff",
+      "to": "bfs",
+      "variant": "default"
+    },
+    {
+      "from": "registry",
+      "to": "bfs",
+      "variant": "dashed"
+    },
+    {
+      "from": "bfs",
+      "to": "select",
+      "variant": "default"
+    },
+    {
+      "from": "select",
+      "to": "runtime",
+      "variant": "dashed"
+    },
+    {
+      "from": "runtime",
+      "to": "compare",
+      "variant": "default"
+    },
+    {
+      "from": "select",
+      "to": "compare",
+      "variant": "default"
+    }
+  ]
+}

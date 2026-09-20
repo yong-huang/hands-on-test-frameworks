@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "逃逸缺陷分析：翻车点→归因→改进映射→策略迭代",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/26_escape_analysis/images/escape_analysis.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "in", "label": "翻车点" },
+    { "id": "engine", "label": "归因引擎" },
+    { "id": "out", "label": "策略产出" }
+  ],
+  "phases": [
+    { "id": "src", "label": "10 个案例", "fromCol": 0, "toCol": 0 },
+    { "id": "attr", "label": "归因与映射", "fromCol": 1, "toCol": 2 },
+    { "id": "emit", "label": "对比与迭代", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["cases", "validate", "aggregate", "iteration"],
+  "nodes": [
+    { "id": "cases", "lane": "in", "col": 0, "type": "database", "label": "10 个逃逸案例", "width": 130, "sublabel": "全部取材 labs 翻车点" },
+    { "id": "validate", "lane": "engine", "col": 1, "type": "security", "label": "四维归因校验", "width": 125, "sublabel": "维度/取材/映射全查" },
+    { "id": "aggregate", "lane": "engine", "col": 2, "type": "backend", "label": "归因分布聚合", "width": 120, "sublabel": "漏测4/时序3/环境2/数据1" },
+    { "id": "iteration", "lane": "out", "col": 3, "type": "frontend", "label": "迭代对比页", "width": 110, "sublabel": "开会→机制 一页纸" },
+    { "id": "evidence", "lane": "out", "col": 4, "type": "frontend", "label": "产物映射证据", "width": 115, "sublabel": "指向真实目录" }
+  ],
+  "edges": [
+    { "from": "cases", "to": "validate", "variant": "default" },
+    { "from": "validate", "to": "aggregate", "variant": "default" },
+    { "from": "aggregate", "to": "iteration", "variant": "default" },
+    { "from": "iteration", "to": "evidence", "variant": "default" }
+  ]
+}

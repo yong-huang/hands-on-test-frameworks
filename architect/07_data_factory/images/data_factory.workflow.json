@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "测试数据生命周期：造数、清理与命名空间边界",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/07_data_factory/images/data_factory.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "normal", "label": "正常路径" },
+    { "id": "abnormal", "label": "异常路径" },
+    { "id": "guard", "label": "安全边界" }
+  ],
+  "phases": [
+    { "id": "make", "label": "造数", "fromCol": 0, "toCol": 0 },
+    { "id": "clean", "label": "清理", "fromCol": 1, "toCol": 2 },
+    { "id": "verify", "label": "巡检", "fromCol": 3, "toCol": 4 }
+  ],
+  "mainPath": ["factory", "usecase_clean", "inspect"],
+  "nodes": [
+    { "id": "factory", "lane": "normal", "col": 0, "type": "backend", "label": "OrderFactory", "width": 132, "sublabel": "QA- 命名空间打标" },
+    { "id": "usecase_clean", "lane": "normal", "col": 1, "type": "backend", "label": "用例级清理", "width": 120, "sublabel": "teardown 按 id 归还" },
+    { "id": "orphan", "lane": "abnormal", "col": 0, "type": "external", "label": "崩溃遗留孤儿", "width": 132, "sublabel": "丢失运行档案的 QA- 行" },
+    { "id": "gc", "lane": "abnormal", "col": 1, "type": "backend", "label": "命名空间 GC", "width": 125, "sublabel": "sweep 只清 QA- 前缀" },
+    { "id": "manual", "lane": "guard", "col": 1, "type": "database", "label": "手工/真实数据", "width": 132, "sublabel": "命名空间外 永不触碰" },
+    { "id": "inspect", "lane": "guard", "col": 3, "type": "frontend", "label": "巡检报告", "width": 110, "sublabel": "全表/命名空间/受保护" }
+  ],
+  "edges": [
+    { "from": "factory", "to": "usecase_clean", "variant": "default" },
+    { "from": "orphan", "to": "gc", "variant": "default" },
+    { "from": "manual", "to": "gc", "variant": "dashed" },
+    { "from": "usecase_clean", "to": "inspect", "variant": "default" },
+    { "from": "gc", "to": "inspect", "variant": "default" }
+  ]
+}

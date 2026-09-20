@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "耗时均衡分片：历史档案 → LPT → 并行合并",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/11_shard_scheduler/images/sharding_scheduler.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "调度引擎"
+    },
+    {
+      "id": "out",
+      "label": "执行与合并"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "耗时档案",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "plan",
+      "label": "LPT 分片",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "run",
+      "label": "并行与合并",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "history",
+    "lpt",
+    "workers",
+    "merge",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "history",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "junit 耗时档案",
+      "width": 130,
+      "sublabel": "246 条实测"
+    },
+    {
+      "id": "fallback",
+      "lane": "in",
+      "col": 1,
+      "type": "security",
+      "label": "无历史兜底",
+      "width": 120,
+      "sublabel": "均分+如实标注"
+    },
+    {
+      "id": "lpt",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "LPT 贪心",
+      "width": 100,
+      "sublabel": "给最轻的片"
+    },
+    {
+      "id": "workers",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "N 进程并行",
+      "width": 110,
+      "sublabel": "14s→3.4s"
+    },
+    {
+      "id": "merge",
+      "lane": "out",
+      "col": 3,
+      "type": "backend",
+      "label": "junit 合并",
+      "width": 110,
+      "sublabel": "246 条守恒校验"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "提速/均衡报告",
+      "width": 120,
+      "sublabel": "76% / 1.08"
+    }
+  ],
+  "edges": [
+    {
+      "from": "history",
+      "to": "lpt",
+      "variant": "default"
+    },
+    {
+      "from": "fallback",
+      "to": "lpt",
+      "variant": "dashed"
+    },
+    {
+      "from": "lpt",
+      "to": "workers",
+      "variant": "default"
+    },
+    {
+      "from": "workers",
+      "to": "merge",
+      "variant": "default"
+    },
+    {
+      "from": "merge",
+      "to": "report",
+      "variant": "default"
+    }
+  ]
+}

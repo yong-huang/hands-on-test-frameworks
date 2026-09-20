@@ -1,0 +1,7 @@
+# staging：形似生产，数据可脏
+database: { url: "postgresql://staging.db.internal/ministore", pool_size: 10, timeout_s: 5 }
+redis: { url: "redis://staging.redis.internal:6379/0", timeout_ms: 100 }
+api: { base_url: "https://staging-api.ministore.example", rate_limit_rps: 200 }
+logging: { level: INFO }
+features: { new_checkout: true, dark_mode: false }
+retry: { max_attempts: 3, backoff_ms: 200 }

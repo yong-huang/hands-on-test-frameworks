@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "质量门禁引擎：从规则到退出码",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/03_quality_gate/images/quality_gate.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "规则与输入"
+    },
+    {
+      "id": "collect",
+      "label": "采集适配器"
+    },
+    {
+      "id": "out",
+      "label": "裁决产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "规则与输入",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "measure",
+      "label": "指标采集",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "judge",
+      "label": "裁决与拦截",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "rules",
+    "suite",
+    "verdict",
+    "report",
+    "ci"
+  ],
+  "nodes": [
+    {
+      "id": "rules",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "gate_rules.yaml",
+      "width": 132,
+      "sublabel": "阈值/比较符/required"
+    },
+    {
+      "id": "defects",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "缺陷库导出",
+      "width": 132,
+      "sublabel": "Sev1/2 open 计数"
+    },
+    {
+      "id": "suite",
+      "lane": "collect",
+      "col": 1,
+      "type": "backend",
+      "label": "套件采集器",
+      "width": 132,
+      "sublabel": "覆盖率+绿榜一次跑出"
+    },
+    {
+      "id": "downstream",
+      "lane": "collect",
+      "col": 2,
+      "type": "backend",
+      "label": "下游报告适配器",
+      "width": 140,
+      "sublabel": "flaky/性能：无数据如实标注"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 3,
+      "type": "backend",
+      "label": "裁决器",
+      "width": 132,
+      "sublabel": "逐规则 实测 vs 阈值"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "门禁报告",
+      "width": 132,
+      "sublabel": "MD+JSON 可解释"
+    },
+    {
+      "id": "ci",
+      "lane": "out",
+      "col": 5,
+      "type": "external",
+      "label": "CI 退出码",
+      "width": 120,
+      "sublabel": "0 放行 / 1 拦截"
+    }
+  ],
+  "edges": [
+    {
+      "from": "rules",
+      "to": "suite",
+      "variant": "dashed"
+    },
+    {
+      "from": "suite",
+      "to": "verdict",
+      "variant": "default"
+    },
+    {
+      "from": "defects",
+      "to": "verdict",
+      "variant": "dashed"
+    },
+    {
+      "from": "downstream",
+      "to": "verdict",
+      "variant": "dashed"
+    },
+    {
+      "from": "verdict",
+      "to": "report",
+      "variant": "default"
+    },
+    {
+      "from": "report",
+      "to": "ci",
+      "variant": "default"
+    },
+    {
+      "from": "report",
+      "to": "ci",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+# =============================================================================
+# architect-tiers.yml — 三层流水线架构（项目 10 的声明式定义）
+#
+#   tier1 快反馈（PR 必跑，<5min）：冒烟圈选（-k 圈出 P0 路径），失败即停
+#   tier2 全量+门禁（合并前）：全量套件 + quality gate（项目 3 的退出码）
+#   tier3 夜间慢层（定时）：全量 + 覆盖档案刷新 + 慢用例排行归档
+#
+# 分层的原则：**每层的存在都为「失败信号要多久回来」服务**——
+# PR 等 3 分钟，合并等 10 分钟，夜间慢层不挡人。
+# 本地用 act -W 本文件 -j tier1-quick 复跑快反馈层，语义与 CI 同源。
+# =============================================================================
+name: architect-tiers
+on: [push, workflow_dispatch]
+
+jobs:
+  tier1-quick-feedback:
+    name: "tier1 快反馈: P0 冒烟 <5min"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装最小依赖
+        run: python3 -m pip install --quiet --break-system-packages --retries 8 --timeout 60 pytest
+      - name: 冒烟圈选（P0 下单路径 + 迁移健康）
+        working-directory: labs/13_db_tests
+        run: python3 -m pytest -c configs/pytest.ini --rootdir=. -q -k "create_and_get_fresh or init_db_repeatable"
+      - name: 快反馈完成
+        run: echo "tier1 ✅ P0 冒烟通过，失败信号已回 PR"
+
+  tier2-full-gate:
+    name: "tier2 全量+门禁"
+    runs-on: ubuntu-latest
+    needs: tier1-quick-feedback
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install --quiet --break-system-packages --retries 8 --timeout 60 pytest pytest-cov pyyaml
+      - name: 全量套件
+        working-directory: labs/13_db_tests
+        run: python3 -m pytest -c configs/pytest.ini --rootdir=. -q
+      - name: 质量门禁（退出码即红线）
+        run: python3 architect/03_quality_gate/gate.py
+
+  tier3-nightly:
+    name: "tier3 夜间: 档案刷新+慢排行"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install --quiet --break-system-packages --retries 8 --timeout 60 pytest pytest-cov
+      - name: 全量+覆盖上下文（刷新精准测试档案，项目 4）
+        working-directory: labs/13_db_tests
+        run: python3 -m pytest -c configs/pytest.ini --rootdir=. -q --cov=store --cov-context=test
+      - name: 归档
+        run: echo "夜间层不挡人：档案/慢排行/趋势数据在早上看"

@@ -1,0 +1,11 @@
+# 业务输入（压测方案题的起点：所有数字都能从业务方/埋点拿到）
+business:
+  dau: 50000                 # 日活用户
+  requests_per_user: 20      # 人均日请求数
+traffic:
+  peak_factor: 4             # 二八原则：80% 流量集中在 20% 时间 → 峰值=均值×4
+  safety_factor: 2           # 压测目标再加安全倍数（大促/突发）
+latency_budget_ms: 50         # SUT 是轻量 sqlite 应用，P95 预算给 50ms
+capacity:
+  probe_rates: [0.5, 1.0, 2.0]   # 按目标 TPS 的倍数实测探测
+  watermark: 0.6                  # 推荐水位：最大承载的 60%

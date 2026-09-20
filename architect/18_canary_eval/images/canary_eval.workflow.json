@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "灰度质量评估：绝对红线 + 相对比率双判定",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/18_canary_eval/images/canary_eval.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "流量采样"
+    },
+    {
+      "id": "engine",
+      "label": "判定引擎"
+    },
+    {
+      "id": "out",
+      "label": "发布动作"
+    }
+  ],
+  "phases": [
+    {
+      "id": "sample",
+      "label": "同形状采样",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "judge",
+      "label": "双判定",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "act",
+      "label": "放量或回滚",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "sampler",
+    "compare",
+    "verdict",
+    "action"
+  ],
+  "nodes": [
+    {
+      "id": "baseline",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "baseline :8899",
+      "width": 125,
+      "sublabel": "现网版本"
+    },
+    {
+      "id": "canary",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "canary :8903",
+      "width": 120,
+      "sublabel": "候选版本"
+    },
+    {
+      "id": "sampler",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "同形状采样",
+      "width": 120,
+      "sublabel": "读多写少×60"
+    },
+    {
+      "id": "compare",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "绝对+相对判定",
+      "width": 130,
+      "sublabel": "错误率/P95 双指标"
+    },
+    {
+      "id": "verdict",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "判定依据",
+      "width": 100,
+      "sublabel": "逐条证据"
+    },
+    {
+      "id": "action",
+      "lane": "out",
+      "col": 4,
+      "type": "security",
+      "label": "放量/回滚",
+      "width": 105,
+      "sublabel": "数据说了算"
+    }
+  ],
+  "edges": [
+    {
+      "from": "baseline",
+      "to": "sampler",
+      "variant": "default"
+    },
+    {
+      "from": "canary",
+      "to": "sampler",
+      "variant": "dashed"
+    },
+    {
+      "from": "sampler",
+      "to": "compare",
+      "variant": "default"
+    },
+    {
+      "from": "compare",
+      "to": "verdict",
+      "variant": "default"
+    },
+    {
+      "from": "verdict",
+      "to": "action",
+      "variant": "default"
+    }
+  ]
+}

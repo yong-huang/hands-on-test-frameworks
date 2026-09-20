@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "三层流水线：失败信号要多久回来",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/architect/10_pipeline_tiers/images/pipeline_tiers.html",
+    "viewBox": [1100, 560]
+  },
+  "lanes": [
+    { "id": "tier1", "label": "tier1 快反馈（PR）" },
+    { "id": "tier2", "label": "tier2 全量+门禁（合并）" },
+    { "id": "tier3", "label": "tier3 夜间慢层" }
+  ],
+  "phases": [
+    { "id": "pr", "label": "3 分钟内", "fromCol": 0, "toCol": 1 },
+    { "id": "merge", "label": "10 分钟内", "fromCol": 2, "toCol": 3 },
+    { "id": "night", "label": "次日早晨", "fromCol": 4, "toCol": 4 }
+  ],
+  "mainPath": ["push", "smoke", "full", "gate", "archive"],
+  "nodes": [
+    { "id": "push", "lane": "tier1", "col": 0, "type": "external", "label": "PR 提交", "width": 110, "sublabel": "开发者等 3 分钟" },
+    { "id": "smoke", "lane": "tier1", "col": 1, "type": "backend", "label": "P0 冒烟 (-k 圈选)", "width": 140, "sublabel": "2/10=20% act 23s" },
+    { "id": "full", "lane": "tier2", "col": 2, "type": "backend", "label": "全量套件", "width": 110, "sublabel": "合并前必绿" },
+    { "id": "gate", "lane": "tier2", "col": 3, "type": "security", "label": "质量门禁", "width": 100, "sublabel": "退出码即红线" },
+    { "id": "archive", "lane": "tier3", "col": 4, "type": "database", "label": "档案/慢排行归档", "width": 140, "sublabel": "不挡人，早上看" }
+  ],
+  "edges": [
+    { "from": "push", "to": "smoke", "variant": "default" },
+    { "from": "smoke", "to": "full", "variant": "default" },
+    { "from": "full", "to": "gate", "variant": "default" },
+    { "from": "gate", "to": "archive", "variant": "dashed" }
+  ]
+}

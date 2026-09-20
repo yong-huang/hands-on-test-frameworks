@@ -1,0 +1,7 @@
+# prod-like：与生产同构（本仓库不碰真生产，用 prod-like 演练）
+database: { url: "postgresql://prodlike.db.internal/ministore", pool_size: 20, timeout_s: 5 }
+redis: { url: "redis://prodlike.redis.internal:6379/0", timeout_ms: 100 }
+api: { base_url: "https://api.ministore.example", rate_limit_rps: 100 }
+logging: { level: INFO }
+features: { new_checkout: false, dark_mode: false }
+retry: { max_attempts: 3, backoff_ms: 200 }
