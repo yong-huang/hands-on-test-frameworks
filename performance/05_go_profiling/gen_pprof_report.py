@@ -52,7 +52,7 @@ def main():
         "## pprof 归因（修复前）",
         "",
         f"- CPU top：{', '.join(top_funcs('reports/cpu_before.txt'))}",
-        "- 火焰图级证据：`go tool pprof -http=: ` 可交互查看（reports/cpu_before.txt 为 top 文本）",
+        "- 火焰图级证据：`go tool pprof -http=:8080 ` 可交互查看（reports/cpu_before.txt 为 top 文本）",
         "",
         "## 修复动作",
         "",

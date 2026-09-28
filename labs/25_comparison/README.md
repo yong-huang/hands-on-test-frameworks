@@ -1,52 +1,47 @@
 # 25 · 三框架硬对比：同一 SUT、同语义用例，用数据说话
 
-> 选型争论的尽头是数据。本篇用统一 5 用例矩阵 × 3 框架 × N 轮实测
-> 耗时/稳定性，产出 `docs/results.csv` 与本报告——所有数字都是本机跑出来的，
-> 不是抄官网。
+> 选型争论的尽头是数据。本篇用统一 5 用例矩阵 × 3 框架 × N 轮实测耗时/稳定性，
+> 产出 `docs/results.csv` 与对比结论——所有数字都是本机跑出来的，不是抄官网。
+> 读完本篇你会跑一次可复现的框架对比实验，并带走一份场景化的选型表。
 
-## 1. 为什么需要它
+## Background
 
-- "哪个框架最好"是伪问题，"什么场景选谁"才是真问题——前提是有实测。
-- 复测脚本 `run_all.sh` 一次落盘 CSV，数据可复查、可重跑（`ROUNDS=20`）。
+"哪个 E2E 框架最好"是伪问题，"什么场景选谁"才是真问题——但场景判断
+不能靠背对比表，得靠同题实测。网上对比文的通病是：各框架测不同网站、
+不同用例数、不同机器，数字之间没有可比性。
 
-## 2. 总览：矩阵执行与统计流
+公平对比的四个前提：同 SUT（lab 11 的订单应用）、同语义用例（5 条，
+覆盖下单/查询/删除/断网降级/登录态）、同轮次（N 轮取均值）、同机器。
+启动模型的差异（Cypress 会话复用 vs Selenium 每用例新 driver）要如实承认——
+所以结论是**量级参考**而非精确实验。
 
-<!-- 图: images/comparison.svg -->
+复测脚本 `run_all.sh` 一次落盘 CSV：轮流驱动三套套件，每轮记录
+耗时/通过/失败 → `docs/results.csv` → 报告。数据可复查、可重跑
+（`ROUNDS=20`），结论过时就重测。
 
-> 🌐 **交互版**：[在线打开（GitHub Pages）](https://example.github.io/hands-on-test-frameworks/labs/25_comparison/images/comparison.html)
-> （或本地打开 [`images/comparison.html`](images/comparison.html)）。
+## What
 
-run_all.sh 轮流驱动三套套件，每轮记录 耗时/通过/失败 → results.csv → 报告。
+本实验是一份**对比测试方法论 + 实测报告**：统一矩阵执行（run_all.sh）、
+原始数据落盘（CSV）、结论带日期与版本号（框架迭代快，无版本号的结论不可信）。
 
-## 3. 快速开始
+可以把对比实验想成三家出租公司的评测：同一批乘客（同一 SUT）、同一条路线（同 5 条用例）、各跑 N 趟（同轮次），记录每趟时长——单趟快慢有运气成分，均值才有说服力。
 
-```bash
-ROUNDS=3 ./run_all.sh       # 本报告的数据来源
-ROUNDS=20 ./run_all.sh      # 验收场景：20 轮
-column -t -s, docs/results.csv
-```
+但和评测不同的是，偶发的极端值（如某轮 30 秒的冷启动抖动）**要保留并标注**而不是删除——稳定性本身就是对比维度，修过的数据不配叫实测。
 
-## 4. 实测数据（2026-09，本机）
 
-| framework | r1 | r2 | r3 | 均值 |
-|:---|:---|:---|:---|:---|
-| Playwright 1.62 | 2.82s | 2.68s | 2.66s | **2.72s** |
-| Cypress 16 | 3.00s | 3.01s | 30.58s* | 3.00s* |
-| Selenium 4.x | 5.89s | 5.30s | 5.72s | **5.64s** |
+## When to Use
 
-*Cypress 第 3 轮出现 30s 离群（Electron 冷启动抖动），如实保留不删——
-**稳定性数据就该长这样**，不修图。
+典型场景：
 
-### 4.1 稳定性
+- 团队选型论证：把"我觉得 PW 快"变成"本机实测快 2.1 倍，依据是这份 CSV"。
+- 版本升级评估：框架大版本升级后重跑 run_all.sh，数字倒退立刻可见。
+- 新人培训：三条命令复现全部数字，理解对比方法论。
 
-3 框架 × 3 轮 × 5 用例 = 45 次执行，0 失败。机制差异：
-重试 CY 内置（runMode:1）、PW 靠 expect 等待、SE 全靠显式等待纪律。
+何时不用：只有一个框架可用（存量锁定）时对比没有决策价值；
+把本报告的绝对数字直接搬到自己机器上引用也不对——**每台机器重测**，
+数字只在同机同轮次内可比。
 
-### 4.2 调试体验（主观但可复核）
-
-trace viewer（PW）> 运行器命令日志（CY）> driver 日志（SE）。
-
-### 4.3 场景选型结论
+场景选型结论（依据实测与前三篇的第一手体验）：
 
 | 场景 | 推荐 | 依据 |
 |:---|:---|:---|
@@ -54,40 +49,83 @@ trace viewer（PW）> 运行器命令日志（CY）> driver 日志（SE）。
 | 前端团队自维护 | Cypress | 运行器体验 + 生态 |
 | 多语言团队/存量资产 | Selenium | 语言中立 + Grid 成熟 |
 
-## 5. 脚本工程细节（复现必读）
+## Quick Start
 
-- Cypress 的 spec 必须在其项目根内——脚本把 25 的套件拷进 21 的工程跑完即删。
-- 三家输出格式不同（`N passed` / `passing: N` / `passing: N`），解析各自适配。
-- 双 `-q` 会吞 pytest 的统计行——`-o addopts=` 清空再跑（本实验踩过）。
+前置条件：labs/00 体检通过；三框架各自就绪（labs/16、21、23 已跑通）。
 
-## 6. 文件结构
-
-```
-25_comparison/
-├── README.md
-├── run_all.sh                 # 一键复测（ROUNDS 可调）
-├── configs/pytest.ini
-├── tests/
-│   ├── pw_suite.py            # Playwright 版 5 用例
-│   ├── sel_suite.py           # Selenium 版 5 用例
-│   └── conftest.py            # driver + sut_url
-├── cypress/e2e/suite.cy.js    # Cypress 版 5 用例
-├── docs/
-│   ├── results.csv            # 原始数据（脚本产出）
-│   └── comparison.md          # 本报告
-└── images/
+```bash
+cd labs/25_comparison
+ROUNDS=3 ./run_all.sh       # 本报告的数据来源
+ROUNDS=20 ./run_all.sh      # 验收场景：20 轮
+column -t -s, docs/results.csv
 ```
 
-## 7. 深入要点
+复测的真实输出与落盘数据（2026-09-28 实测，节选）：
 
-- **Q: 对比测试怎么设计才公平？** 同 SUT、同语义用例、同轮次、同机器；
+```
+=====> [observe] Cypress（Electron）× 3 轮
+  cypress 第 1 轮: 3.13s (passed=5 failed=0)
+  cypress 第 2 轮: 3.08s (passed=5 failed=0)
+  cypress 第 3 轮: 3.06s (passed=5 failed=0)
+
+=====> [observe] Selenium（Chrome）× 3 轮
+  selenium 第 1 轮: 6.76s (passed=5 failed=0)
+  selenium 第 2 轮: 6.14s (passed=5 failed=0)
+  selenium 第 3 轮: 6.47s (passed=5 failed=0)
+
+=====> [observe] 结果落盘 docs/results.csv
+framework,round,duration_s,passed,failed
+playwright,1,2.68,5,0
+playwright,2,2.67,5,0
+playwright,3,2.67,5,0
+cypress,1,3.13,5,0
+cypress,2,3.08,5,0
+cypress,3,3.06,5,0
+selenium,1,6.76,5,0
+selenium,2,6.14,5,0
+selenium,3,6.47,5,0
+```
+
+诚实预期：3 框架 × 3 轮 × 5 用例 = 45 次执行，0 失败。量级结论：Playwright 约 2.7s < Cypress 约 3.1s < Selenium 约 6.5s（约 2.1 倍差距）。
+
+实验作者更早一轮的实测里 Cypress 出现过 30s 离群（Electron 冷启动抖动），如实保留不删——**稳定性数据就该长这样**，不修图。
+
+
+## How It Works
+
+**公平性的工程保障**：三套套件同语义（同样 5 条用例），run_all.sh 轮流驱动、
+统一计时口径（整轮墙钟，含框架启动）。数字解释要承认启动模型差异：
+Cypress 复用会话、Selenium 每用例新 driver——所以看量级与排序，不看小数点。
+
+**输出解析适配**：三家输出格式不同（`N passed` / `passing: N` 各异），
+脚本各自适配解析出 passed/failed。pytest 侧还有个小坑：双 `-q` 会吞统计行——
+`-o addopts=` 清空再跑（本实验踩过）。
+
+**Cypress spec 的位置约束**：Cypress 的 spec 必须在其项目根内——
+脚本把本实验的套件拷进 labs/21 的工程里跑，跑完即删。这是对比实验的
+"胶水工程"，不是三家的能力差异。
+
+**离群值的纪律**：某轮异常慢（冷启动、GC、机器抖动）时不静默删除——
+标注原因后保留，或提高 ROUNDS 重测。删离群值 = 修图，稳定性维度直接失真。
+
+## Pitfalls & Q&A
+
+踩坑清单（本实验真实踩过）：
+
+- **双 `-q` 吞掉 pytest 统计行**。现象：解析不到 passed/failed。
+  解法：`-o addopts=` 清空附加参数再跑。
+- **Cypress spec 放在项目外**。现象：`cypress run` 找不到 spec。
+  解法：拷进 21 的工程根内执行，跑完清理。
+- **引用别人的绝对数字**。现象：自己机器上"复现不出"报告的数字。
+  解法：数字只在同机同轮次内可比，引用请自带重测。
+- **只跑一轮就下结论**。现象：一轮的运气被当成能力。
+  解法：ROUNDS=3 起步，验收场景 20 轮。
+
+深入问答：
+
+- **Q：对比测试怎么设计才公平？** 同 SUT、同语义用例、同轮次、同机器；
   承认启动模型差异（会话复用 vs 每用例新 driver）——量级参考而非精确实验。
-- **Q: 离群值怎么处理？** 保留并标注（如 CY 30s 一轮），不静默删除——
+- **Q：离群值怎么处理？** 保留并标注（如 CY 30s 一轮），不静默删除——
   稳定性本身就是对比维度。
-- **Q: 结论会过时吗？** 会——框架迭代快，报告必须带日期与版本号，
+- **Q：结论会过时吗？** 会——框架迭代快，报告必须带日期与版本号，
   run_all.sh 随时可复跑。
-
-## 8. 总结
-
-阶段五毕业：三大框架全部上手且有了自己的选型判断。下一篇
-[26_locust](../26_locust/README.md)：进入阶段六——给 SUT 上压力。

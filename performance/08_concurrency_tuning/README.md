@@ -4,36 +4,48 @@
 > workers 和 GOMAXPROCS 变成旋钮，3×2×2 矩阵跑下来：shop 提 **63%**，
 > shorturl 却纹丝不动——两种语言、两种运行时、两种诚实的结论。
 
-## 1. 为什么需要它
+## Background
 
-- 默认配置是给"不知道你的负载"的人准备的；容量调参就是把负载形状代入，
-  用矩阵实验代替拍脑袋；
-- Python 的 worker 数与 GIL/线程池互相纠缠，Go 的 GOMAXPROCS 只管 CPU
-  并行——两个旋钮的命运在数据里对比得清清楚楚；
-- 连接池是**每进程**的：worker 翻倍 = PG 连接翻倍，容量预算必须联动。
+默认配置是给"不知道你的负载"的人准备的。容量调参就是把自己的负载形状
+代入，用矩阵实验代替拍脑袋——每个旋钮拧到哪一格，不该是玄学。
 
-## 2. 总览：矩阵实验拓扑
+两个旋钮的性格完全不同：Python 的 worker 数与 GIL（全局解释器锁——同一进程同一时刻只允许一个线程执行 Python 字节码，所以多 worker 各持独立 GIL 才是真并行）互相纠缠；Go 的 GOMAXPROCS 只管 CPU 并行度——**旋钮有没有用，取决于瓶颈在不在它管的资源上**。
 
-<!-- 图: images/tuning.svg -->
+这也是为什么调参必须跟着观测（项目 3）走。
 
-> 🌐 **交互版**：[在线打开（GitHub Pages）](https://example.github.io/hands-on-test-frameworks/performance/08_concurrency_tuning/images/tuning.html)
-> （或本地打开 [`images/tuning.html`](images/tuning.html)）。
 
-两个旋钮（UVICORN_WORKERS / GOMAXPROCS）× 两档并发（50/200 VU）× 两服务，
-每格 40s，全部读写入 `reports/matrix_results.txt`，报告脚本挑出最优工作点。
+还有一笔隐藏账单：连接池是**每进程**的——worker 翻倍 = PG 连接翻倍，
+容量预算必须联动，否则调参调出连接耗尽的新事故。
 
-## 3. 快速开始
+## What
 
-```bash
-./tune_concurrency.sh all     # 矩阵实验 → docs/tuning.md（约 12 分钟）
-./tune_concurrency.sh clean   # 恢复默认配置
-```
+并发调参矩阵实验：两个旋钮（UVICORN_WORKERS / GOMAXPROCS）× 两档并发
+（50/200 VU）× 两服务，每格 40s，全部读写入
+`reports/matrix_results.txt`，报告脚本自动挑出最优工作点。
 
-## 4. 核心概念
+可以把矩阵实验想成汽车发动机的台架调校：转速（并发）× 油气比（配置）
+逐一组合测功率，找出最优工作点——而不是只测出厂默认那一格。
+但和台架不同的是，有的旋钮拧了根本没用（Go 的 GOMAXPROCS 对 IO 密集
+服务），实验的价值恰恰包括证明"这个旋钮一文不值"。
 
-### 4.1 实测矩阵（本机数据，40s/格）
+**结论方法论**：调参实验的两种诚实结论——"某配置最优"与
+"该旋钮无感"，都是有价值的答案。
 
-**shop（FastAPI，读多写少）：**
+## When to Use
+
+典型场景：
+
+- 容量上线前定配：worker 数、池上限按矩阵实验实测，而不是抄默认值。
+- 容器化部署：GOMAXPROCS 对齐容器 CPU limit（宿主机超卖——分给各容器的 CPU
+  总量超过物理核数——时，内核会按配额限速 throttling，GOMAXPROCS=物理核数
+  反而加剧抖动）。
+- 连接预算复核：worker 数 × 池上限 < max_connections − 运维预留。
+
+何时不用：负载极小或单实例玩具服务，默认配置就够；
+瓶颈已定位在代码层（项目 04/05）时先修代码——
+给低效代码调参是在优化错误的东西。
+
+实测矩阵（本机数据，40s/格）——**shop（FastAPI，读多写少）**：
 
 | workers | 50 VU | 200 VU |
 |---:|---:|---:|
@@ -44,7 +56,7 @@
 最优 4 workers @200VU：**比默认 1 worker +63%**（验收线 20%）。
 P50/P95 同时下降——worker 变多不只是吞吐，排队也短了。
 
-**shorturl（Go，内存跳转）：**
+**shorturl（Go，内存跳转）**：
 
 | GOMAXPROCS | 50 VU | 200 VU |
 |---:|---:|---:|
@@ -54,36 +66,30 @@ P50/P95 同时下降——worker 变多不只是吞吐，排队也短了。
 
 **完全无感**——三种设置误差 <1%。
 
-### 4.2 为什么 Python 收益巨大而 Go 无感
+## Quick Start
+
+前置条件：项目 01 靶场栈运行中；全矩阵约 12 分钟。
+
+```bash
+cd performance/08_concurrency_tuning
+./tune_concurrency.sh all     # 矩阵实验 → docs/tuning.md（约 12 分钟）
+./tune_concurrency.sh clean   # 恢复默认配置
+```
+
+**为什么 Python 收益巨大而 Go 无感**：
 
 - shop 是多进程受益型：每 worker 独立 GIL + 独立线程池，4 进程 = 4 倍
   并行处理能力；且它是 IO 密集 + DB 交互型，worker 间无共享状态冲突；
-- shorturl 的跳转是**纳秒级内存操作**：单 P 的 runtime 就能喂饱网卡与
+- shorturl 的跳转是**纳秒级内存操作**：单个 CPU 核的 runtime 就能喂饱网卡与
   连接处理，CPU 根本不是瓶颈——GOMAXPROCS 调的是 CPU 并行度，对
-  IO 密集服务天然无感。它的真实用途是**对齐容器 CPU limit**（超卖节点
-  上 GOMAXPROCS=核数会撞 throttling）。
-- 结论方法论：**旋钮有没有用，取决于瓶颈在不在它管的资源上**。
-  这也是为什么调参必须跟着观测（项目 3）走。
+  IO 密集服务天然无感。它的真实用途是**对齐容器 CPU limit**。
 
-### 4.3 连接池预算：worker 数的隐藏账单
+**连接池预算：worker 数的隐藏账单**。uvicorn 每个 worker 是独立进程，**各自持有完整连接池**：4 workers × POOL_MAX_SIZE=10 = 40 条 PG 连接。
 
-uvicorn 每个 worker 是独立进程，**各自持有完整连接池**：4 workers ×
-POOL_MAX_SIZE=10 = 40 条 PG 连接。把 worker 加到 8，连接就 80——
-`max_connections=100` 的默认额度瞬间见底。worker 数 × 池上限必须一起
-进容量预算（项目 6 的教训在这里闭环）。
+把 worker 加到 8，连接就 80——`max_connections=100` 的默认额度瞬间见底。worker 数 × 池上限必须一起进容量预算（项目 6 的教训在这里闭环）。
 
-### 4.4 易错点（本实验真踩）
 
-- **postgres 健康检查写死精确值**（`grep -q 5000`）：压测写入新短链后
-  count≠5000，检查永远失败 → 依赖它的容器卡在 Created 状态起不来，
-  k6 对着空气打出"7734 RPS / P95 0ms / 100% 失败"的假数据。
-  健康检查语义要用**下限/范围**，不要精确值；
-- **压测脚本写死 VU 数**：smoke_shorturl 固定 5 VU，GOMAXPROCS 矩阵
-  第一轮全跑成了 5 VU——旋钮实验里每个维度都必须真的在变；
-- 重启 worker 后立刻开压，首个数据点会被连接池预热污染（出现过
-  78 RPS 的假低点），等 8s 再压。
-
-## 5. 关键参数
+关键参数（这段在做什么：两个旋钮的注入方式）：
 
 ```bash
 # 旋钮 1：uvicorn workers（shell 形式 CMD 展开环境变量）
@@ -92,31 +98,44 @@ UVICORN_WORKERS=4 docker compose up -d --build shop
 GOMAXPROCS=2 docker compose up -d shorturl
 ```
 
-## 6. 文件结构
+## How It Works
 
-```
-08_concurrency_tuning/
-├── README.md
-├── tune_concurrency.sh    # prereq/matrix-shop/matrix-go/report/clean
-├── gen_tuning.py          # 矩阵结果 → docs/tuning.md（自动挑最优工作点）
-├── reports/               # matrix_results.txt + 各格 JSON
-├── docs/tuning.md         # 矩阵报告（验收物）
-└── images/                # 图三件套
-```
+**矩阵的控制变量**。旋钮逐格切换（每格重建容器生效）、并发两档固定、
+每格 40s 等长采样——三样锁定，格与格之间才可比。
+报告脚本自动挑"饱和区里 P95 最低"的配置为最优工作点。
 
-## 7. 深入要点
+**饱和区判定**。RPS 不随并发增长而 P95 直线上涨 = 进入饱和区；
+最优工作点在饱和区边界附近选（本实验 4 workers @200VU）。
 
-- **Q: uvicorn 的 workers 怎么定？** 起点是容器 CPU 核数；用矩阵实验在
-  目标并发下实测 RPS/P95，收益归零即停。同时乘上每进程连接池算 PG 连接账。
-- **Q: GOMAXPROCS 什么时候需要调？** 容器设了 CPU limit 但节点超卖时，
-  对齐 limit 避免调度抖动；IO 密集服务通常无感（本实验实测 0%）。
-- **Q: 怎么判断到了饱和区？** RPS 不随并发增长而 P95 直线上涨；饱和区里
-  选 P95 最低的配置为最优工作点。
-- **Q: 多进程 SQLAlchemy/连接池要注意什么？** 每进程独立池：总连接数 =
-  进程数 × 池上限，必须小于 PG max_connections 减去运维预留。
+**预热等待**。重启 worker 后立刻开压，首个数据点会被连接池预热污染
+（出现过 78 RPS 的假低点）——等 8s 再压，让池先热身。
 
-## 8. 总结
+## Pitfalls & Q&A
 
-矩阵实验给了两个诚实的答案：shop 加 worker 值 63%，shorturl 拧 GOMAXPROCS
-一文不值——旋钮的价值取决于瓶颈在不在它管的资源上。下一篇项目 9
-「浸泡测试与内存泄漏」，把时间维度加进来：短压测看不见的问题，让时间揭发。
+踩坑清单（本实验真踩）：
+
+- **postgres 健康检查写死精确值**（`grep -q 5000`）。压测写入新短链后
+  count≠5000，检查永远失败 → 依赖它的容器卡在 Created 起不来，
+  k6 对着空气打出"7734 RPS / P95 0ms / 100% 失败"的假数据。
+  解法：健康检查语义用**下限/范围**，不要精确值。
+- **压测脚本写死 VU 数**。smoke_shorturl 固定 5 VU，GOMAXPROCS 矩阵
+  第一轮全跑成 5 VU。解法：旋钮实验里每个维度都必须真的在变。
+- **重启后立即开压**。现象：首点被池预热污染（假低点）。
+  解法：等 8s 再采样。
+- **worker 加倍忘了连接账**。现象：PG 连接耗尽、新请求超时。
+  解法：worker × 池上限进容量预算。
+
+深入问答：
+
+- **Q：uvicorn 的 workers 怎么定？**
+  起点是容器 CPU 核数；用矩阵实验在目标并发下实测 RPS/P95，
+  收益归零即停。同时乘上每进程连接池算 PG 连接账。
+- **Q：GOMAXPROCS 什么时候需要调？**
+  容器设了 CPU limit 但节点超卖时，对齐 limit 避免调度抖动；
+  IO 密集服务通常无感（本实验实测 0%）。
+- **Q：怎么判断到了饱和区？**
+  RPS 不随并发增长而 P95 直线上涨；饱和区里选 P95 最低的配置为
+  最优工作点。
+- **Q：多进程 SQLAlchemy/连接池要注意什么？**
+  每进程独立池：总连接数 = 进程数 × 池上限，必须小于 PG
+  max_connections 减去运维预留。

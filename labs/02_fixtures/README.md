@@ -1,100 +1,149 @@
 # 02 · fixture 与 conftest：用例的准备与清理，测试的依赖注入
 
-> 十条用例都要一个数据库连接：在每条用例里连十遍？还是搞全局变量传着用？
-> pytest 的答案是 fixture——**声明式地"需要什么"，而不是命令式地"怎么造"**。
-> 本实验用"昂贵连接 + 干净表 + 数据工厂"三件套讲透作用域。
+> 十条用例都要同一个数据库连接：每条用例里连十遍？还是用全局变量传着用？
+> pytest 的答案是 fixture——声明式地"需要什么"，而不是命令式地"怎么造"。
+> 读完本篇你能用作用域控制资源生命周期、用 yield 写清理、用 conftest.py 跨文件共享、
+> 用工厂 fixture 批量造数据。
 
-## 1. 为什么需要它
+## Background
 
-- 测试 80% 的代码是准备与清理；fixture 把它们从用例里抽走，用例只剩"断言什么"。
-- 作用域（scope）决定资源生命周期：造一次用到底，还是每条用例换新——写错就是慢和脏。
-- conftest.py 让 fixture 跨文件共享，不用 import。
+没有 fixture 时的两个极端：要么每条用例自己在 `setUp` 里准备资源——数据库连接这种昂贵
+资源被重复创建十遍，套件变慢；要么用全局变量共享——一条用例改了表数据，下一条用例莫名
+失败，用例之间从此不敢乱序执行。
 
-## 2. 总览：一次用例执行背后，fixture 的入栈出栈
+痛点在于测试代码的大头本来就是准备与清理（行数占比常到八成），这部分写得越糟，
+测试套件越慢、越脆。重复准备拖慢速度，全局共享让失败传染——两者还会互相催生：
+为了绕开脏状态，团队开始给用例规定执行顺序，顺序依赖又让并行化无从谈起。
 
-<!-- 图: images/fixtures.svg -->
+pytest 的 fixture 把"需要什么"与"怎么造"解耦：用例在参数表里声明名字，
+pytest 负责按约定创建资源、在合适的时机清理。本实验用"昂贵连接 + 干净表 + 数据工厂"
+三件套把这套机制讲透。
 
-> 🌐 **交互版**：[在线打开（GitHub Pages）](https://example.github.io/hands-on-test-frameworks/labs/02_fixtures/images/fixtures.html)
-> （或本地打开 [`images/fixtures.html`](images/fixtures.html)）。
+## What
 
-pytest 像栈一样装配 fixture：session 级最先建、最后拆；function 级每条用例
-一对 setup/teardown。`--setup-show` 能把这张图打印出来，本实验脚本就是这么做的。
+fixture 是 pytest 的资源提供机制：一个带 `@pytest.fixture` 装饰器的函数，
+用例把它的函数名写进参数表，pytest 就在用例运行前执行它、把返回值注入用例，
+并在约定时机执行清理。
 
-## 3. 快速开始
+可以把 fixture 想象成酒店房务：住客（用例）只声明"要一间干净的房"，退房后的打扫（teardown，清理步骤）由酒店负责。
+
+但和酒店不同的是，fixture 的服务粒度由作用域（scope）精确控制——整场会议（session 作用域）只建一次的资源，和每位住客（function 作用域）都要换新的资源，可以并存。
+
+
+fixture 之间也能互相依赖：一个 fixture 的参数表里写另一个 fixture 的名字，
+pytest 会自动先造好后者——用例由此只关心"断言什么"，形成**测试的依赖注入**
+（依赖由框架按声明自动装配，用例不去主动获取）。
+
+## When to Use
+
+典型场景：
+
+- 多个用例共享昂贵资源（数据库连接、启动服务）：session 级 fixture，建一次用到底。
+- 每条用例需要干净状态（清空表、临时目录）：function 级 fixture，逐条清理。
+- 批量造测试数据：工厂 fixture 返回造数据的函数，一条用例造 3 个还是 10 个用户自己定。
+
+何时不用：只有一条用例用一个资源时，直接在用例里写更直白；fixture 层层依赖深到
+读不懂时，是抽象过度的信号，该收敛了。
+
+同类方案对比：
+
+| 方案 | 差异 | 什么时候选它 |
+|:---|:---|:---|
+| unittest setUp/tearDown | 固定 function 级、必须写成类 | 已有 unittest 代码库 |
+| pytest fixture | 多作用域、无需类、conftest 共享 | pytest 项目的默认做法 |
+| 用例内手写 try/finally | 每条重复、容易漏清理 | 只有一条用例时 |
+
+## Quick Start
+
+前置条件：labs/00 体检通过；本实验无外部服务，`FakeDB` 是内存假数据库
+（带实例计数器，用来证明"建了几次"）。
 
 ```bash
+cd labs/02_fixtures
 ./fixtures.sh            # 全流程
 ./fixtures.sh observe    # 重点看 ② --setup-show 的 SETUP/TEARDOWN 幕后
 ```
 
-## 4. 核心概念
+全量运行的真实输出（2026-09-28 实测，节选）：
 
-### 4.1 作用域：session / module / function
+```
+collected 12 items
 
-实验证据：`FakeDB.instances` 计数器。session 级 `db` 连接 0.2s 只发生一次，
-四条用例共用；function 级 `clean_db` 每条用例把表清空。**贵的共享，脏的换新**。
+tests/test_fixtures.py ............                                      [100%]
 
-### 4.2 yield 式 setup/teardown
+============================== 12 passed in 0.27s ==============================
+```
 
-`yield` 前是 setup，之后是 teardown；即使用例失败 teardown 也执行（类似 try/finally）。
-验证：`--setup-show` 输出里 `SETUP S db … TEARDOWN S db` 成对出现。
+`--setup-show` 打开某条用例的 setup/teardown 幕后（同一次 observe，节选）：
 
-### 4.3 conftest.py 共享
+```
+SETUP    S db
+        SETUP    F clean_db (fixtures used: db)
+        TEARDOWN F clean_db
+TEARDOWN S db
+```
 
-放 `tests/conftest.py` 的 fixture 对整个目录可见，用例参数表里直接写名字即可。
-层级规则：子目录的 conftest 可覆盖父目录同名 fixture——天然的"项目级默认 + 目录级特化"。
+诚实预期：12 条用例全绿是正常态。
 
-### 4.4 fixture 工厂
+`--setup-show` 输出里 `S` 前缀是 session 级 fixture、`F` 前缀是 function 级；`SETUP S db` 与 `TEARDOWN S db` 首尾成对，中间夹着每条用例自己的 `clean_db`——session 连接只建一次，表清理逐条发生。
 
-工厂 fixture 返回**造数据的函数**而不是数据：一条用例造 3 个用户还是 10 个，自己说了算。
-本实验 `user_factory(n=10)` 造出 10 份不重名数据，只需一行。
+作用域证据还可以看 `FakeDB.instances` 计数器：session 级 `db` 连接（约 0.2s）在整个运行里只发生一次，四条用例共用。
 
-### 4.5 易错点
 
-- 作用域只能"就大不就小"：function fixture 不能被 session fixture 依赖（会报 ScopeMismatch）。
-- fixture 之间有依赖时写参数即可（`clean_db(db)`），pytest 自动解析——这就是**测试的依赖注入**。
-- 用例之间别互相依赖顺序；靠 function 级 teardown 保证"谁先跑都干净"（lab 09 并行的前提）。
+本实验的三个共享 fixture（`db` / `clean_db` / `user_factory`）都在
+`tests/conftest.py` 里，用例只管在参数表里报名字。
 
-## 5. 关键字段
+## How It Works
+
+**栈式装配**：pytest 像栈一样装配 fixture——session 级最先建、最后拆；function 级每条用例一对 setup/teardown。
+
+Quick Start 节选输出里的先后顺序（`SETUP S db` → `SETUP F clean_db` → `TEARDOWN F clean_db` → `TEARDOWN S db`）就是这张栈的实况。
+
+
+**yield 式 setup/teardown** 是最核心的写法：
 
 ```python
 @pytest.fixture(scope="session")   # 作用域：function < module < package < session
 def db():
-    conn = FakeDB(...)             # setup
+    conn = FakeDB(...)             # setup：建昂贵连接
     yield conn                     # 把资源交给用例
-    conn.close()                   # teardown
+    conn.close()                   # teardown：即使用例失败也执行
 ```
 
-坑清单：
-- `scope="function"` 是默认值，忘了改 scope 是"测试变慢"的头号原因。
-- autouse=True 会强加给所有用例——慎用，显式声明依赖更可读。
-- tmp_path 是内置 fixture（每用例唯一临时目录，自动清理），别自己造 tempfile。
+为什么这样写：`yield` 之前的代码是 setup，之后的是 teardown，一个函数写完生命周期，
+不需要像 unittest 那样拆成两个方法。teardown 的执行保证与 try/finally 相同——
+用例失败也执行，脏状态不会泄漏给下一条用例。
 
-## 6. 文件结构
+**conftest.py 共享**：放在 `tests/conftest.py` 里的 fixture 对整个目录的用例可见，
+不需要 import。层级规则是就近优先：子目录的 conftest 可以覆盖父目录同名 fixture，
+天然支持"项目级默认 + 目录级特化"（monorepo 多包各自动态定制时有用）。
 
-```
-02_fixtures/
-├── README.md
-├── fixtures.sh            # 主演示脚本（--setup-show 是隐藏好戏）
-├── configs/pytest.ini
-├── fake_db.py             # 被测"昂贵"资源（带实例计数器）
-├── tests/
-│   ├── conftest.py        # db / clean_db / user_factory 三个共享 fixture
-│   └── test_fixtures.py   # 13 条用例：作用域证据 + 工厂 + tmp_path
-└── images/
-```
+**依赖解析**：用例签名声明参数 → pytest 按名字解析 fixture → fixture 自身的参数
+又解析其他 fixture，层层展开成一张依赖图（DAG）。`clean_db(db)` 这一个签名就表达了
+"先有 session 连接，再清表"。
 
-## 7. 深入要点
+**工厂 fixture**：`user_factory(n=10)` 返回的不是数据而是**造数据的函数**——
+用例里调用几次、造几份，自己说了算。
 
-- **Q: session 和 function 作用域怎么选？** 按"建一次的成本 × 脏的风险"权衡；
-  连接类贵而不脏的上 session，数据类易脏的留 function 并在 teardown 复位。
-- **Q: yield fixture 和 addfinalizer 的区别？** 语义等价；yield 更线性可读，
-  多个 finalizer 出栈顺序为注册的逆序——与多层 yield 行为一致。
-- **Q: conftest 能被子目录覆盖吗？** 能，就近优先；适合 monorepo 多包各自定制。
-- **Q: fixture 如何做依赖注入？** 用例签名声明参数 → pytest 按名字解析 fixture →
-  fixture 自身参数又解析其他 fixture，形成 DAG。
+## Pitfalls & Q&A
 
-## 8. 总结
+踩坑清单：
 
-你现在能让"贵的只建一次、脏的自动清理、数据按需批量造"。下一篇
-[03_parametrize](../03_parametrize/README.md)：一条用例变二十条——参数化。
+- **测试套件莫名变慢**。原因：`scope="function"` 是默认值，昂贵资源忘了改作用域，
+  每条用例重建一遍。解法：连接类贵而不脏的资源上 session 级。
+- **报 ScopeMismatch**。现象：fixture 创建时报作用域不匹配。原因：function 级
+  fixture 被 session 级依赖——作用域只能"就大不就小"。解法：调大被依赖者的作用域。
+- **autouse=True 满天飞**。autouse 会把 fixture 强加给所有用例，隐式依赖难排查。
+  解法：显式写在参数表里，可读性优先。
+- **用例之间有顺序依赖**。现象：单独跑全绿、合跑就挂。原因：脏状态没清理。
+  解法：function 级 teardown 保证"谁先跑都干净"——这也是 lab 09 并行化的前提。
+- **自己造 tempfile 管临时目录**。pytest 内置 `tmp_path` fixture：每条用例唯一
+  临时目录、自动清理，不需要手写 tempfile 逻辑。
+
+深入问答：
+
+- **Q：session 和 function 作用域怎么选？** 按"建一次的成本 × 脏的风险"权衡：
+  连接类贵而不脏的上 session；数据类易脏的留 function，并在 teardown 里复位。
+- **Q：yield fixture 和 addfinalizer 的区别？** 语义等价，yield 更线性可读。
+  多个 finalizer 的执行顺序是注册的逆序，与多层 yield 的行为一致。
+- **Q：conftest 能被子目录覆盖吗？** 能，就近优先，适合 monorepo 里多个包各自定制。
