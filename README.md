@@ -81,7 +81,7 @@ hands-on-test-frameworks/
 ├── docs/
 │   ├── test_frameworks.md     # 原始 30 项目清单（来源）
 │   ├── performance.md         # 性能工程 10 项目清单（来源）
-│   └── test_architect.md      # 测试架构师 28 项目清单（面试驱动）
+│   └── test_architect.md      # 测试架构师 28 项目清单（问题驱动）
 ├── scripts/
 │   ├── load_resources.sh      # 共享环境准备（幂等）
 │   └── gen-diagrams.py        # 架构图图源生成器（29 张图，调 Archify 技能渲染）
@@ -128,9 +128,9 @@ macOS（Apple Silicon 实测）/ Python 3.11+ / Node 20+ / Docker（14、24、29
 [performance.md](docs/performance.md) 定义了独立的 10 项目性能工程清单（观测/剖析/调优/容量），
 实验在 [performance/](performance/) 内从 [01_perf_baseline](performance/01_perf_baseline) 起独立编号（01-10），与上面 30 个框架实验互补不重叠。
 
-## 🏛️ 测试架构师系列（28/28 全部完成，面试驱动）
+## 🏛️ 测试架构师系列（28/28 全部完成，问题驱动）
 
-[test_architect.md](docs/test_architect.md) 定义了面试驱动的 28 项目架构师清单：以高频真题为纲
+[test_architect.md](docs/test_architect.md) 定义了问题驱动的 28 项目架构师清单：以真实工程问题为纲
 （策略/门禁/精准测试/flaky 治理/测试平台/环境管理/右移/非功能/度量/AI 热点），每题一个可跑工程产物，
 实验在 [architect/](architect/) 内独立编号（01-28），已完成 01 分层审计、02 风险策略生成器、03 质量门禁引擎、04 精准测试原型、05 qa_kit 插件套件、06 DSL 引擎、07 数据工厂、08 挡板服务、09 自愈定位器、10 三层流水线、11 分片调度、12 静态增量选择、13 flaky 治理、14 失败聚类、15 契约矩阵、16 环境工厂、17 配置漂移、18 灰度判定、19 合成探针、20 压测模型、21 故障注入、22 安全门禁、23 度量看板、24 覆盖率卡点、25 LLM 评测、26 逃逸分析、27 全景看板、28 演进方案，系列全部完成。
 治理对象即本仓库已有资产：labs/ 的 30 个实验与 SUT（labs/11 FastAPI 订单应用）当作真实团队的

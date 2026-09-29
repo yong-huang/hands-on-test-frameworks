@@ -1,6 +1,6 @@
 # 🏛️ architect/：测试架构师系列实验区（28/28 ✅ 全部完成）
 
-清单见 [../docs/test_architect.md](../docs/test_architect.md)——面试驱动的 28 项目清单，
+清单见 [../docs/test_architect.md](../docs/test_architect.md)——问题驱动的 28 项目清单，
 每个项目对应本目录下一个 `NN_short_name/` 实验（编号 01-28，与 labs/、performance/ 三线并列互不干扰）。
 
 **治理对象**：本仓库已有资产——labs/ 的 30 个框架实验 + SUT（labs/11 的 FastAPI 订单应用）。
