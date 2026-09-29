@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Playwright TS 栈演示页</title>
+<style>
+  body { font-family: -apple-system, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+  section { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  button { padding: 6px 14px; }
+  li { margin: 4px 0; }
+  .ok { color: #0a7d32; font-weight: 600; }
+  #clock { font-variant-numeric: tabular-nums; color: #666; }
+</style>
+</head>
+<body>
+  <h1>Playwright TS 栈演示页</h1>
+  <p>这个页面给 lab 31 的用例提供三个典型靶点：异步列表、提交表单、动态时钟。</p>
+
+  <section aria-labelledby="h-load">
+    <h2 id="h-load">① 异步列表（800ms 延迟接口）</h2>
+    <button id="btn-load" type="button">加载商品列表</button>
+    <ul id="item-list" aria-live="polite"></ul>
+  </section>
+
+  <section aria-labelledby="h-form">
+    <h2 id="h-form">② 订阅表单（300ms 延迟接口）</h2>
+    <form id="sub-form">
+      <label for="email">邮箱</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required>
+      <button type="submit">订阅</button>
+    </form>
+    <p id="sub-result" role="status"></p>
+  </section>
+
+  <section aria-labelledby="h-clock">
+    <h2 id="h-clock">③ 动态时钟（每秒变化）</h2>
+    <p id="clock">--:--:--</p>
+  </section>
+
+<script>
+  document.getElementById('btn-load').addEventListener('click', async () => {
+    const res = await fetch('/api/items');
+    const { items } = await res.json();
+    const ul = document.getElementById('item-list');
+    ul.innerHTML = '';
+    for (const it of items) {
+      const li = document.createElement('li');
+      li.textContent = it;
+      li.dataset.testid = 'item';
+      ul.appendChild(li);
+    }
+  });
+
+  document.getElementById('sub-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const res = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: 'email=' + encodeURIComponent(email),
+    });
+    const { ticket } = await res.json();
+    document.getElementById('sub-result').textContent = `订阅成功，确认号 ${ticket}`;
+    document.getElementById('sub-result').className = 'ok';
+  });
+
+  setInterval(() => {
+    document.getElementById('clock').textContent =
+      new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  }, 1000);
+</script>
+</body>
+</html>

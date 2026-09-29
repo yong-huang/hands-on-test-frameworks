@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "网络控制层：同一处 route 钩子，三种操纵流量",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/05_pw_network_pro/images/netflow.html"
+  },
+  "components": [
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "SPA 页面",
+      "sublabel": "fetch / XHR 全部经此",
+      "pos": [
+        120,
+        250
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "harlayer",
+      "type": "backend",
+      "label": "routeFromHAR",
+      "sublabel": "update 录制 · 回放应答",
+      "pos": [
+        385,
+        110
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "inject",
+      "type": "security",
+      "label": "route 拦截",
+      "sublabel": "fulfill 500 · abort 断连",
+      "pos": [
+        385,
+        250
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "delay",
+      "type": "cloud",
+      "label": "延迟放行",
+      "sublabel": "fetch 真实数据后压 3s",
+      "pos": [
+        385,
+        390
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "harfile",
+      "type": "database",
+      "label": "har/pw-store.har",
+      "sublabel": "录制产物（含响应体）",
+      "pos": [
+        670,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "backend",
+      "type": "backend",
+      "label": "真实后端 :9005",
+      "sublabel": "录制时在 · 回放时可无",
+      "pos": [
+        670,
+        200
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "页面降级表现",
+      "sublabel": "错误提示 / loading 态",
+      "pos": [
+        670,
+        380
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试代码的网络中间层",
+      "wraps": [
+        "harlayer",
+        "inject",
+        "delay"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "page",
+      "to": "harlayer",
+      "label": "走 HAR 层",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          310,
+          282
+        ],
+        [
+          310,
+          142
+        ]
+      ]
+    },
+    {
+      "id": "b",
+      "from": "page",
+      "to": "inject",
+      "label": ""
+    },
+    {
+      "id": "c",
+      "from": "page",
+      "to": "delay",
+      "label": "走延迟层",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          310,
+          282
+        ],
+        [
+          310,
+          422
+        ]
+      ]
+    },
+    {
+      "id": "d",
+      "from": "harlayer",
+      "to": "harfile",
+      "label": "录制写 / 回放读"
+    },
+    {
+      "id": "e",
+      "from": "harlayer",
+      "to": "backend",
+      "label": "update 穿透",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          610,
+          142
+        ],
+        [
+          610,
+          232
+        ]
+      ]
+    },
+    {
+      "id": "f",
+      "from": "inject",
+      "to": "ui",
+      "label": "伪造应答",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          600,
+          282
+        ],
+        [
+          600,
+          412
+        ]
+      ]
+    },
+    {
+      "id": "g",
+      "from": "delay",
+      "to": "ui",
+      "label": "慢速数据",
+      "fromSide": "bottom",
+      "toSide": "bottom",
+      "via": [
+        [
+          460,
+          500
+        ],
+        [
+          750,
+          500
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "三种操纵",
+      "items": [
+        "routeFromHAR：整站录制回放",
+        "route.fulfill：任意伪造应答",
+        "route.fetch + delay：真实但变慢"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "离线回放语义",
+      "items": [
+        "同一请求永远同一条应答",
+        "是有线杆不是有状态 mock"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "断言对象",
+      "items": [
+        "降级 UI：错误提示正确出现",
+        "loading 态在延迟窗口内可见"
+      ]
+    }
+  ]
+}

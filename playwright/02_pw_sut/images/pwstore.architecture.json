@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pw-store 靶场：一个端口承载四类流量的被测系统",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/02_pw_sut/images/pwstore.html"
+  },
+  "components": [
+    {
+      "id": "embedzone",
+      "type": "external",
+      "label": "iframe + Shadow DOM",
+      "sublabel": "帧穿透靶点",
+      "pos": [140, 100],
+      "size": [170, 64]
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "pw-store SPA",
+      "sublabel": "Vite+React · 订单/上传/慢加载",
+      "pos": [140, 260],
+      "size": [170, 64]
+    },
+    {
+      "id": "static",
+      "type": "backend",
+      "label": "静态托管",
+      "sublabel": "app/dist + embedded.html",
+      "pos": [450, 100],
+      "size": [170, 64]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "JSON API",
+      "sublabel": "login·orders·files·slow",
+      "pos": [450, 240],
+      "size": [170, 64],
+      "tag": "Bearer"
+    },
+    {
+      "id": "ws",
+      "type": "messagebus",
+      "label": "WS /ws",
+      "sublabel": "订单状态实时广播",
+      "pos": [450, 420],
+      "size": [150, 64]
+    },
+    {
+      "id": "ordersdb",
+      "type": "database",
+      "label": "orders 内存态",
+      "sublabel": "种子×3 · created→paid→shipped",
+      "pos": [770, 180],
+      "size": [180, 64]
+    },
+    {
+      "id": "uploads",
+      "type": "database",
+      "label": ".uploads 目录",
+      "sublabel": "文件 + sha256 记录",
+      "pos": [770, 420],
+      "size": [160, 64]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "浏览器进程",
+      "wraps": ["embedzone", "spa"]
+    },
+    {
+      "kind": "region",
+      "label": "pw-store 进程 :9002",
+      "wraps": ["static", "api", "ws", "ordersdb", "uploads"]
+    }
+  ],
+  "connections": [
+    { "id": "a", "from": "embedzone", "to": "static", "label": "GET embedded.html" },
+    { "id": "b", "from": "spa", "to": "static", "label": "加载 bundle", "fromSide": "top", "toSide": "bottom", "via": [[225, 185], [535, 185]] },
+    { "id": "c", "from": "spa", "to": "api", "label": "REST + Bearer", "fromSide": "right", "toSide": "left" },
+    { "id": "d", "from": "api", "to": "ordersdb", "label": "CRUD", "fromSide": "right", "toSide": "left", "via": [[690, 272], [690, 212]] },
+    { "id": "e", "from": "api", "to": "uploads", "label": "写文件", "fromSide": "right", "toSide": "left", "via": [[700, 272], [700, 452]] },
+    { "id": "f", "from": "ordersdb", "to": "ws", "label": "状态演进广播", "variant": "dashed", "fromSide": "right", "toSide": "bottom", "via": [[990, 212], [990, 510], [525, 510]], "labelAt": [1, 0.5] },
+    { "id": "g", "from": "ws", "to": "spa", "label": "order-status 帧", "variant": "dashed", "fromSide": "left", "toSide": "bottom", "via": [[350, 452], [350, 336], [225, 336]] }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "双角色",
+      "items": [
+        "admin / customer 两级权限",
+        "token = base64(role:name) 可逆"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实时演进",
+      "items": [
+        "新单 created →2s→ paid →2s→ shipped",
+        "每步经 WS 广播全端"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "可测性设计",
+      "items": [
+        "/api/reset 重置种子数据",
+        "重启进程即回到初始态"
+      ]
+    }
+  ]
+}

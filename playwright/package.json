@@ -1,0 +1,22 @@
+{
+  "name": "hands-on-test-frameworks-playwright",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Playwright 进阶系列（labs 31-49）共享 Node 依赖 —— 对应 Python 系列的 .venv 模式，node_modules 装在仓库根，各 lab 直接复用。@playwright/test 与 experimental-ct-react 必须同版本（1.62.1 为 ct 最新稳定线）",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/experimental-ct-react": "1.62.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.7.2",
+    "vite": "^8.0.0",
+    "ws": "^8.18.0"
+  },
+  "type": "module"
+}

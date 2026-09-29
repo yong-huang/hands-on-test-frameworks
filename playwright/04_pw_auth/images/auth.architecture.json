@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "setup 预登录 + 双角色矩阵：登录一次，全 kit 复用",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/04_pw_auth/images/auth.html"
+  },
+  "components": [
+    {
+      "id": "setup",
+      "type": "frontend",
+      "label": "setup project",
+      "sublabel": "每角色 UI 登录一次",
+      "pos": [
+        120,
+        240
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "adminjson",
+      "type": "database",
+      "label": ".auth/admin.json",
+      "sublabel": "admin storageState",
+      "pos": [
+        390,
+        110
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "custjson",
+      "type": "database",
+      "label": ".auth/customer.json",
+      "sublabel": "customer storageState",
+      "pos": [
+        390,
+        370
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "actx",
+      "type": "frontend",
+      "label": "admin context",
+      "sublabel": "登录态 + admin API 头",
+      "pos": [
+        640,
+        110
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "cctx",
+      "type": "frontend",
+      "label": "customer context",
+      "sublabel": "登录态 + customer API 头",
+      "pos": [
+        640,
+        370
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "api",
+      "type": "security",
+      "label": "auth 中间件",
+      "sublabel": "解码 Bearer · 服务端权威判定",
+      "pos": [
+        890,
+        230
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "9004"
+    },
+    {
+      "id": "ordersdb",
+      "type": "database",
+      "label": "orders 资源",
+      "sublabel": "授权后 CRUD · 403 拒越权",
+      "pos": [
+        895,
+        410
+      ],
+      "size": [
+        170,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试工程（同一套用例 × 两角色复跑）",
+      "wraps": [
+        "setup",
+        "adminjson",
+        "custjson",
+        "actx",
+        "cctx"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "pw-store :9004",
+      "wraps": [
+        "api",
+        "ordersdb"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "setup",
+      "to": "adminjson",
+      "label": "登录落盘",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          320,
+          272
+        ],
+        [
+          320,
+          142
+        ]
+      ]
+    },
+    {
+      "id": "b",
+      "from": "setup",
+      "to": "custjson",
+      "label": "登录落盘",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          320,
+          272
+        ],
+        [
+          320,
+          402
+        ]
+      ]
+    },
+    {
+      "id": "c",
+      "from": "adminjson",
+      "to": "actx",
+      "label": "注入"
+    },
+    {
+      "id": "d",
+      "from": "custjson",
+      "to": "cctx",
+      "label": "注入"
+    },
+    {
+      "id": "e",
+      "from": "actx",
+      "to": "api",
+      "label": "Bearer(admin)",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          820,
+          142
+        ],
+        [
+          820,
+          262
+        ]
+      ]
+    },
+    {
+      "id": "f",
+      "from": "cctx",
+      "to": "api",
+      "label": "Bearer(customer)",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          840,
+          402
+        ],
+        [
+          840,
+          262
+        ]
+      ]
+    },
+    {
+      "id": "g",
+      "from": "api",
+      "to": "ordersdb",
+      "label": "授权后放行",
+      "labelAt": [
+        0,
+        0.5
+      ],
+      "labelDx": -70
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "登录一次原则",
+      "items": [
+        "setup 每角色真实 UI 登录 1 次",
+        "此后全部用例 /api/login 调用 = 0"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "双通道角色",
+      "items": [
+        "UI 通道：storageState 恢复登录态",
+        "API 通道：extraHTTPHeaders 角色头"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "权威判定在服务端",
+      "items": [
+        "前端藏起按钮 ≠ 授权收口",
+        "绕过 UI 直打 API 必须 403"
+      ]
+    }
+  ]
+}

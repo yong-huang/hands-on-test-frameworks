@@ -68,7 +68,7 @@ do_install_cli() {
 check_all() {
     echo "=====> [check] 环境体检"
     command -v python3 >/dev/null && ok "python3 $(python3 --version)" || miss "python3"
-    command -v node    >/dev/null && ok "node $(node --version)"       || warn "node 缺（lab 21/22 Cypress 需要）"
+    command -v node    >/dev/null && ok "node $(node --version)"       || warn "node 缺（lab 21/22 Cypress、playwright/ 系列）"
     command -v docker  >/dev/null && docker info >/dev/null 2>&1 \
         && ok "docker $(docker --version | cut -d' ' -f3 | tr -d ',')" \
         || warn "docker 不可用（lab 14/24/29/30 的 act 受阻，README 已标注）"

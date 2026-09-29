@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "定位器决策流：从一个元素到一条稳定定位器",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/03_pw_locators_pro/images/locators.html"
+  },
+  "lanes": [
+    { "id": "element", "label": "目标元素" },
+    { "id": "strategy", "label": "定位策略（按优先级）" },
+    { "id": "refine", "label": "嵌套与收窄" },
+    { "id": "result", "label": "产出" }
+  ],
+  "mainPath": ["el", "role", "nest", "filt", "strict", "ok"],
+  "nodes": [
+    { "id": "el", "lane": "element", "col": 0, "type": "external", "label": "页面元素", "sublabel": "要点的按钮、要填的框", "width": 132 },
+    { "id": "role", "lane": "strategy", "col": 1, "type": "frontend", "label": "getByRole·getByLabel", "sublabel": "无障碍树优先", "width": 156 },
+    { "id": "tidcss", "lane": "strategy", "col": 2, "type": "frontend", "label": "testid / CSS 兜底", "sublabel": "第三方内容常只有 id", "width": 152 },
+    { "id": "nest", "lane": "refine", "col": 2, "type": "messagebus", "label": "嵌套文档换轨", "sublabel": "frameLocator·shadow 穿透", "width": 152 },
+    { "id": "filt", "lane": "refine", "col": 3, "type": "backend", "label": "filter 链式收窄", "sublabel": "hasText·区域限定", "width": 138 },
+    { "id": "strict", "lane": "refine", "col": 4, "type": "security", "label": "strict mode 门禁", "sublabel": "命中多个即拒绝", "width": 138 },
+    { "id": "ok", "lane": "result", "col": 4, "type": "database", "label": "稳定定位器", "sublabel": "10 连跑不红", "width": 132 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "el", "to": "role", "label": "开始选型" },
+    { "id": "e2", "from": "role", "to": "tidcss", "label": "无角色可用" },
+    { "id": "e4", "from": "tidcss", "to": "nest", "label": "目标在嵌套文档内" },
+    { "id": "e5", "from": "role", "to": "nest", "label": "直接命中" },
+    { "id": "e6", "from": "nest", "to": "filt", "label": "候选过多" },
+    { "id": "e7", "from": "filt", "to": "strict", "label": "候选唯一化" },
+    { "id": "e8", "from": "strict", "to": "ok", "label": "唯一匹配" },
+    { "id": "e9", "from": "strict", "to": "filt", "label": "多候选退回收窄", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "优先级", "items": ["role/label 最贴近用户视角", "testid 是工程约定，css 兜底第三方"] },
+    { "dot": "emerald", "title": "嵌套文档", "items": ["iframe 要 frameLocator 换轨", "open shadow 穿透零写法差异"] },
+    { "dot": "rose", "title": "strict mode", "items": ["命中多个不当场静默取第一个", "把取错元素从隐性 bug 变显性报错"] }
+  ]
+}

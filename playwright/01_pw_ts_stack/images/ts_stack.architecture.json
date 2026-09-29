@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "TS 原生测试栈：一次跑批的完整链路",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/labs/31_pw_ts_stack/images/ts_stack.html"
+  },
+  "components": [
+    {
+      "id": "spec",
+      "type": "frontend",
+      "label": "ts_stack.spec.ts",
+      "sublabel": "定位 + 断言 5 条用例",
+      "pos": [130, 150],
+      "size": [150, 64]
+    },
+    {
+      "id": "fixture",
+      "type": "frontend",
+      "label": "test.extend",
+      "sublabel": "user fixture（类型安全）",
+      "pos": [130, 310],
+      "size": [150, 64]
+    },
+    {
+      "id": "config",
+      "type": "backend",
+      "label": "playwright.config.ts",
+      "sublabel": "baseURL·retries·reporter",
+      "pos": [425, 310],
+      "size": [150, 64]
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "Test Runner",
+      "sublabel": "自动等待 · web-first 重试",
+      "pos": [420, 150],
+      "size": [160, 64],
+      "tag": "框架托管"
+    },
+    {
+      "id": "browsers",
+      "type": "external",
+      "label": "三核浏览器",
+      "sublabel": "chromium / firefox / webkit",
+      "pos": [700, 150],
+      "size": [160, 64]
+    },
+    {
+      "id": "report",
+      "type": "database",
+      "label": "HTML 报告 + trace",
+      "sublabel": "失败自动截图留痕",
+      "pos": [700, 310],
+      "size": [160, 64]
+    },
+    {
+      "id": "webserver",
+      "type": "cloud",
+      "label": "webServer 托管",
+      "sublabel": "node server.mjs :9001",
+      "pos": [1000, 150],
+      "size": [160, 64]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "npx playwright test 进程",
+      "wraps": ["spec", "fixture", "config", "runner", "browsers", "report"]
+    },
+    {
+      "kind": "region",
+      "label": "被测服务",
+      "wraps": ["webserver"]
+    }
+  ],
+  "connections": [
+    { "id": "a", "from": "fixture", "to": "spec", "label": "注入", "fromSide": "top", "toSide": "bottom" },
+    { "id": "b", "from": "spec", "to": "runner", "label": "执行" },
+    { "id": "c", "from": "config", "to": "runner", "label": "声明", "fromSide": "top", "toSide": "bottom" },
+    { "id": "d", "from": "runner", "to": "browsers", "label": "驱动协议" },
+    { "id": "e", "from": "browsers", "to": "webserver", "label": "HTTP" },
+    { "id": "f", "from": "runner", "to": "webserver", "label": "起停+探活", "variant": "dashed", "fromSide": "top", "toSide": "top", "via": [[500, 70], [1080, 70]], "labelAt": [1, 0.5] },
+    { "id": "g", "from": "runner", "to": "report", "label": "产出", "fromSide": "bottom", "toSide": "left" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "与 pytest 栈的差异",
+      "items": [
+        "命令行参数收进 config 文件",
+        "fixture 是代码级函数带类型"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "框架托管",
+      "items": [
+        "webServer：起服务→探活→收尾",
+        "失败自动截图 + trace"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "三核矩阵",
+      "items": [
+        "projects 声明浏览器模板",
+        "一条命令 × 3 浏览器"
+      ]
+    }
+  ]
+}

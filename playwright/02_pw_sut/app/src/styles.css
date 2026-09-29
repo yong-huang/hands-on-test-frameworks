@@ -1,0 +1,44 @@
+/* styles.css — pw-store 全局样式（朴素但完整：登录/导航/四个功能区/状态徽标） */
+* { box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; margin: 0; background: #f6f8fa; color: #1f2328; }
+
+.app { max-width: 860px; margin: 0 auto; padding: 16px; }
+header { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+header h1 { margin: 0; font-size: 20px; }
+header span { color: #57606a; }
+header button { margin-left: auto; }
+header button + button { margin-left: 0; }
+
+nav { display: flex; gap: 8px; margin: 8px 0 16px; }
+nav button { padding: 6px 14px; }
+nav button[aria-selected="true"] { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+
+button { padding: 6px 12px; cursor: pointer; }
+input { padding: 6px 8px; margin: 4px 0; }
+label { display: block; margin: 6px 0; }
+
+main section { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; }
+
+.login { max-width: 360px; margin: 60px auto; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 24px; }
+.login h1 { font-size: 18px; }
+.login .hint { color: #8b949e; font-size: 12px; }
+[role="alert"] { color: #cf222e; }
+
+ul { list-style: none; padding: 0; }
+li { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #eaeef2; }
+li .title { flex: 1; }
+li .status { color: #1f6feb; font-size: 13px; }
+li .fmeta { color: #8b949e; font-size: 12px; }
+
+table { border-collapse: collapse; margin-top: 12px; min-width: 360px; }
+th, td { border: 1px solid #d0d7de; padding: 6px 12px; text-align: left; font-size: 14px; }
+
+.live { font-size: 13px; padding: 2px 8px; border-radius: 10px; }
+.live.on { background: #dafbe1; color: #116329; }
+.live.off { background: #ffebe9; color: #cf222e; }
+
+.file-label { display: inline-block; padding: 6px 14px; border: 1px dashed #1f6feb; border-radius: 6px; cursor: pointer; }
+
+iframe { width: 320px; height: 150px; border: 1px solid #d0d7de; border-radius: 6px; }
+.badge-zone { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+[role="status"][data-testid="upload-done"] { color: #116329; margin-left: 8px; }

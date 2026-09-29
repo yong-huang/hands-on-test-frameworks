@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>嵌入面板</title>
+<style>
+  body { font-family: -apple-system, sans-serif; padding: 12px; background: #f6f8fa; }
+  h2 { margin: 0 0 8px; font-size: 16px; }
+  button { padding: 4px 10px; }
+  #count { font-weight: 700; }
+</style>
+</head>
+<body>
+  <h2>iframe 内部面板</h2>
+  <p>这个页面被主应用以 iframe 嵌入，专供帧穿透定位练习。</p>
+  <button id="embed-btn" type="button">iframe 内点赞 <span id="count">0</span></button>
+<script>
+  document.getElementById('embed-btn').addEventListener('click', () => {
+    const el = document.getElementById('count');
+    el.textContent = String(Number(el.textContent) + 1);
+  });
+</script>
+</body>
+</html>

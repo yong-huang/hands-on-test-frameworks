@@ -32,3 +32,6 @@ contexts/
 ministore-report.json
 performance/01_perf_baseline/shorturl/shorturl
 .py-spy-pkgs/
+
+# pw-store 运行期上传目录
+.uploads/
