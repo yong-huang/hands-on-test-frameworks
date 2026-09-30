@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "分片流水线：一份配置，本地 act 与 GHA 两种执行位",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/18_pw_ci_sharding/images/sharding.html"
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "源"
+    },
+    {
+      "id": "runner",
+      "label": "两种执行位"
+    },
+    {
+      "id": "sink",
+      "label": "产物"
+    }
+  ],
+  "mainPath": [
+    "wf",
+    "gha",
+    "shard",
+    "junit"
+  ],
+  "nodes": [
+    {
+      "id": "wf",
+      "lane": "source",
+      "col": 0,
+      "type": "frontend",
+      "label": "e2e.yml",
+      "sublabel": "matrix shard 1-4",
+      "width": 130
+    },
+    {
+      "id": "gha",
+      "lane": "runner",
+      "col": 1,
+      "type": "cloud",
+      "label": "GitHub Actions",
+      "sublabel": "4 runner 真并行",
+      "width": 150
+    },
+    {
+      "id": "act",
+      "lane": "runner",
+      "col": 2,
+      "type": "backend",
+      "label": "act 本地",
+      "sublabel": "单分片校验语义",
+      "width": 130
+    },
+    {
+      "id": "shard",
+      "lane": "runner",
+      "col": 3,
+      "type": "messagebus",
+      "label": "--shard=x/4",
+      "sublabel": "40 条均分 4 份",
+      "width": 130
+    },
+    {
+      "id": "junit",
+      "lane": "sink",
+      "col": 3,
+      "type": "database",
+      "label": "junit-shard-N.xml",
+      "sublabel": "按分片归档",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "wf",
+      "to": "gha",
+      "label": "push 触发"
+    },
+    {
+      "id": "e2",
+      "from": "wf",
+      "to": "act",
+      "label": "本地复跑",
+      "variant": "dashed"
+    },
+    {
+      "id": "e3",
+      "from": "gha",
+      "to": "shard",
+      "label": "每 runner 一片"
+    },
+    {
+      "id": "e4",
+      "from": "act",
+      "to": "shard",
+      "label": "校验一片"
+    },
+    {
+      "id": "e5",
+      "from": "shard",
+      "to": "junit",
+      "label": "结果归档"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ACT 守卫三件",
+      "items": [
+        "checkout/npm-ci/artifact 按守卫跳过",
+        "bind 挂载复用本地 node_modules"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实测记录",
+      "items": [
+        "容器内 shard 3/4：10 passed",
+        "40 用例轻套件分片收益≈开销"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "共享 SUT",
+      "items": [
+        "分片并行需预起服务",
+        "错峰启动防探活误判"
+      ]
+    }
+  ]
+}

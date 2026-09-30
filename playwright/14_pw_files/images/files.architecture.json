@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "文件闭环：两种注入、一次落盘、指纹比对",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/14_pw_files/images/files.html"
+  },
+  "components": [
+    {
+      "id": "input",
+      "type": "frontend",
+      "label": "setInputFiles / drop",
+      "sublabel": "两种等价注入",
+      "pos": [
+        130,
+        150
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "dl",
+      "type": "external",
+      "label": "锚点下载",
+      "sublabel": "?token= 鉴权链接",
+      "pos": [
+        130,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "导航请求"
+    },
+    {
+      "id": "list",
+      "type": "frontend",
+      "label": "文件列表",
+      "sublabel": "名称 + 指纹前缀",
+      "pos": [
+        420,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "fetch",
+      "type": "backend",
+      "label": "fetch PUT",
+      "sublabel": "raw body 免 multipart",
+      "pos": [
+        420,
+        150
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": ".uploads 落盘",
+      "sublabel": "字节 + sha256 指纹",
+      "pos": [
+        700,
+        150
+      ],
+      "size": [
+        170,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "浏览器进程",
+      "wraps": [
+        "input",
+        "dl",
+        "list"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "pw-store 服务端",
+      "wraps": [
+        "fetch",
+        "store"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "input",
+      "to": "fetch",
+      "label": "PUT 上传"
+    },
+    {
+      "id": "b",
+      "from": "fetch",
+      "to": "store",
+      "label": "写盘"
+    },
+    {
+      "id": "c",
+      "from": "store",
+      "to": "list",
+      "label": "指纹前缀展示",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "right"
+    },
+    {
+      "id": "d",
+      "from": "list",
+      "to": "dl",
+      "label": "锚点 ?token"
+    },
+    {
+      "id": "e",
+      "from": "dl",
+      "to": "input",
+      "label": "saveAs 后 sha256 比对闭环",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "双通道注入",
+      "items": [
+        "setInputFiles 走 input 元素",
+        "drop 事件走 DataTransfer，两者等价"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "指纹闭环",
+      "items": [
+        "列表展示 sha256 前缀",
+        "下载落盘后与源字节全量比对"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "下载鉴权",
+      "items": [
+        "导航请求带不了 Authorization 头",
+        "?token= 查询参数是标准解法（实测踩坑）"
+      ]
+    }
+  ]
+}

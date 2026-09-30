@@ -1,0 +1,15 @@
+/* styles.css — ct 挂载环境全局样式（与 pw-store 主应用同一套观感） */
+* { box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; margin: 16px; background: #f6f8fa; color: #1f2328; }
+
+.card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 12px 16px; margin: 8px 0; display: flex; align-items: center; gap: 10px; }
+.card .title { flex: 1; }
+
+.badge { font-size: 12px; padding: 2px 10px; border-radius: 10px; }
+.badge.created { background: #fff1e5; color: #9a5507; }
+.badge.paid { background: #ddf4ff; color: #0969da; }
+.badge.shipped { background: #dafbe1; color: #116329; }
+
+button { padding: 4px 12px; cursor: pointer; }
+input { padding: 6px 8px; margin-right: 6px; }
+form { display: flex; align-items: center; }

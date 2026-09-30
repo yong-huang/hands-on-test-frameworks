@@ -2,9 +2,11 @@
 // 关键差异在 expect.toHaveScreenshot 段：阈值、动画、光标三件套
 // 基线图默认落在 tests/<spec>-snapshots/ 目录，随仓库入库（它们是"应然的像素"）
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     timeout: 30_000,
     retries: 0,
     workers: 1,
@@ -12,6 +14,7 @@ export default defineConfig({
 
     use: {
         baseURL: 'http://127.0.0.1:9006',
+        locale: 'zh-CN',
         screenshot: 'off',          // 视觉断言自己截图，失败留痕截图反而干扰基线目录
         trace: 'retain-on-failure',
     },

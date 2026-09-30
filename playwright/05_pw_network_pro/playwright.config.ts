@@ -2,9 +2,11 @@
 // 离线回放套件（offline.spec.ts）走 configs/offline.config.ts——
 // 那份配置不配 webServer，专门证明"HAR 回放不依赖活着的后端"
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     testIgnore: '**/offline.spec.ts',     // 离线套件由独立配置接管
     timeout: 30_000,
     retries: 0,

@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "视觉基线生命周期：生成 → 比对 → 变红/转绿 → 更新入库",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/06_pw_visual/images/visual.html"
+  },
+  "lanes": [
+    { "id": "flow", "label": "用例执行" },
+    { "id": "gate", "label": "像素比对" },
+    { "id": "repo", "label": "基线资产" }
+  ],
+  "mainPath": ["run", "shot", "compare", "green"],
+  "nodes": [
+    { "id": "run", "lane": "flow", "col": 0, "type": "external", "label": "npx playwright test", "sublabel": "跑视觉用例", "width": 150 },
+    { "id": "shot", "lane": "flow", "col": 1, "type": "frontend", "label": "截取当前画面", "sublabel": "fullPage / 元素级", "width": 140 },
+    { "id": "write", "lane": "repo", "col": 2, "type": "database", "label": "首跑写基线", "sublabel": "--update-snapshots", "width": 140 },
+    { "id": "compare", "lane": "gate", "col": 2, "type": "security", "label": "双阈值比对", "sublabel": "颜色距离 0.2 + 占比 2%", "width": 156 },
+    { "id": "diff", "lane": "gate", "col": 3, "type": "cloud", "label": "diff 三联图", "sublabel": "expected/actual/diff", "width": 150 },
+    { "id": "update", "lane": "repo", "col": 3, "type": "database", "label": "确认后更新基线", "sublabel": "随代码一起提交", "width": 146 },
+    { "id": "green", "lane": "gate", "col": 4, "type": "database", "label": "全绿", "sublabel": "布局未变，用例通过", "width": 136 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "run", "to": "shot", "label": "触发" },
+    { "id": "e2", "from": "shot", "to": "compare", "label": "当前画面" },
+    { "id": "e3", "from": "run", "to": "write", "label": "基线缺失时", "variant": "dashed" },
+    { "id": "e4", "from": "write", "to": "compare", "label": "基线供给" },
+    { "id": "e5", "from": "compare", "to": "green", "label": "阈值内" },
+    { "id": "e6", "from": "compare", "to": "diff", "label": "超阈值" },
+    { "id": "e7", "from": "diff", "to": "update", "label": "人工确认是预期改动" },
+    { "id": "e8", "from": "update", "to": "compare", "label": "新基线复验", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "双重阈值", "items": ["像素颜色距离 0.2：微色差忽略", "差异占比 2%：小位移可能漏过"] },
+    { "dot": "emerald", "title": "mask 动态区", "items": ["订单列表/连接徽标遮住", "比对布局，不比对数据"] },
+    { "dot": "rose", "title": "基线入库", "items": ["png 随代码提交", "clean 不清理基线目录"] }
+  ]
+}

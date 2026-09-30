@@ -30,7 +30,7 @@ do_observe() {
     ls -la har/pw-store.har
 
     step "observe" "② 注入套件：500 / 3s 慢接口 / 断连 / waitForResponse"
-    $PW test network_pro --project=chromium --reporter=list
+    $PW test tests/network_pro.spec.ts --project=chromium --reporter=list
 
     step "observe" "③ 离线回放：先杀掉后端，再用 HAR 跑通同一条下单路径"
     lsof -ti ":${PORT}" 2>/dev/null | xargs kill 2>/dev/null || true

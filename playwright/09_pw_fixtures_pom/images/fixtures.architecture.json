@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "fixture 分层与 POM 收口：用例只说业务语言",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/09_pw_fixtures_pom/images/fixtures.html"
+  },
+  "components": [
+    {
+      "id": "spec",
+      "type": "frontend",
+      "label": "orders.pom.spec.ts",
+      "sublabel": "业务动作 + 断言",
+      "pos": [
+        130,
+        140
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "fixtures",
+      "type": "backend",
+      "label": "fixtures.ts",
+      "sublabel": "test.extend 两层组合",
+      "pos": [
+        130,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "DI"
+    },
+    {
+      "id": "workerf",
+      "type": "messagebus",
+      "label": "worker 层",
+      "sublabel": "adminToken 一次/进程",
+      "pos": [
+        400,
+        440
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "pom",
+      "type": "frontend",
+      "label": "pages/",
+      "sublabel": "OrdersPage·LoginPage",
+      "pos": [
+        420,
+        140
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "真 Chromium",
+      "sublabel": "page 驱动",
+      "pos": [
+        750,
+        140
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "pw-store :9009",
+      "sublabel": "页面导航 + API 登录",
+      "pos": [
+        750,
+        360
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试工程",
+      "wraps": [
+        "spec",
+        "fixtures",
+        "workerf",
+        "pom"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "运行环境",
+      "wraps": [
+        "browser",
+        "sut"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "spec",
+      "to": "fixtures",
+      "label": "声明依赖",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "b",
+      "from": "fixtures",
+      "to": "pom",
+      "label": "实例化",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "id": "c",
+      "from": "workerf",
+      "to": "fixtures",
+      "label": "token 复用",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelAt": [
+        0,
+        0.5
+      ],
+      "labelDx": -62
+    },
+    {
+      "id": "d",
+      "from": "pom",
+      "to": "browser",
+      "label": "操作真实 DOM"
+    },
+    {
+      "id": "e",
+      "from": "browser",
+      "to": "sut",
+      "label": "HTTP",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "f",
+      "from": "fixtures",
+      "to": "sut",
+      "label": "API 登录",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          210,
+          510
+        ],
+        [
+          670,
+          510
+        ],
+        [
+          670,
+          392
+        ]
+      ],
+      "labelAt": [
+        1,
+        0.5
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两层 extend",
+      "items": [
+        "test 层每用例全新",
+        "worker 层整个进程一次"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "验收三线",
+      "items": [
+        "新用例 6 行 ≤ 10",
+        "tsc 零错误 · tests/ 零选择器"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "POM 纪律",
+      "items": [
+        "选择器只住 pages/",
+        "方法返 locator，断言不进 POM"
+      ]
+    }
+  ]
+}

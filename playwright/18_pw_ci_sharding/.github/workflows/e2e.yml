@@ -1,0 +1,44 @@
+# e2e.yml — Playwright E2E 分片流水线（lab 18）
+# GitHub Actions 上：4 个矩阵 job 真并行；本地 act：单分片校验流水线语义
+# ACT 环境守卫：act 复用本地挂载的仓库（无需 checkout），浏览器手动安装
+name: e2e-sharded
+on: [push, workflow_dispatch]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      SHARD_ID: ${{ matrix.shard }}
+    steps:
+      - name: checkout（act 本地模式跳过，仓库已挂载）
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/checkout@v4
+
+      - name: 安装依赖（npm ci 稳定复现；act 复用挂载的 node_modules）
+        if: ${{ env.ACT != 'true' }}
+        working-directory: playwright
+        run: npm ci --no-fund --no-audit
+
+      - name: 安装浏览器（CI 含系统依赖；act 复用宿主缓存目录）
+        if: ${{ env.ACT != 'true' }}
+        working-directory: playwright
+        run: npx playwright install chromium --with-deps
+      - name: act 容器内补浏览器（写到挂载缓存，供本进程使用）
+        if: ${{ env.ACT == 'true' }}
+        working-directory: playwright
+        run: npx playwright install chromium || echo "浏览器缺失时分片用例会明确报错"
+
+      - name: 运行分片 ${{ matrix.shard }}/4
+        working-directory: playwright/18_pw_ci_sharding
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/4
+
+      - name: 上传报告（JUnit + 失败产物）
+        if: ${{ always() && env.ACT != 'true' }}   # act 无法拉取 github actions，本地校验时跳过
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-shard-${{ matrix.shard }}
+          path: playwright/18_pw_ci_sharding/junit-*.xml

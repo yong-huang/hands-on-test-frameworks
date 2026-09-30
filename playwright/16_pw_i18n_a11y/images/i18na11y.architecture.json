@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "i18n 与无障碍：两条从环境到渲染的通路",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/16_pw_i18n_a11y/images/i18na11y.html"
+  },
+  "components": [
+    {
+      "id": "locale",
+      "type": "external",
+      "label": "navigator.language",
+      "sublabel": "仿真可注入",
+      "pos": [
+        100,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "keyboard",
+      "type": "external",
+      "label": "键盘事件",
+      "sublabel": "Tab / Enter",
+      "pos": [
+        650,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "dict",
+      "type": "database",
+      "label": "i18n.ts 字典",
+      "sublabel": "zh / en 双语文案",
+      "pos": [
+        100,
+        320
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "渲染页面",
+      "sublabel": "DOM + 样式",
+      "pos": [
+        370,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "a11y",
+      "type": "messagebus",
+      "label": "无障碍树",
+      "sublabel": "role · accessible name",
+      "pos": [
+        370,
+        320
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "axe",
+      "type": "security",
+      "label": "axe-core 规则",
+      "sublabel": "对比度 · 焦点 · 标签",
+      "pos": [
+        650,
+        320
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "tag": "wcag2a/aa"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "被测应用",
+      "wraps": [
+        "dict",
+        "ui",
+        "a11y"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "locale",
+      "to": "dict",
+      "labelDx": 14
+    },
+    {
+      "id": "b",
+      "from": "dict",
+      "to": "ui"
+    },
+    {
+      "id": "c",
+      "from": "keyboard",
+      "to": "ui"
+    },
+    {
+      "id": "d",
+      "from": "ui",
+      "to": "a11y",
+      "variant": "dashed"
+    },
+    {
+      "id": "e",
+      "from": "a11y",
+      "to": "axe"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "文案矩阵",
+      "items": [
+        "locale 仿真切换环境",
+        "同一批 key 双语各断言一次"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "无障碍闭环",
+      "items": [
+        "axe 扫描计算样式与无障碍树",
+        "critical/serious = 0 为门禁"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "实测战果",
+      "items": [
+        "边含义：选语言→字典→渲染；键盘→渲染",
+        "渲染派生无障碍树→axe 规则扫描",
+        "登录提示对比度 3.1:1 被抓出后修到 4.7:1"
+      ]
+    }
+  ]
+}

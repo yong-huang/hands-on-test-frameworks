@@ -2,9 +2,11 @@
 // 被测对象是 lab 02 的 pw-store，但起在独立端口 9003——
 // 每个实验一个端口是本系列的隔离约定（90NN），互不串扰
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     timeout: 30_000,
     retries: 0,
     workers: 1,
@@ -13,6 +15,7 @@ export default defineConfig({
 
     use: {
         baseURL: 'http://127.0.0.1:9003',
+        locale: 'zh-CN',
         screenshot: 'only-on-failure',
         trace: 'retain-on-failure',
     },

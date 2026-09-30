@@ -11,7 +11,9 @@ import { EmbedPage } from './pages/Embed';
 type Tab = 'orders' | 'upload' | 'slow' | 'embed';
 
 export function App() {
-    const [lang, setLang] = useState<Lang>('zh');
+    // 初始语言跟随浏览器 locale（lab 11 的 locale 仿真靶点）
+    const [lang, setLang] = useState<Lang>(() =>
+        (navigator.language || 'zh-CN').toLowerCase().startsWith('en') ? 'en' : 'zh');
     const [auth, setAuth] = useState<Auth | null>(() => loadAuth());
     const [tab, setTab] = useState<Tab>('orders');
 

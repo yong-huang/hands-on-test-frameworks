@@ -6,10 +6,13 @@ import { LiveBadge, useWebSocket } from '../App';
 
 const STATUS_KEY = { created: 'created', paid: 'paid', shipped: 'shipped' } as const;
 
+const PAGE_SIZE = 20;   // lab 17：客户端分页，大列表 UI 模式的被测能力
+
 export function OrdersPage({ lang, role }: { lang: Lang; role: Role }) {
     const [orders, setOrders] = useState<Order[]>([]);
     const [title, setTitle] = useState('');
     const [error, setError] = useState('');
+    const [page, setPage] = useState(0);
     const tr = (key: Parameters<typeof t>[1]) => t(lang, key);
 
     // WS 消息驱动重取：订单状态演进由服务端定时器广播（created→paid→shipped）
@@ -22,6 +25,10 @@ export function OrdersPage({ lang, role }: { lang: Lang; role: Role }) {
     useEffect(() => {
         api.listOrders().then((r) => setOrders(r.orders)).catch((e) => setError(String(e)));
     }, []);
+
+    const pageCount = Math.max(1, Math.ceil(orders.length / PAGE_SIZE));
+    const safePage = Math.min(page, pageCount - 1);
+    const visible = orders.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
 
     async function create(e: React.FormEvent) {
         e.preventDefault();
@@ -51,8 +58,18 @@ export function OrdersPage({ lang, role }: { lang: Lang; role: Role }) {
             </form>
             {error && <p role="alert" data-testid="orders-error">{error}</p>}
 
+            <div data-testid="pager" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button data-testid="page-prev" disabled={safePage === 0}
+                    onClick={() => setPage(safePage - 1)}>‹</button>
+                <span data-testid="page-indicator">
+                    {safePage + 1} / {pageCount}（共 {orders.length} 条）
+                </span>
+                <button data-testid="page-next" disabled={safePage >= pageCount - 1}
+                    onClick={() => setPage(safePage + 1)}>›</button>
+            </div>
+
             <ul data-testid="order-list">
-                {orders.map((o) => (
+                {visible.map((o) => (
                     <li key={o.id} data-testid="order-item" data-order-id={o.id} data-status={o.status}>
                         <span className="title">{o.title}</span>
                         <span className="status">{tr(STATUS_KEY[o.status])}</span>

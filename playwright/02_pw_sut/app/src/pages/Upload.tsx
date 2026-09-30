@@ -1,12 +1,13 @@
 // Upload.tsx — 上传区：多文件上传 + 文件列表 + 下载链接（lab 14 的主靶点）
 import { useEffect, useRef, useState } from 'react';
-import { api, type StoredFile } from '../api';
+import { api, loadAuth, type StoredFile } from '../api';
 import { t, type Lang } from '../i18n';
 
 export function UploadPage({ lang }: { lang: Lang }) {
     const [files, setFiles] = useState<StoredFile[]>([]);
     const [busy, setBusy] = useState(false);
     const [done, setDone] = useState(false);
+    const [dragging, setDragging] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const tr = (key: Parameters<typeof t>[1]) => t(lang, key);
 
@@ -15,8 +16,7 @@ export function UploadPage({ lang }: { lang: Lang }) {
     }
     useEffect(refresh, []);
 
-    async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
-        const picked = Array.from(e.target.files ?? []);
+    async function uploadAll(picked: File[]) {
         if (!picked.length) return;
         setBusy(true);
         setDone(false);
@@ -30,8 +30,23 @@ export function UploadPage({ lang }: { lang: Lang }) {
         }
     }
 
+    async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+        await uploadAll(Array.from(e.target.files ?? []));
+    }
+
+    // 拖拽上传：drop 事件的 DataTransfer.files 与 input 选择等价处理
+    async function handleDrop(e: React.DragEvent) {
+        e.preventDefault();
+        setDragging(false);
+        await uploadAll(Array.from(e.dataTransfer.files ?? []));
+    }
+
     return (
-        <section data-testid="upload-page" aria-labelledby="upload-h">
+        <section data-testid="upload-page" aria-labelledby="upload-h"
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+            style={dragging ? { outline: '2px dashed #1f6feb' } : undefined}>
             <h2 id="upload-h">{tr('uploadTitle')}</h2>
 
             <label data-testid="upload-choose" className="file-label">
@@ -47,7 +62,8 @@ export function UploadPage({ lang }: { lang: Lang }) {
                     <li key={f.name} data-testid="file-item">
                         <span className="fname">{f.name}</span>
                         <span className="fmeta">{f.size} B · sha256:{f.sha256.slice(0, 12)}…</span>
-                        <a data-testid="file-download" href={`/api/files/${f.name}`}
+                        <a data-testid="file-download"
+                            href={`/api/files/${f.name}?token=${loadAuth()?.token ?? ''}`}
                             download={f.name}>{tr('download')}</a>
                     </li>
                 ))}

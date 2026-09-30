@@ -1,9 +1,11 @@
 // playwright.config.ts — lab 02 冒烟测试配置：验证靶场六大功能区本身可用
 // 后续 17 个实验各自有 config，但都通过 webServer 复用本实验的 pw-store（端口 9002）
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     timeout: 30_000,
     retries: 0,
     workers: 1,                        // SUT 状态在内存里，先串行保证可复现
@@ -12,6 +14,7 @@ export default defineConfig({
 
     use: {
         baseURL: 'http://127.0.0.1:9002',
+        locale: 'zh-CN',
         screenshot: 'only-on-failure',
         trace: 'retain-on-failure',
     },

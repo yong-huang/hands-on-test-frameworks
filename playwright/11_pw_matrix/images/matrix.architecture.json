@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "设备 × 主题矩阵与仿真注入：一套用例，六种世界",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/11_pw_matrix/images/matrix.html"
+  },
+  "components": [
+    {
+      "id": "matrix",
+      "type": "backend",
+      "label": "projects 矩阵",
+      "sublabel": "3 设备 × 明/暗",
+      "pos": [
+        60,
+        330
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "spec",
+      "type": "frontend",
+      "label": "matrix.spec.ts",
+      "sublabel": "响应式 + 主题断言",
+      "pos": [
+        330,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "sim",
+      "type": "security",
+      "label": "仿真选项",
+      "sublabel": "locale·timezone·offline·触屏",
+      "pos": [
+        335,
+        330
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "ctx",
+      "type": "messagebus",
+      "label": "6 × 浏览器上下文",
+      "sublabel": "viewport·UA·colorScheme",
+      "pos": [
+        620,
+        140
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "pw-store :9011",
+      "sublabel": "深色样式 · locale 感知",
+      "pos": [
+        900,
+        140
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "summary",
+      "type": "database",
+      "label": "矩阵结果",
+      "sublabel": "36 执行 / 轮全绿",
+      "pos": [
+        850,
+        330
+      ],
+      "size": [
+        150,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试工程",
+      "wraps": [
+        "matrix",
+        "spec",
+        "sim"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "matrix",
+      "to": "spec",
+      "label": "矩阵展开",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          145,
+          172
+        ]
+      ]
+    },
+    {
+      "id": "b",
+      "from": "sim",
+      "to": "spec",
+      "label": "use() 注入",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": -70
+    },
+    {
+      "id": "c",
+      "from": "spec",
+      "to": "ctx",
+      "label": "六路分发"
+    },
+    {
+      "id": "d",
+      "from": "ctx",
+      "to": "sut",
+      "label": "HTTP"
+    },
+    {
+      "id": "e",
+      "from": "spec",
+      "to": "summary",
+      "label": "归并",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          410,
+          250
+        ],
+        [
+          770,
+          250
+        ],
+        [
+          770,
+          362
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "矩阵乘法",
+      "items": [
+        "project = 上下文模板",
+        "6 组合 × N 用例自动展开"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "被测能力配套",
+      "items": [
+        "pw-store 支持 prefers-color-scheme",
+        "初始语言跟随 navigator.language"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "仿真维度",
+      "items": [
+        "locale/timezone/offline/hasTouch",
+        "test.use 局部覆盖 project 默认"
+      ]
+    }
+  ]
+}

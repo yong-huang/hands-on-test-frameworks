@@ -65,8 +65,13 @@ function readBody(req) {
 }
 
 // token 形如 base64("role:username")——教学靶场，明文可逆是刻意设计，方便测试断言角色
-function auth(req) {
-    const header = req.headers.authorization || '';
+// 下载链接场景额外接受 ?token= 查询参数（浏览器导航请求带不了自定义头）
+function auth(req, url) {
+    let header = req.headers.authorization || '';
+    if (!header.startsWith('Bearer ') && url) {
+        const qt = url.searchParams.get('token');
+        if (qt) header = `Bearer ${qt}`;
+    }
     if (!header.startsWith('Bearer ')) return null;
     try {
         const [role, name] = Buffer.from(header.slice(7), 'base64').toString().split(':');
@@ -189,7 +194,7 @@ const server = createServer(async (req, res) => {
     }
     const dlMatch = p.match(/^\/api\/files\/([\w.-]+)$/);
     if (dlMatch && req.method === 'GET') {
-        const user = auth(req);
+        const user = auth(req, url);
         if (!user) return json(res, 401, { error: '未登录' });
         const name = dlMatch[1];
         if (!files.has(name)) return json(res, 404, { error: '文件不存在' });

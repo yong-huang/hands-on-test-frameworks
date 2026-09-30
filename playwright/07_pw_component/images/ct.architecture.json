@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "组件测试路径 vs E2E 路径：同一内核，两种抵达方式",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/07_pw_component/images/ct.html"
+  },
+  "components": [
+    {
+      "id": "ctspec",
+      "type": "frontend",
+      "label": "components.spec.tsx",
+      "sublabel": "mount + page 断言",
+      "pos": [
+        120,
+        150
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "ctrunner",
+      "type": "backend",
+      "label": "ct runner",
+      "sublabel": "内置 vite dev server",
+      "pos": [
+        390,
+        150
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": ":9007"
+    },
+    {
+      "id": "reactroot",
+      "type": "messagebus",
+      "label": "React root",
+      "sublabel": "一测试一根 · update 重渲染",
+      "pos": [
+        660,
+        150
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "comps",
+      "type": "frontend",
+      "label": "被测组件",
+      "sublabel": "StatusBadge·OrderCard·OrderForm",
+      "pos": [
+        920,
+        150
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "tag": "纯 props"
+    },
+    {
+      "id": "e2espec",
+      "type": "external",
+      "label": "E2E 用例（对照）",
+      "sublabel": "登录 → 导航 → 断言",
+      "pos": [
+        390,
+        340
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "backend",
+      "label": "pw-store :9002",
+      "sublabel": "SUT + 网络 + 内存态",
+      "pos": [
+        660,
+        340
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "组件测试路径（毫秒级，无网络）",
+      "wraps": [
+        "ctspec",
+        "ctrunner",
+        "reactroot",
+        "comps"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "E2E 对照路径（秒级）",
+      "wraps": [
+        "e2espec",
+        "sut"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "ctspec",
+      "to": "ctrunner",
+      "label": "执行"
+    },
+    {
+      "id": "b",
+      "from": "ctrunner",
+      "to": "reactroot",
+      "label": "挂载"
+    },
+    {
+      "id": "c",
+      "from": "reactroot",
+      "to": "comps",
+      "label": "props 传入"
+    },
+    {
+      "id": "d",
+      "from": "comps",
+      "to": "reactroot",
+      "label": "事件回传",
+      "variant": "dashed",
+      "labelAt": [
+        0,
+        0.7
+      ],
+      "labelDy": 18
+    },
+    {
+      "id": "e",
+      "from": "e2espec",
+      "to": "sut",
+      "label": "HTTP + 导航"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "零网络依赖",
+      "items": [
+        "不起 SUT、不登录、不发请求",
+        "8 用例 1.3s vs E2E 同量 5.8s"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "一测试一根",
+      "items": [
+        "重复 mount 报 already has a React root",
+        "要测多份就挂一个组合容器"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "定位用 page",
+      "items": [
+        "comp 边界定位嵌套组件不可靠（实测）",
+        "page.getByTestId 稳定且语义不变"
+      ]
+    }
+  ]
+}

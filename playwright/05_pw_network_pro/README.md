@@ -60,9 +60,13 @@ observe ② 是注入套件：伪造 500 看错误提示、3 秒慢接口看 loa
 断连看降级、`waitForResponse` 对齐下单响应：
 
 ```
+✓  1 [chromium] › 录制：登录 → 下单 的完整 HTTP 轨迹 (709ms)
 ✓  2 [chromium] › 500 注入：订单接口挂了，页面出现正确错误提示 (158ms)
 ✓  3 [chromium] › 3s 慢接口注入：loading 态真实可见，数据到达后表格渲染 (4.5s)
-  6 passed (8.3s)
+  5 passed (6.1s)
+
+四条注入用例之外还有一条录制用例——脚本故意让它随跑：保证回放用的 HAR
+永远新鲜。验收口径：注入套件 4 条全绿（连同录制共 5 条）。
 ```
 
 observe ③ 是本实验的高光：先 `kill` 掉 9005 端口的后端并确认探活不可达，
@@ -74,7 +78,7 @@ observe ③ 是本实验的高光：先 `kill` 掉 9005 端口的后端并确认
 >>> 后端不在线，回放套件全绿 ✓
 ```
 
-验收方式：回放套件在后端下线状态下全绿；注入套件 6 条全绿；
+验收方式：回放套件在后端下线状态下全绿；注入套件 4 条全绿；
 `./network_pro.sh clean` 后 `lsof -i :9005` 无残留。
 
 ## How It Works
@@ -108,11 +112,14 @@ Promise，再触发点击，最后 `await`——顺序反了就会错过响应�
 这是 HAR 回放的语义边界：**同一请求永远拿到同一条录制应答**，它不按调用次数
 推进条目，也不理解服务端状态（本实验实测踩过：reload 后列表仍是录制时的种子数据）。
 
-HAR 是"有线杆"不是"有状态 mock"——回放路径的断言应落在
-每一步的响应正确，而不是服务端状态演进。
+HAR 是一盘录像带：每次播放同一段录像，不因你看了一遍就改剧情——
+所以回放路径的断言应落在每一步的响应正确，而不是服务端状态演进。
 
-**Q：`configs/offline.config.ts` 为什么把 testDir 写成 `new URL('../tests', import.meta.url)`？**
+**Q：`configs/offline.config.ts` 为什么把 testDir 写成相对路径的绝对化形式？**
 Playwright 的路径（testDir、storageState 等）相对**配置文件自身**解析。
+
+配置放在 `configs/` 子目录时 `./tests` 会指到不存在的 `configs/tests`，
+所以要写 `fileURLToPath(new URL('../tests', import.meta.url))` 显式指回实验根。
 
 配置放在 `configs/` 子目录时，`./tests` 会指到 `configs/tests`（不存在），
 于是报 "No tests found"（本实验实测踩过）。子目录配置一律用绝对路径指回实验根。

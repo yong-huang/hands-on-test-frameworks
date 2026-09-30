@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "并行调度与数据前缀隔离：workers 档位下的秩序",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/10_pw_parallel/images/parallel.html"
+  },
+  "components": [
+    {
+      "id": "queue",
+      "type": "frontend",
+      "label": "用例队列",
+      "sublabel": "fullyParallel 全展开 23 条",
+      "pos": [
+        120,
+        250
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "sched",
+      "type": "backend",
+      "label": "调度器",
+      "sublabel": "workers 档位（1 / 4）",
+      "pos": [
+        400,
+        250
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "tag": "调度"
+    },
+    {
+      "id": "workers",
+      "type": "messagebus",
+      "label": "4 × worker 进程",
+      "sublabel": "各自独立浏览器上下文",
+      "pos": [
+        680,
+        140
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "uniq",
+      "type": "database",
+      "label": "唯一前缀数据",
+      "sublabel": "隔离协议：只认自己的行",
+      "pos": [
+        970,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "serial",
+      "type": "security",
+      "label": "serial 组",
+      "sublabel": "依赖链单独排队",
+      "pos": [
+        680,
+        380
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "pw-store :9010",
+      "sublabel": "共享内存态",
+      "pos": [
+        970,
+        380
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试进程",
+      "wraps": [
+        "queue",
+        "sched",
+        "workers",
+        "serial"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "queue",
+      "to": "sched",
+      "label": "投递"
+    },
+    {
+      "id": "b",
+      "from": "sched",
+      "to": "workers",
+      "label": "并行分发"
+    },
+    {
+      "id": "c",
+      "from": "sched",
+      "to": "serial",
+      "label": "例外通道",
+      "variant": "dashed"
+    },
+    {
+      "id": "d",
+      "from": "workers",
+      "to": "uniq",
+      "label": "遵守隔离协议",
+      "variant": "dashed"
+    },
+    {
+      "id": "e",
+      "from": "workers",
+      "to": "sut",
+      "label": "并发读写"
+    },
+    {
+      "id": "f",
+      "from": "serial",
+      "to": "sut",
+      "label": "按序",
+      "labelDy": 18
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "隔离协议",
+      "items": [
+        "唯一前缀标题 + 只断言自己的行",
+        "API 造数快于 UI 造数"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "调度档位",
+      "items": [
+        "workers=1: 3360ms",
+        "workers=4: 1840ms（1.83x）"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "serial 例外",
+      "items": [
+        "依赖链强制按序",
+        "优先改造依赖，而不是加 serial"
+      ]
+    }
+  ]
+}

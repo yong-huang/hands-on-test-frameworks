@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "终极串联：清单驱动的回归流水线与质量门禁",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/19_pw_final_suite/images/final.html"
+  },
+  "lanes": [
+    {
+      "id": "input",
+      "label": "输入"
+    },
+    {
+      "id": "pipeline",
+      "label": "流水线"
+    },
+    {
+      "id": "gate",
+      "label": "门禁"
+    }
+  ],
+  "mainPath": [
+    "list",
+    "exec",
+    "collect",
+    "table",
+    "judge"
+  ],
+  "nodes": [
+    {
+      "id": "list",
+      "lane": "input",
+      "col": 0,
+      "type": "frontend",
+      "label": "套件清单",
+      "sublabel": "15 ×（目录·命令）",
+      "width": 140
+    },
+    {
+      "id": "exec",
+      "lane": "pipeline",
+      "col": 1,
+      "type": "backend",
+      "label": "按序执行",
+      "sublabel": "串行保确定性",
+      "width": 130
+    },
+    {
+      "id": "collect",
+      "lane": "pipeline",
+      "col": 2,
+      "type": "messagebus",
+      "label": "日志与计数",
+      "sublabel": "passed/failed/flaky",
+      "width": 150
+    },
+    {
+      "id": "table",
+      "lane": "pipeline",
+      "col": 3,
+      "type": "database",
+      "label": "结果总表",
+      "sublabel": "15 行 ✓/✗",
+      "width": 120
+    },
+    {
+      "id": "judge",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "质量门禁",
+      "sublabel": "0 失败 · flaky≤2 · ≤20min",
+      "width": 180
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "list",
+      "to": "exec",
+      "label": "逐条投递"
+    },
+    {
+      "id": "e2",
+      "from": "exec",
+      "to": "collect",
+      "label": "日志归集"
+    },
+    {
+      "id": "e3",
+      "from": "collect",
+      "to": "table",
+      "label": "计数汇总"
+    },
+    {
+      "id": "e4",
+      "from": "table",
+      "to": "judge",
+      "label": "三阈值判定"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "显式排除",
+      "items": [
+        "08/12 内置人为失败",
+        "18 依赖容器，单列运行"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "首跑战果",
+      "items": [
+        "暴露 11 条漂移：locale×7",
+        "基线过期 · 分页找行"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "门禁阈值",
+      "items": [
+        "failed=0 底线",
+        "flaky≤2 案底 · 时长≤20min"
+      ]
+    }
+  ]
+}

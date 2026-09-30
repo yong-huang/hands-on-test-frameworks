@@ -20,6 +20,14 @@
           ↑ 全程共用同一个被测应用 SUT（实验 11 造）↑
 ```
 
+## 🎭 姊妹系列：Playwright 进阶（TypeScript 栈，19 实验）
+
+> **[playwright/](playwright/README.md)** — 与本系列互补的 TS 原生栈深水区：
+> 靶场 pw-store → 定位/认证/网络/视觉/组件 → 调试/POM/并行/矩阵/报告/flaky
+> → 文件/实时/i18n+a11y/API 混合 → 本地 CI 分片 → 🏁 终极串联（163 用例一条命令）。
+> 清单见 [docs/playwright.md](docs/playwright.md)，环境一条命令：
+> `bash playwright/load_resources.sh`
+
 ## 🚀 快速开始
 
 ```bash

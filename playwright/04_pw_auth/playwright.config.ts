@@ -3,6 +3,7 @@
 // admin / customer 两个 project 依赖 setup，各自带着登录态跑同一批用例。
 // 这是官方的 "setup project + storageState" 认证模式，全系列后续实验都沿用。
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 // pw-store 的 token 是可逆的 base64("role:name")——config 里静态构造，
 // 让 request fixture 也能直接带角色头（生产环境请改从密钥管理服务取）
@@ -11,6 +12,7 @@ const bearer = (role: string, name: string) =>
 
 export default defineConfig({
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     timeout: 30_000,
     retries: 0,
     workers: 1,
@@ -19,6 +21,7 @@ export default defineConfig({
 
     use: {
         baseURL: 'http://127.0.0.1:9004',
+        locale: 'zh-CN',
         screenshot: 'only-on-failure',
         trace: 'retain-on-failure',
     },

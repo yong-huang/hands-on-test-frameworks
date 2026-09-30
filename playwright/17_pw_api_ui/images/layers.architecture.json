@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "API+UI 分层：事实与呈现",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/17_pw_api_ui/images/layers.html"
+  },
+  "components": [
+    {
+      "id": "apitest",
+      "type": "frontend",
+      "label": "API 侧测试",
+      "sublabel": "造数 · 计数 · 清场",
+      "pos": [
+        120,
+        140
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "dataapi",
+      "type": "backend",
+      "label": "REST API",
+      "sublabel": "orders CRUD + /reset",
+      "pos": [
+        450,
+        140
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "uitest",
+      "type": "frontend",
+      "label": "UI 侧测试",
+      "sublabel": "分页浏览 · 目标行断言",
+      "pos": [
+        120,
+        280
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "pw-store SPA",
+      "sublabel": "客户端分页 20 条/页",
+      "pos": [
+        450,
+        280
+      ],
+      "size": [
+        180,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "测试工程（两层各司其职）",
+      "wraps": [
+        "apitest",
+        "uitest"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "被测系统",
+      "wraps": [
+        "dataapi",
+        "page"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "apitest",
+      "to": "dataapi",
+      "label": "HTTP 直打"
+    },
+    {
+      "id": "b",
+      "from": "uitest",
+      "to": "page",
+      "label": "浏览器驱动"
+    },
+    {
+      "id": "c",
+      "from": "page",
+      "to": "dataapi",
+      "label": "SPA fetch"
+    },
+    {
+      "id": "d",
+      "from": "apitest",
+      "to": "uitest",
+      "label": "预置数据供验证",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "分层分工",
+      "items": [
+        "API 管\"是什么\"（事实）",
+        "UI 管\"看起来对不对\"（呈现）"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实测对照",
+      "items": [
+        "API 造 100 条：182ms",
+        "UI 造 10 条：432ms"
+      ]
+    }
+  ]
+}

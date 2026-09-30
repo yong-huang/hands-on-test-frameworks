@@ -4,10 +4,12 @@
 //   --browser chromium / --base-url / --tracing / --html=report.html
 // TS 原生栈把它们收进一个类型安全的配置文件，`npx playwright test` 读它即可。
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
     // 用例文件位置（正则）。子目录 configs/ 里是本 lab 专用的变体配置
     testDir: './tests',
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
 
     // 全局超时：单条用例 30s 兜底（自动等待的单次超时由 expect 单独控制）
     timeout: 30_000,
@@ -30,6 +32,7 @@ export default defineConfig({
     use: {
         // baseURL：用例里 page.goto('/只写路径')。改端口/域名只动这里，用例零改动
         baseURL: 'http://127.0.0.1:9001',
+        locale: 'zh-CN',
 
         // 失败自动截图（trace 的完整开关体系在 lab 38 / 42 讲）
         screenshot: 'only-on-failure',

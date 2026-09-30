@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "报告与产物体系：一次执行，四路产出",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/12_pw_reports/images/reports.html"
+  },
+  "components": [
+    {
+      "id": "run",
+      "type": "frontend",
+      "label": "npx playwright test",
+      "sublabel": "3 用例 · 1 条人为失败",
+      "pos": [
+        120,
+        250
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "results",
+      "type": "messagebus",
+      "label": "执行结果流",
+      "sublabel": "状态 + 附件统一挂载",
+      "pos": [
+        420,
+        250
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "分发"
+    },
+    {
+      "id": "html",
+      "type": "database",
+      "label": "HTML 报告",
+      "sublabel": "人看：回放 trace/视频",
+      "pos": [
+        730,
+        90
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "junit",
+      "type": "database",
+      "label": "report.xml",
+      "sublabel": "CI 平台判定用",
+      "pos": [
+        730,
+        210
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "artifacts",
+      "type": "database",
+      "label": "产物目录",
+      "sublabel": "trace · 截图 · 视频",
+      "pos": [
+        730,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "terminal",
+      "type": "external",
+      "label": "list 终端",
+      "sublabel": "实时反馈（开发循环）",
+      "pos": [
+        730,
+        450
+      ],
+      "size": [
+        170,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "消费者（人 / 机器 / 归档）",
+      "wraps": [
+        "html",
+        "junit",
+        "artifacts",
+        "terminal"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "run",
+      "to": "results",
+      "label": "产出"
+    },
+    {
+      "id": "b",
+      "from": "results",
+      "to": "html",
+      "label": "四路分发"
+    },
+    {
+      "id": "c",
+      "from": "results",
+      "to": "junit",
+      "label": ""
+    },
+    {
+      "id": "d",
+      "from": "results",
+      "to": "artifacts",
+      "label": ""
+    },
+    {
+      "id": "e",
+      "from": "results",
+      "to": "terminal",
+      "label": ""
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "多 reporter 可叠加",
+      "items": [
+        "config 里并列声明即同时产出",
+        "CLI --reporter 会整体覆盖配置"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "产物挂载",
+      "items": [
+        "失败用例自动附 trace/截图/视频",
+        "路径随 outputDir 钉在实验目录"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "JUnit 合法性",
+      "items": [
+        "xmllint --noout 校验",
+        "tests/failures 属性供平台聚合"
+      ]
+    }
+  ]
+}

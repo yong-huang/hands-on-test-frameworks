@@ -1,0 +1,166 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "flaky 治理流：从偶发红到案底与根治",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/13_pw_flaky/images/flaky.html"
+  },
+  "lanes": [
+    {
+      "id": "run",
+      "label": "执行"
+    },
+    {
+      "id": "manage",
+      "label": "治理"
+    }
+  ],
+  "mainPath": [
+    "run1",
+    "retry",
+    "green",
+    "triage",
+    "fix"
+  ],
+  "nodes": [
+    {
+      "id": "run1",
+      "lane": "run",
+      "col": 0,
+      "type": "external",
+      "label": "首跑",
+      "sublabel": "attempt 0 失败",
+      "width": 120
+    },
+    {
+      "id": "retry",
+      "lane": "run",
+      "col": 1,
+      "type": "backend",
+      "label": "retries ≤ 2",
+      "sublabel": "config.retries 自动重试",
+      "width": 140
+    },
+    {
+      "id": "green",
+      "lane": "run",
+      "col": 2,
+      "type": "database",
+      "label": "重试绿",
+      "sublabel": "报告标 flaky 留案底",
+      "width": 130
+    },
+    {
+      "id": "triage",
+      "lane": "manage",
+      "col": 3,
+      "type": "security",
+      "label": "分诊",
+      "sublabel": "为何偶发？",
+      "width": 110
+    },
+    {
+      "id": "fix",
+      "lane": "manage",
+      "col": 4,
+      "type": "frontend",
+      "label": "根治",
+      "sublabel": "toPass/poll · 修环境",
+      "width": 140
+    },
+    {
+      "id": "accept",
+      "lane": "manage",
+      "col": 5,
+      "type": "database",
+      "label": "接受并注解",
+      "sublabel": "已知偶发写明原因",
+      "width": 140
+    },
+    {
+      "id": "stable",
+      "lane": "run",
+      "col": 5,
+      "type": "database",
+      "label": "稳定",
+      "sublabel": "5 轮 0 unexpected",
+      "width": 130
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "run1",
+      "to": "retry",
+      "label": "失败"
+    },
+    {
+      "id": "e2",
+      "from": "retry",
+      "to": "green",
+      "label": "重试通过"
+    },
+    {
+      "id": "e3",
+      "from": "green",
+      "to": "triage",
+      "label": "不放过案底"
+    },
+    {
+      "id": "e4",
+      "from": "triage",
+      "to": "fix",
+      "label": "可根治"
+    },
+    {
+      "id": "e5",
+      "from": "triage",
+      "to": "accept",
+      "label": "暂不可根治"
+    },
+    {
+      "id": "e6",
+      "from": "fix",
+      "to": "stable",
+      "label": "消除来源"
+    },
+    {
+      "id": "e7",
+      "from": "stable",
+      "to": "accept",
+      "label": "持续监控",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "案底制度",
+      "items": [
+        "重试通过 ≠ passed，标 flaky",
+        "HTML 报告有独立徽标"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "根治武器",
+      "items": [
+        "toPass 整体重试",
+        "expect.poll 轮询收敛",
+        "retry 分支裁剪暴露面"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "稳定线",
+      "items": [
+        "连续 5 轮 0 unexpected",
+        "flaky 计数持续可见"
+      ]
+    }
+  ]
+}

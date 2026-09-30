@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
     // -c 指向子目录配置时，路径相对配置文件解析——必须显式指回实验根下的 tests/
     testDir: fileURLToPath(new URL('../tests', import.meta.url)),
+    outputDir: fileURLToPath(new URL('./test-results', import.meta.url)),
     testMatch: '**/offline.spec.ts',
     timeout: 30_000,
     retries: 0,

@@ -41,16 +41,23 @@ do_observe() {
     step "observe" "② 基线比对：4 条截图断言全绿"
     $PW test --project=chromium --reporter=line
 
-    step "observe" "③ 变异演示：给页面注入 1 条 CSS（2px 位移）→ 预期变红"
+    step "observe" "③ 变异演示：注入一条改背景色的 CSS → 预期变红"
+    # 变异选"大面积换色"是有意的：视觉断言有两层感知阈值（像素颜色距离 + 差异占比），
+    # 2px 位移这类小改动在稀疏页面上差异占比不足 2%，测不出来——这正是阈值的语义
     cp "$DIST" "$DIST.bak"
-    sed -i '' 's|</head>|<style>body { padding-top: 2px; }</style></head>|' "$DIST"
+    sed -i '' 's|</head>|<style>body { background: #607d8b; }</style></head>|' "$DIST"
+    if [ "$(grep -c '607d8b' "$DIST")" != "1" ]; then
+        echo "注入失败，中止" >&2; mv "$DIST.bak" "$DIST" 2>/dev/null; exit 1
+    fi
     if $PW test --project=chromium --reporter=line >/tmp/visual-mutation.log 2>&1; then
         echo ">>> 变异未被抓住——视觉回归失效！" >&2; mv "$DIST.bak" "$DIST"; exit 1
     else
-        echo ">>> 变异被抓住（预期红）：$(grep -c 'failed' /tmp/visual-mutation.log) 条用例失败，diff 图见 test-results/"
+        echo ">>> 变异被抓住（预期红）："
         grep -E '✘|failed' /tmp/visual-mutation.log | head -4 || true
+        echo ">>> diff/actual/expected 三联图见 test-results/*-diff.png"
     fi
     mv "$DIST.bak" "$DIST"
+    [ "$(grep -c '607d8b' "$DIST")" = "0" ] || { echo "还原失败" >&2; exit 1; }
 
     step "observe" "④ 还原后复跑：回到全绿（基线未变，变的是世界）"
     $PW test --project=chromium --reporter=line

@@ -21,7 +21,7 @@ main section { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; 
 
 .login { max-width: 360px; margin: 60px auto; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 24px; }
 .login h1 { font-size: 18px; }
-.login .hint { color: #8b949e; font-size: 12px; }
+.login .hint { color: #57606a; font-size: 12px; }   /* #8b949e 对比度仅 3.1:1（axe serious），加深到 4.7:1 */
 [role="alert"] { color: #cf222e; }
 
 ul { list-style: none; padding: 0; }
@@ -42,3 +42,13 @@ th, td { border: 1px solid #d0d7de; padding: 6px 12px; text-align: left; font-si
 iframe { width: 320px; height: 150px; border: 1px solid #d0d7de; border-radius: 6px; }
 .badge-zone { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
 [role="status"][data-testid="upload-done"] { color: #116329; margin-left: 8px; }
+
+/* 深色模式：跟随系统 prefers-color-scheme（lab 11 的被测能力之一） */
+@media (prefers-color-scheme: dark) {
+  body { background: #0d1117; color: #e6edf3; }
+  main section, .login, li, table, th, td { background: #161b22; }
+  main section, .login { border-color: #30363d; }
+  th, td, li { border-color: #30363d; }
+  input { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; }
+  header span, li .fmeta, .login .hint { color: #8b949e; }
+}

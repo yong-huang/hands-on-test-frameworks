@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "WebSocket 实时推送的生命周期：建连、演进、闪断、重连",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/15_pw_realtime/images/ws.html",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN"
+  },
+  "participants": [
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "SPA 页面",
+      "sublabel": "OrdersPage"
+    },
+    {
+      "id": "ws",
+      "type": "messagebus",
+      "label": "WS 通道 /ws",
+      "sublabel": "可拦截注 mock"
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "pw-store",
+      "sublabel": "状态机定时器"
+    }
+  ],
+  "segments": [
+    {
+      "from": 130,
+      "to": 200,
+      "label": "建连"
+    },
+    {
+      "from": 215,
+      "to": 380,
+      "label": "实时演进"
+    },
+    {
+      "from": 395,
+      "to": 520,
+      "label": "闪断重连"
+    }
+  ],
+  "messages": [
+    {
+      "from": "page",
+      "to": "server",
+      "y": 170,
+      "label": "WS 升级 /ws + welcome"
+    },
+    {
+      "from": "page",
+      "to": "server",
+      "y": 230,
+      "label": "POST /api/orders（HTTP 侧）"
+    },
+    {
+      "from": "server",
+      "to": "page",
+      "y": 290,
+      "label": "created → paid 帧（2s 定时器）",
+      "variant": "emphasis"
+    },
+    {
+      "from": "page",
+      "to": "server",
+      "y": 350,
+      "label": "GET refetch（UI 同步）",
+      "variant": "return"
+    },
+    {
+      "from": "ws",
+      "to": "page",
+      "y": 410,
+      "label": "close() 闪断注入",
+      "variant": "dashed"
+    },
+    {
+      "from": "page",
+      "to": "server",
+      "y": 470,
+      "label": "1s 后自动重连成功",
+      "variant": "return"
+    }
+  ]
+}

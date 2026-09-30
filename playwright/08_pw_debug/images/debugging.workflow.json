@@ -1,0 +1,134 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "排障决策流：从一条红用例到根因归类",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/playwright/08_pw_debug/images/debugging.html"
+  },
+  "lanes": [
+    {
+      "id": "scene",
+      "label": "失败现场"
+    },
+    {
+      "id": "root",
+      "label": "根因归类"
+    },
+    {
+      "id": "action",
+      "label": "行动"
+    }
+  ],
+  "mainPath": [
+    "red",
+    "trace",
+    "root3",
+    "fix"
+  ],
+  "nodes": [
+    {
+      "id": "red",
+      "lane": "scene",
+      "col": 0,
+      "type": "external",
+      "label": "用例红了",
+      "sublabel": "失败自动留痕",
+      "width": 130
+    },
+    {
+      "id": "trace",
+      "lane": "scene",
+      "col": 1,
+      "type": "backend",
+      "label": "trace.zip",
+      "sublabel": "每步截图+网络+console",
+      "width": 160
+    },
+    {
+      "id": "report",
+      "lane": "scene",
+      "col": 2,
+      "type": "database",
+      "label": "HTML 报告",
+      "sublabel": "汇总 + 失败截图",
+      "width": 140
+    },
+    {
+      "id": "fix",
+      "lane": "action",
+      "col": 3,
+      "type": "database",
+      "label": "修复 + 防回归",
+      "sublabel": "web-first 断言收编",
+      "width": 146
+    },
+    {
+      "id": "root3",
+      "lane": "root",
+      "col": 2,
+      "type": "security",
+      "label": "根因三族",
+      "sublabel": "定位错 · 时序错 · 预期错",
+      "width": 170
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "red",
+      "to": "trace",
+      "label": "打开轨迹"
+    },
+    {
+      "id": "e2",
+      "from": "trace",
+      "to": "report",
+      "label": "汇总进报告",
+      "variant": "dashed"
+    },
+    {
+      "id": "e11",
+      "from": "trace",
+      "to": "root3",
+      "label": "三面板定位"
+    },
+    {
+      "id": "e12",
+      "from": "root3",
+      "to": "fix",
+      "label": "对症修复"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "trace 是第一现场",
+      "items": [
+        "每个动作可回放",
+        "DOM/网络/console 三面板联动"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "三个根因族",
+      "items": [
+        "定位错：找不到元素",
+        "时序错：拿瞬时值",
+        "预期错：与规则矛盾"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "工具分工",
+      "items": [
+        "trace 事后精读",
+        "UI Mode 边改边跑",
+        "--debug 单步试定位"
+      ]
+    }
+  ]
+}

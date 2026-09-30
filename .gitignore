@@ -35,3 +35,4 @@ performance/01_perf_baseline/shorturl/shorturl
 
 # pw-store 运行期上传目录
 .uploads/
+playwright/07_pw_component/playwright/.cache/
