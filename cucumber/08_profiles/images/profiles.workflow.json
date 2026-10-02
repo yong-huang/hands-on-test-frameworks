@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "profiles 多环境：一份用例 × N 份配置",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/08_profiles/images/profiles.html"
+  },
+  "lanes": [
+    {
+      "id": "cases",
+      "label": "用例（环境无关）"
+    },
+    {
+      "id": "envs",
+      "label": "环境实例"
+    },
+    {
+      "id": "targets",
+      "label": "SUT 实例"
+    }
+  ],
+  "mainPath": [
+    "feature",
+    "world",
+    "dev"
+  ],
+  "nodes": [
+    {
+      "id": "feature",
+      "lane": "cases",
+      "col": 0,
+      "type": "frontend",
+      "label": "env.feature",
+      "sublabel": "零环境字样",
+      "width": 140
+    },
+    {
+      "id": "world",
+      "lane": "cases",
+      "col": 1,
+      "type": "frontend",
+      "label": "World 读环境变量",
+      "sublabel": "BASE_URL · 凭据",
+      "width": 160
+    },
+    {
+      "id": "devprofile",
+      "lane": "envs",
+      "col": 2,
+      "type": "backend",
+      "label": "profile dev",
+      "sublabel": "BASE_URL=9108",
+      "width": 130
+    },
+    {
+      "id": "stagingprofile",
+      "lane": "envs",
+      "col": 3,
+      "type": "backend",
+      "label": "profile staging",
+      "sublabel": "BASE_URL=9109",
+      "width": 150
+    },
+    {
+      "id": "dev",
+      "lane": "targets",
+      "col": 3,
+      "type": "cloud",
+      "label": "SUT dev :9108",
+      "sublabel": "开发环境",
+      "width": 140
+    },
+    {
+      "id": "staging",
+      "lane": "targets",
+      "col": 4,
+      "type": "cloud",
+      "label": "SUT staging :9109",
+      "sublabel": "预发环境",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "feature",
+      "to": "world",
+      "label": "消费变量"
+    },
+    {
+      "id": "e2",
+      "from": "world",
+      "to": "dev",
+      "label": "BASE_URL"
+    },
+    {
+      "id": "e3",
+      "from": "devprofile",
+      "to": "world",
+      "label": "注入 env",
+      "variant": "dashed"
+    },
+    {
+      "id": "e4",
+      "from": "stagingprofile",
+      "to": "staging",
+      "label": "同套件跑 staging"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ESM 正确形态",
+      "items": [
+        "默认导出【函数】返回 profiles",
+        "静态对象会被 namespace 包裹（实测坑）"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "default 键必填",
+      "items": [
+        "--profile X 是 X merge 到 default",
+        "没有 default 键其他 profile 全失效"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "环境变量注入",
+      "items": [
+        "profile 的 env 键注入进程",
+        "World 只消费不关心来源"
+      ]
+    }
+  ]
+}

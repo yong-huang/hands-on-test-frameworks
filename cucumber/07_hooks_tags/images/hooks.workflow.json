@@ -1,0 +1,144 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "四类钩子的生命周期时序与标签圈选",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/07_hooks_tags/images/hooks.html"
+  },
+  "lanes": [
+    {
+      "id": "hooks",
+      "label": "钩子时序"
+    },
+    {
+      "id": "tags",
+      "label": "标签圈选"
+    }
+  ],
+  "mainPath": [
+    "beforeall",
+    "before",
+    "scenario",
+    "after"
+  ],
+  "nodes": [
+    {
+      "id": "beforeall",
+      "lane": "hooks",
+      "col": 0,
+      "type": "backend",
+      "label": "BeforeAll",
+      "sublabel": "浏览器一次",
+      "width": 130
+    },
+    {
+      "id": "before",
+      "lane": "hooks",
+      "col": 1,
+      "type": "backend",
+      "label": "Before",
+      "sublabel": "reset + 新 context",
+      "width": 140
+    },
+    {
+      "id": "scenario",
+      "lane": "hooks",
+      "col": 2,
+      "type": "frontend",
+      "label": "场景执行",
+      "sublabel": "步骤逐条",
+      "width": 130
+    },
+    {
+      "id": "after",
+      "lane": "hooks",
+      "col": 3,
+      "type": "security",
+      "label": "After",
+      "sublabel": "失败才截图",
+      "width": 120
+    },
+    {
+      "id": "afterall",
+      "lane": "hooks",
+      "col": 4,
+      "type": "backend",
+      "label": "AfterAll",
+      "sublabel": "关浏览器",
+      "width": 120
+    },
+    {
+      "id": "tags",
+      "lane": "tags",
+      "col": 1,
+      "type": "messagebus",
+      "label": "--tags 表达式",
+      "sublabel": "@smoke · not @wip",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "beforeall",
+      "to": "before",
+      "label": "套件开始"
+    },
+    {
+      "id": "e2",
+      "from": "before",
+      "to": "scenario",
+      "label": "装备后执行"
+    },
+    {
+      "id": "e3",
+      "from": "scenario",
+      "to": "after",
+      "label": "成败都执行"
+    },
+    {
+      "id": "e4",
+      "from": "after",
+      "to": "beforeall",
+      "label": "下一场景循环",
+      "variant": "dashed"
+    },
+    {
+      "id": "e5",
+      "from": "tags",
+      "to": "before",
+      "label": "圈选子集",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "时序口诀",
+      "items": [
+        "BeforeAll/AfterAll 各一次",
+        "Before/After 每场景成对"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "After 读结果",
+      "items": [
+        "scenario.result.status",
+        "失败才 attach 截图"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "标签布尔",
+      "items": [
+        "@a and not @b",
+        "整体加引号防 shell 吞"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "活文档：场景的三种状态与功能清单抽取",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/12_living_doc/images/living.html"
+  },
+  "lanes": [
+    {
+      "id": "states",
+      "label": "场景状态"
+    },
+    {
+      "id": "doc",
+      "label": "文档产物"
+    }
+  ],
+  "mainPath": [
+    "gherkin",
+    "run",
+    "passed"
+  ],
+  "nodes": [
+    {
+      "id": "gherkin",
+      "lane": "states",
+      "col": 0,
+      "type": "frontend",
+      "label": ".feature 规格源",
+      "sublabel": "业务语言单一事实源",
+      "width": 150
+    },
+    {
+      "id": "run",
+      "lane": "states",
+      "col": 1,
+      "type": "backend",
+      "label": "cucumber 执行",
+      "sublabel": "json 结果流",
+      "width": 140
+    },
+    {
+      "id": "passed",
+      "lane": "states",
+      "col": 2,
+      "type": "database",
+      "label": "✅ 绿：已实现",
+      "sublabel": "行为有代码保障",
+      "width": 150
+    },
+    {
+      "id": "pending",
+      "lane": "states",
+      "col": 3,
+      "type": "security",
+      "label": "🟡 黄：规划中",
+      "sublabel": "pending ≠ failed",
+      "width": 140
+    },
+    {
+      "id": "extract",
+      "lane": "doc",
+      "col": 4,
+      "type": "backend",
+      "label": "清单抽取",
+      "sublabel": "reports/features.md",
+      "width": 150
+    },
+    {
+      "id": "html",
+      "lane": "doc",
+      "col": 5,
+      "type": "database",
+      "label": "HTML 活文档",
+      "sublabel": "业务可读",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "gherkin",
+      "to": "run",
+      "label": "执行"
+    },
+    {
+      "id": "e2",
+      "from": "run",
+      "to": "passed",
+      "label": "断言成立"
+    },
+    {
+      "id": "e3",
+      "from": "run",
+      "to": "pending",
+      "label": "步骤 pending"
+    },
+    {
+      "id": "e4",
+      "from": "run",
+      "to": "extract",
+      "label": "json 供给",
+      "variant": "dashed"
+    },
+    {
+      "id": "e5",
+      "from": "extract",
+      "to": "html",
+      "label": "同源渲染"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "三种状态",
+      "items": [
+        "绿=已实现有保障",
+        "黄=规划中 · 红=做错了"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "单一事实源",
+      "items": [
+        ".feature 改一处",
+        "测试与文档同步更新"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "docstring",
+      "items": [
+        "三引号块传多行业务数据",
+        "原样进入步骤函数"
+      ]
+    }
+  ]
+}

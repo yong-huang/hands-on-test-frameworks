@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "好坏 Gherkin：同一业务的两种表达",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/06_good_gherkin/images/gherkin.html"
+  },
+  "lanes": [
+    { "id": "bad", "label": "命令式（反面教材）" },
+    { "id": "good", "label": "声明式" }
+  ],
+  "mainPath": ["good_feature", "good_steps", "gate"],
+  "nodes": [
+    { "id": "bad_feature", "lane": "bad", "col": 0, "type": "frontend", "label": "命令式场景", "sublabel": "点这、输那、等 1 秒", "width": 140 },
+    { "id": "bad_steps", "lane": "bad", "col": 1, "type": "backend", "label": "微动作步骤 ×9", "sublabel": "裸等待 · 复制定义", "width": 150 },
+    { "id": "good_feature", "lane": "good", "col": 0, "type": "frontend", "label": "声明式场景", "sublabel": "连续创建 2 笔订单", "width": 150 },
+    { "id": "good_steps", "lane": "good", "col": 1, "type": "frontend", "label": "业务步骤 ×5", "sublabel": "等待内聚页面对象", "width": 150 },
+    { "id": "gate", "lane": "good", "col": 2, "type": "security", "label": "Gherkin 门禁", "sublabel": "声明式禁 UI 操作词", "width": 150 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "bad_feature", "to": "bad_steps", "label": "绑定" },
+    { "id": "e2", "from": "good_feature", "to": "good_steps", "label": "绑定" },
+    { "id": "e3", "from": "good_steps", "to": "gate", "label": "持续合规" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "语义等价", "items": ["两版同跑同绿", "业务结果相同"] },
+    { "dot": "emerald", "title": "结构差异", "items": ["9 步 vs 5 步", "裸等待 2s vs 内聚等待"] },
+    { "dot": "rose", "title": "门禁", "items": ["声明式 feature 禁 UI 操作词", "命令式泄漏当场报行号"] }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "步骤层设计：业务句子经页面对象落到浏览器",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/02_step_design/images/steps.html"
+  },
+  "lanes": [
+    {
+      "id": "bdd",
+      "label": "BDD 层"
+    },
+    {
+      "id": "impl",
+      "label": "实现层"
+    }
+  ],
+  "mainPath": [
+    "feature",
+    "stepdef",
+    "po",
+    "dom"
+  ],
+  "nodes": [
+    {
+      "id": "feature",
+      "lane": "bdd",
+      "col": 0,
+      "type": "frontend",
+      "label": "orders.feature",
+      "sublabel": "业务句子 · 零技术词",
+      "width": 150
+    },
+    {
+      "id": "stepdef",
+      "lane": "bdd",
+      "col": 1,
+      "type": "backend",
+      "label": "步骤层",
+      "sublabel": "句子→动作绑定 · 参数捕获",
+      "width": 150
+    },
+    {
+      "id": "po",
+      "lane": "impl",
+      "col": 2,
+      "type": "frontend",
+      "label": "页面对象",
+      "sublabel": "定位器唯一居所",
+      "width": 140
+    },
+    {
+      "id": "dom",
+      "lane": "impl",
+      "col": 3,
+      "type": "external",
+      "label": "pw-store DOM",
+      "sublabel": "data-testid 靶点",
+      "width": 140
+    },
+    {
+      "id": "reset",
+      "lane": "impl",
+      "col": 1,
+      "type": "security",
+      "label": "/api/reset",
+      "sublabel": "每场景回种子",
+      "width": 130
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "feature",
+      "to": "stepdef",
+      "label": "全字符串匹配"
+    },
+    {
+      "id": "e2",
+      "from": "stepdef",
+      "to": "po",
+      "label": "动作委托"
+    },
+    {
+      "id": "e3",
+      "from": "po",
+      "to": "dom",
+      "label": "定位与断言"
+    },
+    {
+      "id": "e4",
+      "from": "reset",
+      "to": "dom",
+      "label": "隔离",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一步一动作",
+      "items": [
+        "复用靠粒度",
+        "不塞点击+填写+断言三合一"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "收口门禁",
+      "items": [
+        "grep 步骤层零定位器",
+        "选择器只住 pages/"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "同名陷阱",
+      "items": [
+        "种子含\"显示器支架\"撞测试名",
+        "断言提前满足——真实踩坑"
+      ]
+    }
+  ]
+}

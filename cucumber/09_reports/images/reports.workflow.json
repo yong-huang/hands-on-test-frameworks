@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "报告体系：一次失败,三路产物,一份活文档",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/09_reports/images/reports.html"
+  },
+  "lanes": [
+    {
+      "id": "run",
+      "label": "执行"
+    },
+    {
+      "id": "format",
+      "label": "formatter 三路"
+    },
+    {
+      "id": "render",
+      "label": "渲染"
+    }
+  ],
+  "mainPath": [
+    "failure",
+    "attach",
+    "jsonfmt",
+    "html"
+  ],
+  "nodes": [
+    {
+      "id": "failure",
+      "lane": "run",
+      "col": 0,
+      "type": "external",
+      "label": "失败场景标本",
+      "sublabel": "After 挂截图",
+      "width": 150
+    },
+    {
+      "id": "attach",
+      "lane": "run",
+      "col": 1,
+      "type": "messagebus",
+      "label": "this.attach",
+      "sublabel": "截图 + 上下文文本",
+      "width": 150
+    },
+    {
+      "id": "jsonfmt",
+      "lane": "format",
+      "col": 2,
+      "type": "backend",
+      "label": "json formatter",
+      "sublabel": "cucumber.json",
+      "width": 150
+    },
+    {
+      "id": "junitfmt",
+      "lane": "format",
+      "col": 3,
+      "type": "backend",
+      "label": "junit formatter",
+      "sublabel": "junit.xml（CI）",
+      "width": 150
+    },
+    {
+      "id": "html",
+      "lane": "render",
+      "col": 4,
+      "type": "database",
+      "label": "HTML 活文档",
+      "sublabel": "业务可读的测试报告",
+      "width": 160
+    },
+    {
+      "id": "cli",
+      "lane": "format",
+      "col": 1,
+      "type": "external",
+      "label": "summary 终端",
+      "sublabel": "即时反馈",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "failure",
+      "to": "attach",
+      "label": "After 挂附件"
+    },
+    {
+      "id": "e2",
+      "from": "attach",
+      "to": "jsonfmt",
+      "label": "进入结果流"
+    },
+    {
+      "id": "e3",
+      "from": "jsonfmt",
+      "to": "html",
+      "label": "渲染"
+    },
+    {
+      "id": "e4",
+      "from": "attach",
+      "to": "junitfmt",
+      "label": "状态流"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "formatter 传参",
+      "items": [
+        "CLI 用 name:path 简写",
+        "配置文件的数组形式校验更严"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "attach 附件",
+      "items": [
+        "this.attach 挂截图/文本",
+        "失败场景才挂，成功零噪声"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "活文档",
+      "items": [
+        "报告即功能清单",
+        "业务可读"
+      ]
+    }
+  ]
+}

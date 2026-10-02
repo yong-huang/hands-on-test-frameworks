@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "World 三机制：类型字段、场景装备、数据隔离",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/03_world_state/images/world.html"
+  },
+  "components": [
+    {
+      "id": "world",
+      "type": "frontend",
+      "label": "SessionWorld",
+      "sublabel": "page · context · role",
+      "pos": [
+        120,
+        240
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "before",
+      "type": "backend",
+      "label": "Before 钩子",
+      "sublabel": "每场景：reset + 新 context",
+      "pos": [
+        400,
+        140
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "asrole",
+      "type": "security",
+      "label": "asRole()",
+      "sublabel": "token 直写 localStorage",
+      "pos": [
+        400,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "双角色"
+    },
+    {
+      "id": "reset",
+      "type": "database",
+      "label": "/api/reset",
+      "sublabel": "SUT 内存态回种子",
+      "pos": [
+        720,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "pw-store :9103",
+      "sublabel": "跨场景共享内存态",
+      "pos": [
+        720,
+        330
+      ],
+      "size": [
+        170,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "cucumber 进程",
+      "wraps": [
+        "world",
+        "before",
+        "asrole"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "被测系统",
+      "wraps": [
+        "reset",
+        "sut"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "before",
+      "to": "world",
+      "label": "装备"
+    },
+    {
+      "id": "b",
+      "from": "before",
+      "to": "reset",
+      "label": "场景前清场"
+    },
+    {
+      "id": "c",
+      "from": "asrole",
+      "to": "world",
+      "label": "切换角色"
+    },
+    {
+      "id": "d",
+      "from": "reset",
+      "to": "sut",
+      "label": "重置",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e",
+      "from": "world",
+      "to": "sut",
+      "label": "",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "三机制",
+      "items": [
+        "类型字段：tsc 全程校验",
+        "Before 装备 · After 释放"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "隔离两翼",
+      "items": [
+        "SUT 侧 /api/reset 回种子",
+        "浏览器侧全新 context"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "双角色切换",
+      "items": [
+        "asRole 重开 context",
+        "token 与展示角色须一致"
+      ]
+    }
+  ]
+}

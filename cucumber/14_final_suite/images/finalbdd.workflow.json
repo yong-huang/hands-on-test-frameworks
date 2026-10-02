@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "终极 BDD 套件：业务域分文件与门禁",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/14_final_suite/images/finalbdd.html"
+  },
+  "lanes": [
+    { "id": "source", "label": "特性源" },
+    { "id": "infra", "label": "基座" },
+    { "id": "gate", "label": "交付" }
+  ],
+  "mainPath": ["features", "world", "run", "report", "gate"],
+  "nodes": [
+    { "id": "features", "lane": "source", "col": 0, "type": "frontend", "label": "auth·orders·uploads", "sublabel": "三业务域 feature", "width": 170 },
+    { "id": "world", "lane": "infra", "col": 1, "type": "backend", "label": "FinalWorld", "sublabel": "双角色·reset·登录态", "width": 160 },
+    { "id": "run", "lane": "infra", "col": 2, "type": "backend", "label": "run_suite.sh", "sublabel": "起靶场·跑批·收产物", "width": 150 },
+    { "id": "report", "lane": "gate", "col": 3, "type": "database", "label": "活文档+清单", "sublabel": "HTML·features.md", "width": 150 },
+    { "id": "gate", "lane": "gate", "col": 4, "type": "security", "label": "质量门禁", "sublabel": "failed=0 才放行", "width": 130 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "features", "to": "world", "label": "绑定执行" },
+    { "id": "e2", "from": "world", "to": "run", "label": "打靶 pw-store" },
+    { "id": "e3", "from": "run", "to": "report", "label": "json 供给" },
+    { "id": "e4", "from": "report", "to": "gate", "label": "状态判定" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "首跑战果", "items": ["中文名净化坑（ASCII 修复）", "logout+initScript 复活坑"] },
+    { "dot": "emerald", "title": "门禁数据源", "items": ["cucumber.json 的 result.status", "不解析终端输出"] },
+    { "dot": "rose", "title": "系列收官", "items": ["7 场景 36 步全绿", "与 playwright/19 双视角互补"] }
+  ]
+}

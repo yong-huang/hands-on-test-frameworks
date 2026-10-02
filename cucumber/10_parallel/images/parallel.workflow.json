@@ -1,0 +1,153 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "并行隔离：唯一前缀协议下的 4 worker 执行",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/10_parallel/images/parallel.html"
+  },
+  "lanes": [
+    {
+      "id": "orch",
+      "label": "编排"
+    },
+    {
+      "id": "w0",
+      "label": "Worker 0"
+    },
+    {
+      "id": "w1",
+      "label": "Worker 1"
+    }
+  ],
+  "mainPath": [
+    "queue",
+    "w0create",
+    "w0assert"
+  ],
+  "nodes": [
+    {
+      "id": "queue",
+      "lane": "orch",
+      "col": 0,
+      "type": "backend",
+      "label": "场景队列",
+      "sublabel": "parallel: 4",
+      "width": 130
+    },
+    {
+      "id": "w0create",
+      "lane": "w0",
+      "col": 1,
+      "type": "frontend",
+      "label": "W0: API 造数",
+      "sublabel": "前缀 W0-xxxx",
+      "width": 140
+    },
+    {
+      "id": "w0assert",
+      "lane": "w0",
+      "col": 2,
+      "type": "security",
+      "label": "W0: 只认自己",
+      "sublabel": "filter(title) count=1",
+      "width": 150
+    },
+    {
+      "id": "w1create",
+      "lane": "w1",
+      "col": 1,
+      "type": "frontend",
+      "label": "W1: API 造数",
+      "sublabel": "前缀 W1-xxxx",
+      "width": 140
+    },
+    {
+      "id": "w1assert",
+      "lane": "w1",
+      "col": 2,
+      "type": "security",
+      "label": "W1: 只认自己",
+      "sublabel": "互不污染",
+      "width": 140
+    },
+    {
+      "id": "sut",
+      "lane": "orch",
+      "col": 3,
+      "type": "cloud",
+      "label": "pw-store :9111",
+      "sublabel": "共享内存态",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "queue",
+      "to": "w0create",
+      "label": ""
+    },
+    {
+      "id": "e2",
+      "from": "queue",
+      "to": "w1create",
+      "label": ""
+    },
+    {
+      "id": "e3",
+      "from": "w0create",
+      "to": "w0assert",
+      "label": ""
+    },
+    {
+      "id": "e4",
+      "from": "w1create",
+      "to": "w1assert",
+      "label": ""
+    },
+    {
+      "id": "e5",
+      "from": "w0create",
+      "to": "sut",
+      "label": "",
+      "variant": "dashed"
+    },
+    {
+      "id": "e6",
+      "from": "w1create",
+      "to": "sut",
+      "label": "",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "隔离协议",
+      "items": [
+        "唯一前缀 W序号-时间-随机",
+        "只断言自己那 1 笔"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "API 造数",
+      "items": [
+        "fetch 直打毫秒级",
+        "浏览器只验呈现"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "共享 SUT",
+      "items": [
+        "内存态跨 worker 可见",
+        "reset 按场景夹住"
+      ]
+    }
+  ]
+}

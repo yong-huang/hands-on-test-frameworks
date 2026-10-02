@@ -1,0 +1,15 @@
+{
+  "name": "hands-on-test-frameworks-cucumber",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Cucumber BDD \u7cfb\u5217\uff08labs 01-14\uff09\u5171\u4eab Node \u4f9d\u8d56 \u2014\u2014 cucumber 13 + @playwright/test 1.62 \u81ea\u5efa World \u65b9\u6848\uff08\u5b98\u65b9\u9002\u914d\u5668 @cucumber/playwright 3.1.0 \u7684 peer \u9501 cucumber ^7\uff0c\u5b9e\u6d4b\u4e0e 13 ERESOLVE \u51b2\u7a81\uff0c\u6545\u4e0d\u91c7\u7528\uff09",
+  "devDependencies": {
+    "@cucumber/cucumber": "13.2.1",
+    "@types/node": "^22.10.0",
+    "multiple-cucumber-html-reporter": "^3.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "@playwright/test": "1.62.1"
+  }
+}

@@ -1,0 +1,36 @@
+# bdd.yml — BDD 套件 CI 流水线（lab 13）
+# GitHub Actions 上全量执行；本地 act 单分片校验（--env ACT=true 走守卫跳过 checkout）
+name: bdd-smoke
+on: [push, workflow_dispatch]
+
+jobs:
+  bdd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout（act 本地模式跳过）
+        if: ${{ env.ACT != 'true' }}
+        uses: actions/checkout@v4
+
+      - name: 安装依赖（act 复用挂载的 node_modules）
+        if: ${{ env.ACT != 'true' }}
+        working-directory: cucumber
+        run: npm ci --no-fund --no-audit
+
+      - name: 起靶场 pw-store
+        working-directory: cucumber/13_ci_github
+        run: |
+          npx vite build ../../playwright/02_pw_sut/app --logLevel warn || true
+          nohup node ../../playwright/02_pw_sut/server.mjs > /dev/null 2>&1 &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:9115/api/health > /dev/null 2>&1 && break
+            sleep 0.25
+          done
+
+      - name: 跑 BDD 冒烟（json 报告归档）
+        working-directory: cucumber/13_ci_github
+        run: npx cucumber-js --profile default --format json:reports/cucumber.json
+
+      - name: 归档报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: cucumber-report, path: cucumber/13_ci_github/reports }

@@ -1,0 +1,137 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "DataTable 双表分工：When 携输入表，Then 携期望表",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/05_data_table/images/table.html"
+  },
+  "lanes": [
+    {
+      "id": "bdd",
+      "label": "BDD 层"
+    },
+    {
+      "id": "run",
+      "label": "执行层"
+    },
+    {
+      "id": "expect",
+      "label": "期望层"
+    }
+  ],
+  "mainPath": [
+    "whentable",
+    "when",
+    "store"
+  ],
+  "nodes": [
+    {
+      "id": "whentable",
+      "lane": "bdd",
+      "col": 0,
+      "type": "database",
+      "label": "输入表",
+      "sublabel": "商品标题 ×5",
+      "width": 130
+    },
+    {
+      "id": "when",
+      "lane": "bdd",
+      "col": 1,
+      "type": "backend",
+      "label": "When 批量创建",
+      "sublabel": "rows() 逐行",
+      "width": 150
+    },
+    {
+      "id": "store",
+      "lane": "run",
+      "col": 2,
+      "type": "cloud",
+      "label": "pw-store",
+      "sublabel": "落库 + 列表",
+      "width": 130
+    },
+    {
+      "id": "thentable",
+      "lane": "expect",
+      "col": 3,
+      "type": "database",
+      "label": "期望表",
+      "sublabel": "标题 + 预期状态",
+      "width": 140
+    },
+    {
+      "id": "then",
+      "lane": "expect",
+      "col": 4,
+      "type": "security",
+      "label": "Then 逐字段核对",
+      "sublabel": "hashes() → 断言",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "whentable",
+      "to": "when",
+      "label": "rows()"
+    },
+    {
+      "id": "e2",
+      "from": "when",
+      "to": "store",
+      "label": "POST ×5"
+    },
+    {
+      "id": "e3",
+      "from": "thentable",
+      "to": "then",
+      "label": "hashes()"
+    },
+    {
+      "id": "e4",
+      "from": "then",
+      "to": "store",
+      "label": "回读断言",
+      "variant": "dashed"
+    },
+    {
+      "id": "e5",
+      "from": "store",
+      "to": "then",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两种消费",
+      "items": [
+        "rows()：string[][] 按列位",
+        "hashes()：对象数组按表头"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "双表分工",
+      "items": [
+        "When 表是输入",
+        "Then 表是期望——都可读"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "无表的 Then",
+      "items": [
+        "签名里的 table 接住回调",
+        "报 callback+promise 双接口错"
+      ]
+    }
+  ]
+}

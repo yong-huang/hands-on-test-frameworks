@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Example Mapping：三色卡到红绿闭环",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/11_example_mapping/images/mapping.html"
+  },
+  "lanes": [
+    { "id": "biz", "label": "需求对话" },
+    { "id": "impl", "label": "红绿实现" }
+  ],
+  "mainPath": ["card", "rules", "features", "pending", "impl", "green"],
+  "nodes": [
+    { "id": "card", "lane": "biz", "col": 0, "type": "external", "label": "需求卡", "sublabel": "仅 admin 可删单", "width": 130 },
+    { "id": "rules", "lane": "biz", "col": 1, "type": "messagebus", "label": "规则+例子+疑问", "sublabel": "三色卡推演", "width": 160 },
+    { "id": "features", "lane": "impl", "col": 2, "type": "frontend", "label": ".feature 落笔", "sublabel": "全 pending（黄）", "width": 140 },
+    { "id": "pending", "lane": "impl", "col": 3, "type": "security", "label": "红：步骤未实现", "sublabel": "pending ≠ failed", "width": 150 },
+    { "id": "impl", "lane": "impl", "col": 4, "type": "backend", "label": "逐条实现步骤", "sublabel": "页面已存在，纯接线", "width": 150 },
+    { "id": "green", "lane": "impl", "col": 5, "type": "database", "label": "全绿", "sublabel": "2 组例子独立红绿", "width": 110 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "card", "to": "rules", "label": "推演" },
+    { "id": "e2", "from": "rules", "to": "features", "label": "落成场景" },
+    { "id": "e3", "from": "features", "to": "pending", "label": "先红" },
+    { "id": "e4", "from": "pending", "to": "impl", "label": "逐条接线" },
+    { "id": "e5", "from": "impl", "to": "green", "label": "收敛" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "三色卡", "items": ["规则=卡纸 · 例子=便利贴", "疑问=红卡，当场澄清"] },
+    { "dot": "emerald", "title": "规则→场景映射", "items": ["每条规则 ≥2 个例子", "例子进 Examples 表"] },
+    { "dot": "rose", "title": "pending 语义", "items": ["黄=还没做", "红=做错了"] }
+  ]
+}

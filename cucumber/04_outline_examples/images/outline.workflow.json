@@ -1,0 +1,130 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "场景大纲：一套骨架 × N 组例子",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/04_outline_examples/images/outline.html"
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "源"
+    },
+    {
+      "id": "expand",
+      "label": "展开与执行"
+    },
+    {
+      "id": "sink",
+      "label": "产物"
+    }
+  ],
+  "mainPath": [
+    "outline",
+    "expand",
+    "run"
+  ],
+  "nodes": [
+    {
+      "id": "outline",
+      "lane": "source",
+      "col": 0,
+      "type": "frontend",
+      "label": "场景大纲",
+      "sublabel": "占位符 <用户名> 等",
+      "width": 130
+    },
+    {
+      "id": "examples",
+      "lane": "source",
+      "col": 1,
+      "type": "database",
+      "label": "例子表",
+      "sublabel": "4 组凭据",
+      "width": 120
+    },
+    {
+      "id": "expand",
+      "lane": "expand",
+      "col": 1,
+      "type": "backend",
+      "label": "纯文本替换",
+      "sublabel": "占位符逐组代入",
+      "width": 150
+    },
+    {
+      "id": "run",
+      "lane": "expand",
+      "col": 2,
+      "type": "external",
+      "label": "4 次执行",
+      "sublabel": "每组独立场景",
+      "width": 130
+    },
+    {
+      "id": "report",
+      "lane": "sink",
+      "col": 3,
+      "type": "database",
+      "label": "失败定位",
+      "sublabel": "报到具体组",
+      "width": 130
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "examples",
+      "to": "expand",
+      "label": "供数据"
+    },
+    {
+      "id": "e2",
+      "from": "outline",
+      "to": "expand",
+      "label": "骨架"
+    },
+    {
+      "id": "e3",
+      "from": "expand",
+      "to": "run",
+      "label": "逐组执行"
+    },
+    {
+      "id": "e4",
+      "from": "run",
+      "to": "report",
+      "label": "结果"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "纯文本替换",
+      "items": [
+        "占位符不加引号",
+        "代入值原样进入句子"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "{string} 要引号",
+      "items": [
+        "{string} 只匹配带引号文本",
+        "裸值用匿名参数 {}"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "方言关键字",
+      "items": [
+        "zh-CN 是场景大纲",
+        "不是场景模板（实测踩坑）"
+      ]
+    }
+  ]
+}

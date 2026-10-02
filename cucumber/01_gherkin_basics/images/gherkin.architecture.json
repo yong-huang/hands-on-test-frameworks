@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Gherkin 最小闭环：从业务句子到浏览器动作",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/01_gherkin_basics/images/gherkin.html"
+  },
+  "components": [
+    {
+      "id": "feature",
+      "type": "frontend",
+      "label": "login.feature",
+      "sublabel": "中文 Gherkin 3 场景",
+      "pos": [
+        120,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "parser",
+      "type": "backend",
+      "label": "Gherkin 解析",
+      "sublabel": "方言 zh-CN · 关键字匹配",
+      "pos": [
+        420,
+        140
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "steps",
+      "type": "frontend",
+      "label": "步骤层",
+      "sublabel": "句子 → 浏览器动作",
+      "pos": [
+        720,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "world",
+      "type": "messagebus",
+      "label": "World",
+      "sublabel": "每场景新 context/page",
+      "pos": [
+        420,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Chromium",
+      "sublabel": "locale: zh-CN",
+      "pos": [
+        720,
+        330
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "sut",
+      "type": "cloud",
+      "label": "pw-store :9101",
+      "sublabel": "脚本托管启停",
+      "pos": [
+        960,
+        140
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "cucumber 运行器",
+      "wraps": [
+        "feature",
+        "parser",
+        "steps",
+        "world"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "a",
+      "from": "feature",
+      "to": "parser",
+      "label": "解析为执行计划"
+    },
+    {
+      "id": "b",
+      "from": "parser",
+      "to": "steps",
+      "label": "句子匹配"
+    },
+    {
+      "id": "c",
+      "from": "steps",
+      "to": "browser",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "d",
+      "from": "world",
+      "to": "steps",
+      "label": "this 注入",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e",
+      "from": "world",
+      "to": "browser",
+      "label": "装备",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "f",
+      "from": "browser",
+      "to": "sut",
+      "label": "HTTP"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两套生命周期",
+      "items": [
+        "BeforeAll：浏览器一次",
+        "Before：context/page 每场景"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "静默失效",
+      "items": [
+        "关键字拼错 → 落入描述文本",
+        "场景照常通过，不测任何东西"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "SUT 脚本托管",
+      "items": [
+        "cucumber 无 webServer 概念",
+        "apply 起服务 · clean 杀进程"
+      ]
+    }
+  ]
+}

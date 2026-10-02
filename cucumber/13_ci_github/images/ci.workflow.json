@@ -1,0 +1,129 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "BDD 套件进 CI：act 本地校验与 GHA 执行位",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/cucumber/13_ci_github/images/ci.html"
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "源"
+    },
+    {
+      "id": "runner",
+      "label": "执行位"
+    },
+    {
+      "id": "artifacts",
+      "label": "产物"
+    }
+  ],
+  "mainPath": [
+    "yml",
+    "act"
+  ],
+  "nodes": [
+    {
+      "id": "yml",
+      "lane": "source",
+      "col": 0,
+      "type": "frontend",
+      "label": "bdd.yml",
+      "sublabel": "ACT 守卫三件",
+      "width": 130
+    },
+    {
+      "id": "act",
+      "lane": "runner",
+      "col": 1,
+      "type": "backend",
+      "label": "act 本地",
+      "sublabel": "bind + pull=false + 代理",
+      "width": 170
+    },
+    {
+      "id": "gha",
+      "lane": "runner",
+      "col": 2,
+      "type": "cloud",
+      "label": "GitHub Actions",
+      "sublabel": "全量步骤（含 checkout）",
+      "width": 170
+    },
+    {
+      "id": "cucumber",
+      "lane": "runner",
+      "col": 3,
+      "type": "frontend",
+      "label": "BDD 冒烟 ×3",
+      "sublabel": "json 报告",
+      "width": 140
+    },
+    {
+      "id": "artifact",
+      "lane": "artifacts",
+      "col": 4,
+      "type": "database",
+      "label": "reports 归档",
+      "sublabel": "upload-artifact",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "yml",
+      "to": "act",
+      "label": "本地校验"
+    },
+    {
+      "id": "e2",
+      "from": "yml",
+      "to": "gha",
+      "label": "push 触发"
+    },
+    {
+      "id": "e3",
+      "from": "gha",
+      "to": "cucumber",
+      "label": "执行"
+    },
+    {
+      "id": "e4",
+      "from": "cucumber",
+      "to": "artifact",
+      "label": "json 归档"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ACT 守卫",
+      "items": [
+        "checkout / npm ci 跳过",
+        "upload-artifact 跳过（无网络）"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "SUT 脚本托管",
+      "items": [
+        "workflow 内 nohup 起服务",
+        "探活循环与本地一致"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "API 冒烟集",
+      "items": [
+        "无浏览器依赖，容器可跑",
+        "json 报告按次归档"
+      ]
+    }
+  ]
+}
