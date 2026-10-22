@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="cart">
+    <test name="cart-flow">
+        <classes>
+            <class name="dev.handson.appium.CartTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,210 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "目录与排序：滚动累计与价格断言",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/04_catalog/images/catalog-sort.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "验证主路径"
+    },
+    {
+      "id": "sortlane",
+      "label": "排序分支"
+    },
+    {
+      "id": "pricelane",
+      "label": "价格深潜"
+    }
+  ],
+  "phases": [
+    {
+      "id": "baseline",
+      "label": "累计基线",
+      "fromCol": 0,
+      "toCol": 2
+    },
+    {
+      "id": "sorting",
+      "label": "四种排序",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    },
+    {
+      "id": "extremes",
+      "label": "极值验证",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "catalog",
+    "scroll",
+    "assert-default",
+    "menu",
+    "price-sort",
+    "detail",
+    "assert-price"
+  ],
+  "nodes": [
+    {
+      "id": "catalog",
+      "lane": "main",
+      "col": 0,
+      "type": "frontend",
+      "label": "打开 Catalog",
+      "width": 150,
+      "sublabel": "25 件商品，首屏只见 6"
+    },
+    {
+      "id": "scroll",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "滚动累计",
+      "width": 150,
+      "sublabel": "mobile: scroll + LinkedHashSet"
+    },
+    {
+      "id": "assert-default",
+      "lane": "main",
+      "col": 2,
+      "type": "messagebus",
+      "label": "默认序断言",
+      "width": 150,
+      "sublabel": "总数 ≥ 20；全序 = 名称升序",
+      "tag": "到底判定：3 次无新增"
+    },
+    {
+      "id": "menu",
+      "lane": "sortlane",
+      "col": 3,
+      "type": "security",
+      "label": "Sort by: 菜单",
+      "width": 150,
+      "sublabel": "四个选项都是静态文本",
+      "tag": "图标无障碍标注缺失"
+    },
+    {
+      "id": "name-desc",
+      "lane": "sortlane",
+      "col": 4,
+      "type": "backend",
+      "label": "Name - Descending",
+      "width": 150,
+      "sublabel": "全序 = 默认顺序反转"
+    },
+    {
+      "id": "price-sort",
+      "lane": "pricelane",
+      "col": 4,
+      "type": "backend",
+      "label": "Price 升 / 降序",
+      "width": 150,
+      "sublabel": "先记下首尾商品名"
+    },
+    {
+      "id": "detail",
+      "lane": "pricelane",
+      "col": 5,
+      "type": "backend",
+      "label": "详情页读价",
+      "width": 150,
+      "sublabel": "Price 元素 \"$ 15.99\"",
+      "tag": "列表不暴露金额"
+    },
+    {
+      "id": "reset",
+      "lane": "sortlane",
+      "col": 5,
+      "type": "security",
+      "label": "Catalog tab 返回",
+      "width": 150,
+      "sublabel": "排序态重置为默认",
+      "tag": "离开列表即重置"
+    },
+    {
+      "id": "assert-price",
+      "lane": "main",
+      "col": 5,
+      "type": "messagebus",
+      "label": "极值断言",
+      "width": 150,
+      "sublabel": "同一批 25 件；极值价跨方向一致"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "catalog",
+      "to": "scroll",
+      "variant": "emphasis",
+      "label": "逐屏推进"
+    },
+    {
+      "id": "e2",
+      "from": "scroll",
+      "to": "assert-default",
+      "variant": "emphasis",
+      "label": "重建全序"
+    },
+    {
+      "id": "e3",
+      "from": "assert-default",
+      "to": "menu",
+      "variant": "default",
+      "label": "换排序"
+    },
+    {
+      "id": "e4",
+      "from": "menu",
+      "to": "name-desc",
+      "variant": "default"
+    },
+    {
+      "id": "e5",
+      "from": "menu",
+      "to": "price-sort",
+      "variant": "security",
+      "label": "金额不在列表"
+    },
+    {
+      "id": "e6",
+      "from": "price-sort",
+      "to": "detail",
+      "variant": "default",
+      "label": "按名字取价"
+    },
+    {
+      "id": "e7",
+      "from": "detail",
+      "to": "reset",
+      "variant": "dashed"
+    },
+    {
+      "id": "e8",
+      "from": "reset",
+      "to": "price-sort",
+      "variant": "dashed",
+      "label": "重新滚动定位"
+    },
+    {
+      "id": "e9",
+      "from": "detail",
+      "to": "assert-price",
+      "variant": "emphasis",
+      "label": "首尾价齐"
+    }
+  ]
+}

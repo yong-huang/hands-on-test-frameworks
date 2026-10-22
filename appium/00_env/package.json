@@ -1,0 +1,17 @@
+{
+  "name": "appium-ios-env",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Appium 3 + XCUITest driver for the appium/ learning line",
+  "scripts": {
+    "setup": "npm install --no-audit --no-fund && appium driver install xcuitest && appium driver doctor xcuitest",
+    "server": "appium server --port 4723 --base-path /wd/hub",
+    "doctor": "appium driver doctor xcuitest"
+  },
+  "dependencies": {
+    "appium": "3.8.0"
+  },
+  "devDependencies": {
+    "appium-xcuitest-driver": "^12.19.1"
+  }
+}

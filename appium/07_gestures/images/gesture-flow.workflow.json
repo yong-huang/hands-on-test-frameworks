@@ -1,0 +1,194 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "手势测试：画布签名、长按、swipe 与重置",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/07_gestures/images/gesture-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "canvas",
+      "label": "画布签名"
+    },
+    {
+      "id": "clearlane",
+      "label": "长按与清理"
+    },
+    {
+      "id": "menulane",
+      "label": "列表与重置"
+    }
+  ],
+  "phases": [
+    {
+      "id": "draw",
+      "label": "画布签名",
+      "fromCol": 0,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "longpress",
+      "label": "长按与清理",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "open",
+    "draw",
+    "assert",
+    "save",
+    "longpress",
+    "clear"
+  ],
+  "nodes": [
+    {
+      "id": "open",
+      "lane": "canvas",
+      "col": 0,
+      "type": "frontend",
+      "label": "打开 Drawing",
+      "width": 150,
+      "sublabel": "画布 visible 标志不可靠",
+      "tag": "等 presence"
+    },
+    {
+      "id": "draw",
+      "lane": "canvas",
+      "col": 1,
+      "type": "backend",
+      "label": "画折线 W3C Actions",
+      "width": 150,
+      "sublabel": "4 个画布内百分比坐标"
+    },
+    {
+      "id": "assert",
+      "lane": "canvas",
+      "col": 2,
+      "type": "messagebus",
+      "label": "像素差断言",
+      "width": 150,
+      "sublabel": "画布区域变化 11400 px"
+    },
+    {
+      "id": "save",
+      "lane": "canvas",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Save",
+      "width": 150,
+      "sublabel": "无可见反馈（实测）",
+      "tag": "需预授权照片权限"
+    },
+    {
+      "id": "longpress",
+      "lane": "clearlane",
+      "col": 4,
+      "type": "backend",
+      "label": "长按 1.2 秒",
+      "width": 150,
+      "sublabel": "按出墨点 38 px"
+    },
+    {
+      "id": "clear",
+      "lane": "clearlane",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Clear 复原",
+      "width": 150,
+      "sublabel": "残留差异 0 px"
+    },
+    {
+      "id": "swipe",
+      "lane": "menulane",
+      "col": 0,
+      "type": "backend",
+      "label": "swipe 目录列表",
+      "width": 150,
+      "sublabel": "相对坐标滑到末尾"
+    },
+    {
+      "id": "reset",
+      "lane": "menulane",
+      "col": 1,
+      "type": "security",
+      "label": "Reset App State",
+      "width": 150,
+      "sublabel": "确认框 RESET APP"
+    },
+    {
+      "id": "empty",
+      "lane": "menulane",
+      "col": 2,
+      "type": "messagebus",
+      "label": "购物车空态",
+      "width": 150,
+      "sublabel": "No Items 重新可见"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "open",
+      "to": "draw",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "draw",
+      "to": "assert",
+      "variant": "emphasis",
+      "label": "源码零变化"
+    },
+    {
+      "id": "e3",
+      "from": "assert",
+      "to": "save",
+      "variant": "default"
+    },
+    {
+      "id": "e4",
+      "from": "save",
+      "to": "longpress",
+      "variant": "default",
+      "label": "下一组手势"
+    },
+    {
+      "id": "e5",
+      "from": "longpress",
+      "to": "clear",
+      "variant": "emphasis",
+      "label": "墨点消失"
+    },
+    {
+      "id": "e6",
+      "from": "clear",
+      "to": "swipe",
+      "variant": "dashed",
+      "label": "换列表手势"
+    },
+    {
+      "id": "e7",
+      "from": "swipe",
+      "to": "reset",
+      "variant": "default",
+      "label": "最后一件可见"
+    },
+    {
+      "id": "e8",
+      "from": "reset",
+      "to": "empty",
+      "variant": "emphasis",
+      "label": "RESET APP"
+    }
+  ]
+}

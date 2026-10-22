@@ -1,0 +1,134 @@
+{
+ "schema_version": 1,
+ "diagram_type": "lifecycle",
+ "meta": {
+  "title": "登录与鉴权生命周期：从空表单到可重跑",
+  "locale": "zh-CN",
+  "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/03_login/images/login-lifecycle.html",
+  "viewBox": [
+   980,
+   566
+  ],
+  "animation": "trace",
+  "visual_preset": "signal-flow",
+  "quality_profile": "showcase"
+ },
+ "lanes": [
+  {
+   "id": "main",
+   "label": "登录主路径"
+  },
+  {
+   "id": "gate",
+   "label": "校验分支"
+  }
+ ],
+ "states": [
+  {
+   "id": "guest",
+   "type": "start",
+   "label": "未登录 Catalog",
+   "sublabel": "More → Login Button",
+   "lane": "main",
+   "col": 0,
+   "step": "01",
+   "tag": "guest"
+  },
+  {
+   "id": "form",
+   "type": "active",
+   "label": "Login Form",
+   "sublabel": "用户名 / 密码 / Login",
+   "lane": "main",
+   "col": 1,
+   "step": "02",
+   "tag": "input"
+  },
+  {
+   "id": "auth",
+   "type": "success",
+   "label": "已登录 Catalog",
+   "sublabel": "More → LogOut",
+   "lane": "main",
+   "col": 2,
+   "step": "03",
+   "tag": "success"
+  },
+  {
+   "id": "stale",
+   "type": "failure",
+   "label": "LogOut 后表单",
+   "sublabel": "登录态仍未清除",
+   "lane": "main",
+   "col": 3,
+   "step": "04",
+   "tag": "App bug"
+  },
+  {
+   "id": "reset",
+   "type": "success",
+   "label": "冷启动后未登录",
+   "sublabel": "Login Button 重新可见",
+   "lane": "main",
+   "col": 4,
+   "step": "05",
+   "tag": "clearApp"
+  },
+  {
+   "id": "validation",
+   "type": "decision",
+   "label": "Validation Error",
+   "sublabel": "Username / Password required",
+   "lane": "gate",
+   "col": 0,
+   "tag": "alert"
+  }
+ ],
+ "transitions": [
+  {
+   "id": "open-login",
+   "from": "guest",
+   "to": "form",
+   "variant": "emphasis",
+   "route": "straight",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "empty-submit",
+   "from": "form",
+   "to": "validation",
+   "variant": "security"
+  },
+  {
+   "id": "alert-back",
+   "from": "validation",
+   "to": "form",
+   "variant": "dashed"
+  },
+  {
+   "id": "login-submit",
+   "from": "form",
+   "to": "auth",
+   "variant": "emphasis",
+   "route": "straight",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "logout-stale",
+   "from": "auth",
+   "to": "stale",
+   "variant": "security",
+   "route": "straight",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "cold-reset",
+   "from": "stale",
+   "to": "reset",
+   "variant": "dashed"
+  }
+ ]
+}

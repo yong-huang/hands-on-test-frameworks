@@ -1,0 +1,189 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "加购链路：从商品详情到空态",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/05_cart/images/cart-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "detail",
+      "label": "商品详情页"
+    },
+    {
+      "id": "state",
+      "label": "状态与全局"
+    },
+    {
+      "id": "cartlane",
+      "label": "购物车页"
+    }
+  ],
+  "phases": [
+    {
+      "id": "adding",
+      "label": "加购",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify",
+      "label": "入车校验",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "mutate",
+      "label": "改动与清空",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "detail",
+    "add",
+    "badge",
+    "cart-open",
+    "total",
+    "stepper",
+    "remove",
+    "empty"
+  ],
+  "nodes": [
+    {
+      "id": "detail",
+      "lane": "detail",
+      "col": 0,
+      "type": "frontend",
+      "label": "打开商品详情",
+      "width": 150,
+      "sublabel": "Sauce Labs Backpack - Black"
+    },
+    {
+      "id": "add",
+      "lane": "detail",
+      "col": 1,
+      "type": "backend",
+      "label": "AddToCart",
+      "width": 150,
+      "sublabel": "先把 Amount 调到 2",
+      "tag": "角标统计总件数"
+    },
+    {
+      "id": "badge",
+      "lane": "state",
+      "col": 2,
+      "type": "security",
+      "label": "角标 = 总件数",
+      "width": 150,
+      "sublabel": "visible=false 的数字文本",
+      "tag": "presence 断言"
+    },
+    {
+      "id": "cart-open",
+      "lane": "cartlane",
+      "col": 2,
+      "type": "frontend",
+      "label": "进入 My Cart",
+      "width": 150,
+      "sublabel": "Cart-tab-item"
+    },
+    {
+      "id": "total",
+      "lane": "cartlane",
+      "col": 3,
+      "type": "messagebus",
+      "label": "总价 = 单价 × 数量",
+      "width": 150,
+      "sublabel": "\"$29.99\" 无空格格式",
+      "tag": "BigDecimal 清洗"
+    },
+    {
+      "id": "stepper",
+      "lane": "cartlane",
+      "col": 4,
+      "type": "backend",
+      "label": "数量 +1 / -1",
+      "width": 150,
+      "sublabel": "等 \"N Items\" 变化再读总价"
+    },
+    {
+      "id": "remove",
+      "lane": "state",
+      "col": 4,
+      "type": "security",
+      "label": "Remove Item",
+      "width": 150,
+      "sublabel": "删除行内商品"
+    },
+    {
+      "id": "empty",
+      "lane": "cartlane",
+      "col": 5,
+      "type": "messagebus",
+      "label": "No Items 空态",
+      "width": 150,
+      "sublabel": "isDisplayed 为真才算空"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "detail",
+      "to": "add",
+      "variant": "emphasis",
+      "label": "读单价"
+    },
+    {
+      "id": "e2",
+      "from": "add",
+      "to": "badge",
+      "variant": "emphasis",
+      "label": "加购后变化"
+    },
+    {
+      "id": "e3",
+      "from": "badge",
+      "to": "cart-open",
+      "variant": "default",
+      "label": "切到购物车"
+    },
+    {
+      "id": "e4",
+      "from": "cart-open",
+      "to": "total",
+      "variant": "emphasis",
+      "label": "校验乘积"
+    },
+    {
+      "id": "e5",
+      "from": "total",
+      "to": "stepper",
+      "variant": "default",
+      "label": "改数量"
+    },
+    {
+      "id": "e6",
+      "from": "stepper",
+      "to": "remove",
+      "variant": "dashed",
+      "label": "验证完同步"
+    },
+    {
+      "id": "e7",
+      "from": "remove",
+      "to": "empty",
+      "variant": "emphasis",
+      "label": "回到空态"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="appium-ios-locators" verbose="1">
+    <test name="locator-strategies">
+        <classes>
+            <class name="dev.handson.appium.LocatorStrategyTest"/>
+        </classes>
+    </test>
+</suite>

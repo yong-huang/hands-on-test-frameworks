@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "结算全流程：登录门、表单校验与下单",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/06_checkout/images/checkout-flow.html",
+    "viewBox": [
+      1210,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "结算主路径"
+    },
+    {
+      "id": "validation",
+      "label": "负向校验"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entry",
+      "label": "入口",
+      "fromCol": 0,
+      "toCol": 0,
+      "variant": "emphasis"
+    },
+    {
+      "id": "forms",
+      "label": "两段表单",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "order",
+      "label": "复核与下单",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "gate",
+    "shipping",
+    "payment",
+    "review",
+    "complete"
+  ],
+  "nodes": [
+    {
+      "id": "gate",
+      "lane": "main",
+      "col": 0,
+      "type": "security",
+      "label": "登录门（条件）",
+      "width": 150,
+      "sublabel": "$29.99 → Proceed",
+      "tag": "登录态跨 clearApp 残留"
+    },
+    {
+      "id": "shipping",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "地址表单",
+      "width": 150,
+      "sublabel": "5 个必填字段清空重填",
+      "tag": "预填值不被认账"
+    },
+    {
+      "id": "payment",
+      "lane": "main",
+      "col": 2,
+      "type": "backend",
+      "label": "支付表单",
+      "width": 150,
+      "sublabel": "卡号 / 有效期 / 安全码重填"
+    },
+    {
+      "id": "review",
+      "lane": "main",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Review Order",
+      "width": 150,
+      "sublabel": "$35.98 = $29.99 + $5.99 运费"
+    },
+    {
+      "id": "complete",
+      "lane": "main",
+      "col": 4,
+      "type": "frontend",
+      "label": "Checkout Complete",
+      "width": 150,
+      "sublabel": "Place Order 后到达"
+    },
+    {
+      "id": "name-alert",
+      "lane": "validation",
+      "col": 1,
+      "type": "security",
+      "label": "空姓名拦截",
+      "width": 150,
+      "sublabel": "地址步的校验 alert"
+    },
+    {
+      "id": "card-alert",
+      "lane": "validation",
+      "col": 2,
+      "type": "security",
+      "label": "空卡号拦截",
+      "width": 150,
+      "sublabel": "Review 步的校验 alert"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "gate",
+      "to": "shipping",
+      "variant": "emphasis",
+      "label": "穿过登录门"
+    },
+    {
+      "id": "e2",
+      "from": "shipping",
+      "to": "payment",
+      "variant": "emphasis",
+      "label": "To Payment"
+    },
+    {
+      "id": "e3",
+      "from": "shipping",
+      "to": "name-alert",
+      "variant": "dashed",
+      "label": "留空姓名"
+    },
+    {
+      "id": "e4",
+      "from": "payment",
+      "to": "review",
+      "variant": "emphasis",
+      "label": "Review Order"
+    },
+    {
+      "id": "e5",
+      "from": "payment",
+      "to": "card-alert",
+      "variant": "dashed",
+      "label": "留空卡号"
+    },
+    {
+      "id": "e6",
+      "from": "review",
+      "to": "complete",
+      "variant": "emphasis",
+      "label": "Place Order"
+    }
+  ]
+}

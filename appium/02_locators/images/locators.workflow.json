@@ -1,0 +1,193 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "iOS 定位策略：从 id 到 XPath 的优先级",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/02_locators/images/locators.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "UI 树"
+    },
+    {
+      "id": "strategy",
+      "label": "定位策略"
+    },
+    {
+      "id": "cost",
+      "label": "代价"
+    }
+  ],
+  "phases": [
+    {
+      "id": "first",
+      "label": "首选",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "fallback",
+      "label": "兜底",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "tree",
+    "aid",
+    "pred",
+    "chain",
+    "xpath"
+  ],
+  "nodes": [
+    {
+      "id": "tree",
+      "lane": "source",
+      "col": 0,
+      "type": "frontend",
+      "label": "XCUITest 元素树",
+      "width": 150,
+      "sublabel": "6 商品 + 1 角标"
+    },
+    {
+      "id": "aid",
+      "lane": "strategy",
+      "col": 1,
+      "type": "backend",
+      "label": "Accessibility ID",
+      "width": 150,
+      "sublabel": "Catalog-tab-item",
+      "tag": "唯一命中"
+    },
+    {
+      "id": "pred",
+      "lane": "strategy",
+      "col": 2,
+      "type": "backend",
+      "label": "Predicate",
+      "width": 150,
+      "sublabel": "label / name 条件",
+      "tag": "条件收窄"
+    },
+    {
+      "id": "chain",
+      "lane": "strategy",
+      "col": 3,
+      "type": "security",
+      "label": "Class Chain",
+      "width": 150,
+      "sublabel": "层级 + 索引",
+      "tag": "索引脆弱"
+    },
+    {
+      "id": "xpath",
+      "lane": "strategy",
+      "col": 4,
+      "type": "external",
+      "label": "XPath",
+      "width": 150,
+      "sublabel": "遍历整棵树",
+      "tag": "最后手段"
+    },
+    {
+      "id": "cost-id",
+      "lane": "cost",
+      "col": 1,
+      "type": "messagebus",
+      "label": "快且稳",
+      "width": 130,
+      "sublabel": "改版通常不动"
+    },
+    {
+      "id": "cost-pred",
+      "lane": "cost",
+      "col": 2,
+      "type": "messagebus",
+      "label": "可读性最好",
+      "width": 130,
+      "sublabel": "条件可组合"
+    },
+    {
+      "id": "cost-chain",
+      "lane": "cost",
+      "col": 3,
+      "type": "messagebus",
+      "label": "快但看层级",
+      "width": 130,
+      "sublabel": "索引易失效"
+    },
+    {
+      "id": "cost-xpath",
+      "lane": "cost",
+      "col": 4,
+      "type": "messagebus",
+      "label": "最慢最脆",
+      "width": 130,
+      "sublabel": "只在无路可走时"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "tree",
+      "to": "aid",
+      "variant": "emphasis",
+      "label": "先查 id"
+    },
+    {
+      "id": "e2",
+      "from": "aid",
+      "to": "pred",
+      "variant": "default",
+      "label": "不唯一 / 需条件"
+    },
+    {
+      "id": "e3",
+      "from": "pred",
+      "to": "chain",
+      "variant": "default",
+      "label": "需要层级"
+    },
+    {
+      "id": "e4",
+      "from": "chain",
+      "to": "xpath",
+      "variant": "dashed",
+      "label": "最后才用"
+    },
+    {
+      "id": "c1",
+      "from": "aid",
+      "to": "cost-id",
+      "variant": "dashed"
+    },
+    {
+      "id": "c2",
+      "from": "pred",
+      "to": "cost-pred",
+      "variant": "dashed"
+    },
+    {
+      "id": "c3",
+      "from": "chain",
+      "to": "cost-chain",
+      "variant": "dashed"
+    },
+    {
+      "id": "c4",
+      "from": "xpath",
+      "to": "cost-xpath",
+      "variant": "dashed"
+    }
+  ]
+}
