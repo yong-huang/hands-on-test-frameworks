@@ -21,12 +21,15 @@ do_observe() {
     # 首跑会拉起容器（约 5-15s），结束后自动销毁
     $PY -m pytest $INI -q
 
-    step "observe" "② 证明容器已自动销毁：测试结束后查不到 postgres 容器"
+    step "observe" "② 证明容器已自动销毁：测试结束后查不到 testcontainers 容器"
     sleep 2
-    if docker ps --format '{{.Image}}' | grep -q postgres; then
-        echo "⚠️ 仍有 postgres 容器在运行（残留！）："; docker ps | grep postgres
+    # 只查 testcontainers 打的标签（org.testcontainers=true）——机器上其他项目的
+    # postgres 容器（如 docker compose 起的长驻库）与本实验无关，不应误报为残留
+    if docker ps --filter 'label=org.testcontainers=true' --format '{{.ID}}' | grep -q .; then
+        echo "⚠️ 仍有 testcontainers 容器在运行（残留！）："
+        docker ps --filter 'label=org.testcontainers=true'
     else
-        echo "✅ 无 postgres 容器残留——随测试会话自动销毁"
+        echo "✅ 无 testcontainers 容器残留——随测试会话自动销毁"
     fi
 
     step "observe" "③ 生成与 SQLite 的差异记录 docs/differences.md"

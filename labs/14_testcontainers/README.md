@@ -61,10 +61,23 @@ cd labs/14_testcontainers
 cat docs/differences.md    # 与 SQLite 的 4 条实测差异
 ```
 
-预期行为（本机 Docker 未启动，无法提供实时输出；以下为实验设计的确定性流程）：
-脚本先起 session 级容器（4 条用例共享一个实例，实验作者实测全套约 3 秒），
-跑 CRUD（增删改查）回归与 3 条差异实测用例，最后验证 `docker ps` 无残留容器。
-Docker 环境就绪时应全部通过。
+真实输出（2026-10-21 实测，节选）：
+
+```
+=====> [observe] ① 起 Postgres 容器跑全套（容器由 testcontainers 自动起停）
+============================= test session starts ==============================
+platform darwin -- Python 3.13.9, pytest-9.1.1, pluggy-1.6.0
+...（插件列表与 asyncio 配置行省略）
+tests/test_postgres.py ....                                              [100%]
+============================== 4 passed in 2.53s ===============================
+
+=====> [observe] ② 证明容器已自动销毁：测试结束后查不到 testcontainers 容器
+✅ 无 testcontainers 容器残留——随测试会话自动销毁
+```
+
+脚本先起 session 级容器（4 条用例共享一个实例），跑 CRUD（增删改查）回归与
+3 条差异实测用例，最后按 `org.testcontainers` 标签验证容器已随会话销毁——
+机器上其他项目的 postgres 容器（如 compose 起的长驻库）不会被误报为残留。
 
 与 SQLite 的 4 条实测差异（`docs/differences.md`，实验作者真机跑出，每条都有
 对应用例，非抄文档）：

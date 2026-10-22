@@ -43,6 +43,7 @@ do_observe() {
     # 预起共享 SUT（4 个分片同时起跑时会撞端口，服务必须先在位）
     lsof -ti ":${PORT}" 2>/dev/null | xargs kill 2>/dev/null || true
     nohup node "$SUT/server.mjs" </dev/null > /dev/null 2>&1 &
+    disown $! 2>/dev/null || true   # 脱离作业表：clean 杀它时 bash 不会报 Terminated
     SUT_ENV_PORT=${PORT}
     for i in $(seq 1 40); do
         curl -sf -m 2 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && break

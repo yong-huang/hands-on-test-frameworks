@@ -31,6 +31,7 @@ do_observe() {
     step "observe" "② 宿主机直跑 BDD 冒烟集（API 层 3 条）"
     lsof -ti :9115 2>/dev/null | xargs kill 2>/dev/null || true
     PORT=9115 nohup node ../../playwright/02_pw_sut/server.mjs </dev/null > /dev/null 2>&1 &
+    disown $! 2>/dev/null || true   # 脱离作业表：39 行杀它时 bash 不会报 Terminated
     for i in $(seq 1 40); do
         curl -sf http://127.0.0.1:9115/api/health >/dev/null 2>&1 && break
         sleep 0.25
