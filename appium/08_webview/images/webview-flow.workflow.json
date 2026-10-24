@@ -1,0 +1,153 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "WebView 实验：加载、context 轮询与降级断言",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/08_webview/images/webview-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "主路径"
+    },
+    {
+      "id": "fallbacklane",
+      "label": "降级分支"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entry",
+      "label": "入口与加载",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "polling",
+      "label": "context 轮询",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "verify",
+      "label": "断言与返回",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "menu",
+    "load",
+    "poll",
+    "switch",
+    "content"
+  ],
+  "nodes": [
+    {
+      "id": "menu",
+      "lane": "main",
+      "col": 0,
+      "type": "frontend",
+      "label": "Webview 菜单",
+      "width": 150,
+      "sublabel": "默认 URL website.com 不可达"
+    },
+    {
+      "id": "load",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "填本地 URL 加载",
+      "width": 150,
+      "sublabel": "127.0.0.1:8923 静态页"
+    },
+    {
+      "id": "poll",
+      "lane": "main",
+      "col": 2,
+      "type": "security",
+      "label": "轮询 WEBVIEW context",
+      "width": 150,
+      "sublabel": "webviewConnectTimeout 30s",
+      "tag": "每秒读 getContextHandles"
+    },
+    {
+      "id": "switch",
+      "lane": "main",
+      "col": 3,
+      "type": "backend",
+      "label": "切换 context",
+      "width": 150,
+      "sublabel": "断言 title = WebView Demo"
+    },
+    {
+      "id": "fallback",
+      "lane": "fallbacklane",
+      "col": 3,
+      "type": "security",
+      "label": "native fallback",
+      "width": 150,
+      "sublabel": "该构建未开 inspectable"
+    },
+    {
+      "id": "content",
+      "lane": "main",
+      "col": 4,
+      "type": "messagebus",
+      "label": "断言并返回 Catalog",
+      "width": 150,
+      "sublabel": "Hello WebView 可见"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "menu",
+      "to": "load",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "load",
+      "to": "poll",
+      "variant": "emphasis",
+      "label": "Go To Site"
+    },
+    {
+      "id": "e3",
+      "from": "poll",
+      "to": "switch",
+      "variant": "emphasis",
+      "label": "拿到 WEBVIEW"
+    },
+    {
+      "id": "e4",
+      "from": "poll",
+      "to": "fallback",
+      "variant": "dashed",
+      "label": "30s 超时"
+    },
+    {
+      "id": "e5",
+      "from": "switch",
+      "to": "content",
+      "variant": "default"
+    },
+    {
+      "id": "e6",
+      "from": "fallback",
+      "to": "content",
+      "variant": "dashed",
+      "label": "同一断言收尾"
+    }
+  ]
+}

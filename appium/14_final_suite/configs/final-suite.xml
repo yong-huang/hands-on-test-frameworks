@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="final-regression" parallel="tests" thread-count="2">
+    <listeners>
+        <listener class-name="dev.handson.appium.RetryTransformer"/>
+    </listeners>
+    <parameter name="appium.url" value="http://127.0.0.1:4723/wd/hub"/>
+    <parameter name="bundle.id" value="com.saucelabs.mydemo.app.ios"/>
+
+    <test name="smoke" thread-count="1">
+        <parameter name="device.udid" value="137A9ECA-508D-4B98-BCE1-18B96C09EE0D"/>
+        <parameter name="device.name" value="iPhone 17"/>
+        <parameter name="wda.localPort" value="8100"/>
+        <parameter name="derived.dataPath" value="/Users/hyhit/appium-wda/device1"/>
+        <classes>
+            <class name="dev.handson.appium.smoke.SmokeTest"/>
+        </classes>
+    </test>
+
+    <test name="regression" thread-count="1">
+        <parameter name="device.udid" value="5DBEB73E-2CD2-4F57-9A9D-6BD5718E146F"/>
+        <parameter name="device.name" value="iPhone 17 · 2"/>
+        <parameter name="wda.localPort" value="8101"/>
+        <parameter name="derived.dataPath" value="/Users/hyhit/appium-wda/device2"/>
+        <packages>
+            <package name="dev.handson.appium.regression"/>
+        </packages>
+    </test>
+</suite>

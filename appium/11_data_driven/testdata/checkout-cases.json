@@ -1,0 +1,62 @@
+[
+  {
+    "caseName": "英国标准地址",
+    "fullName": "Rebecca Winter",
+    "address": "Mandorley 112",
+    "city": "Truro",
+    "zip": "89750",
+    "country": "United Kingdom",
+    "cardName": "Maxim Winter",
+    "cardNumber": "3258 1265 7568 7896",
+    "expiry": "03/25",
+    "securityCode": "123"
+  },
+  {
+    "caseName": "美国西海岸",
+    "fullName": "Alice Johnson",
+    "address": "1 Market Street",
+    "city": "San Francisco",
+    "zip": "94105",
+    "country": "United States",
+    "cardName": "Alice Johnson",
+    "cardNumber": "4111 1111 1111 1111",
+    "expiry": "11/26",
+    "securityCode": "456"
+  },
+  {
+    "caseName": "中国地址",
+    "fullName": "李雷",
+    "address": "中关村大街 1 号",
+    "city": "北京",
+    "zip": "100000",
+    "country": "China",
+    "cardName": "Han Meimei",
+    "cardNumber": "5200 8268 6829 3802",
+    "expiry": "08/27",
+    "securityCode": "789"
+  },
+  {
+    "caseName": "德国长地名",
+    "fullName": "Klara Musterfrau",
+    "address": "Am Nordhafen 42",
+    "city": "Frankfurt am Main",
+    "zip": "60311",
+    "country": "Germany",
+    "cardName": "Klara Musterfrau",
+    "cardNumber": "5555 4444 3333 2222",
+    "expiry": "01/28",
+    "securityCode": "321"
+  },
+  {
+    "caseName": "日本短字段",
+    "fullName": "Yamada Taro",
+    "address": "Shibuya 2-11-21",
+    "city": "Tokyo",
+    "zip": "150-0002",
+    "country": "Japan",
+    "cardName": "Yamada Taro",
+    "cardNumber": "3566 0020 2036 0505",
+    "expiry": "05/29",
+    "securityCode": "654"
+  }
+]

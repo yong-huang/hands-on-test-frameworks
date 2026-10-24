@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Face ID 模拟登录：开关、登记与匹配",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/09_biometrics/images/biometric-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "登录主路径"
+    },
+    {
+      "id": "fail",
+      "label": "匹配失败分支"
+    }
+  ],
+  "phases": [
+    {
+      "id": "prepare",
+      "label": "准备与登记",
+      "fromCol": 0,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "match",
+      "label": "系统匹配",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "toggle",
+    "login",
+    "enroll",
+    "prompt",
+    "match-true"
+  ],
+  "nodes": [
+    {
+      "id": "toggle",
+      "lane": "main",
+      "col": 0,
+      "type": "backend",
+      "label": "Biometrics 页开开关",
+      "width": 150,
+      "sublabel": "图标按钮，名不变"
+    },
+    {
+      "id": "login",
+      "lane": "main",
+      "col": 1,
+      "type": "frontend",
+      "label": "Login 页 FaceId 按钮",
+      "width": 150,
+      "sublabel": "出现即开关生效"
+    },
+    {
+      "id": "enroll",
+      "lane": "main",
+      "col": 2,
+      "type": "backend",
+      "label": "enrollBiometric",
+      "width": 150,
+      "sublabel": "登记一次即可"
+    },
+    {
+      "id": "prompt",
+      "lane": "main",
+      "col": 3,
+      "type": "security",
+      "label": "系统人脸提示",
+      "width": 150,
+      "sublabel": "源码不可见，点不到",
+      "tag": "用 match 命令应答"
+    },
+    {
+      "id": "match-true",
+      "lane": "main",
+      "col": 4,
+      "type": "frontend",
+      "label": "match = true",
+      "width": 150,
+      "sublabel": "登录成功，进地址页"
+    },
+    {
+      "id": "match-false",
+      "lane": "fail",
+      "col": 4,
+      "type": "security",
+      "label": "match = false",
+      "width": 150,
+      "sublabel": "停留登录页；重试仍可登录"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "toggle",
+      "to": "login",
+      "variant": "emphasis",
+      "label": "开关生效"
+    },
+    {
+      "id": "e2",
+      "from": "login",
+      "to": "enroll",
+      "variant": "default"
+    },
+    {
+      "id": "e3",
+      "from": "enroll",
+      "to": "prompt",
+      "variant": "emphasis",
+      "label": "点 FaceId 按钮"
+    },
+    {
+      "id": "e4",
+      "from": "prompt",
+      "to": "match-true",
+      "variant": "emphasis",
+      "label": "match = true"
+    },
+    {
+      "id": "e5",
+      "from": "prompt",
+      "to": "match-false",
+      "variant": "dashed",
+      "label": "match = false"
+    }
+  ]
+}

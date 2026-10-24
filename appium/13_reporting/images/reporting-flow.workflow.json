@@ -1,0 +1,131 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "失败诊断链：录屏、失败采集与 Allure 报告",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/13_reporting/images/reporting-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "用例执行"
+    },
+    {
+      "id": "faillane",
+      "label": "失败证据采集"
+    }
+  ],
+  "phases": [
+    {
+      "id": "run",
+      "label": "用例执行",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "collect",
+      "label": "证据采集",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "report",
+      "label": "报告",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "start",
+    "exec",
+    "success",
+    "allure"
+  ],
+  "nodes": [
+    {
+      "id": "start",
+      "lane": "main",
+      "col": 0,
+      "type": "frontend",
+      "label": "用例开始",
+      "width": 190,
+      "sublabel": "onTestStart 启动录屏"
+    },
+    {
+      "id": "exec",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "执行用例",
+      "width": 190,
+      "sublabel": "断言对需求的判断"
+    },
+    {
+      "id": "success",
+      "lane": "main",
+      "col": 2,
+      "type": "messagebus",
+      "label": "通过：停录即弃",
+      "width": 190,
+      "sublabel": "成功用例零附件"
+    },
+    {
+      "id": "evidence",
+      "lane": "faillane",
+      "col": 2,
+      "type": "security",
+      "label": "失败：四类证据",
+      "width": 190,
+      "sublabel": "截图 · page source · syslog · 录屏"
+    },
+    {
+      "id": "allure",
+      "lane": "main",
+      "col": 3,
+      "type": "frontend",
+      "label": "Allure 报告",
+      "width": 190,
+      "sublabel": "allure serve 查看证据链"
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "exec",
+      "variant": "emphasis"
+    },
+    {
+      "from": "exec",
+      "to": "success",
+      "variant": "default",
+      "label": "断言通过"
+    },
+    {
+      "from": "exec",
+      "to": "evidence",
+      "variant": "dashed",
+      "label": "断言失败"
+    },
+    {
+      "from": "evidence",
+      "to": "allure",
+      "variant": "emphasis",
+      "label": "证据挂进用例"
+    },
+    {
+      "from": "success",
+      "to": "allure",
+      "variant": "default",
+      "label": "结果入报告"
+    }
+  ]
+}

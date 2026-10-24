@@ -1,0 +1,163 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "终极回归套件：双模拟器并行与连跑统计",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/14_final_suite/images/final-suite.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "测试层与归档"
+    },
+    {
+      "id": "sim2lane",
+      "label": "模拟器 2 · regression"
+    }
+  ],
+  "phases": [
+    {
+      "id": "setup",
+      "label": "准备",
+      "fromCol": 0,
+      "toCol": 0,
+      "variant": "emphasis"
+    },
+    {
+      "id": "parallel",
+      "label": "双机并行执行",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "stats",
+      "label": "重试与统计",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "setup",
+    "smokerun",
+    "flownote",
+    "archive",
+    "summary"
+  ],
+  "nodes": [
+    {
+      "id": "setup",
+      "lane": "main",
+      "col": 0,
+      "type": "frontend",
+      "label": "run_suite.sh",
+      "width": 150,
+      "sublabel": "双机启动 · 装应用"
+    },
+    {
+      "id": "smokerun",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "smoke 8 条",
+      "width": 150,
+      "sublabel": "登录 · 目录 · 角标 · 重置"
+    },
+    {
+      "id": "flownote",
+      "lane": "main",
+      "col": 2,
+      "type": "messagebus",
+      "label": "RetryAnalyzer",
+      "width": 150,
+      "sublabel": "失败自动重试 1 次"
+    },
+    {
+      "id": "archive",
+      "lane": "main",
+      "col": 3,
+      "type": "database",
+      "label": "归档 run-N",
+      "width": 150,
+      "sublabel": "每轮报告归档"
+    },
+    {
+      "id": "summary",
+      "lane": "main",
+      "col": 4,
+      "type": "frontend",
+      "label": "连跑统计",
+      "width": 150,
+      "sublabel": "总用例 · 通过率 · flaky 率"
+    },
+    {
+      "id": "regrun",
+      "lane": "sim2lane",
+      "col": 2,
+      "type": "backend",
+      "label": "regression 21 条",
+      "width": 150,
+      "sublabel": "专项 · 数据驱动"
+    },
+    {
+      "id": "wda",
+      "lane": "sim2lane",
+      "col": 1,
+      "type": "security",
+      "label": "资源隔离",
+      "width": 150,
+      "sublabel": "独立端口与构建"
+    }
+  ],
+  "edges": [
+    {
+      "from": "setup",
+      "to": "smokerun",
+      "variant": "emphasis",
+      "label": "设备 1"
+    },
+    {
+      "from": "setup",
+      "to": "wda",
+      "variant": "default",
+      "label": "设备 2"
+    },
+    {
+      "from": "wda",
+      "to": "regrun",
+      "variant": "emphasis",
+      "label": "并行启动"
+    },
+    {
+      "from": "smokerun",
+      "to": "flownote",
+      "variant": "default",
+      "label": "偶发失败"
+    },
+    {
+      "from": "flownote",
+      "to": "archive",
+      "variant": "emphasis",
+      "label": "重试后归档"
+    },
+    {
+      "from": "regrun",
+      "to": "archive",
+      "variant": "default",
+      "label": "报告归档"
+    },
+    {
+      "from": "archive",
+      "to": "summary",
+      "variant": "emphasis",
+      "label": "N 轮累加"
+    }
+  ]
+}

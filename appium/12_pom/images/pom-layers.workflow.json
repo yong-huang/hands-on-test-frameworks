@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "POM 分层：测试断言、Flow 编排、Page 定位",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/12_pom/images/pom-layers.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "测试层"
+    },
+    {
+      "id": "flowlane",
+      "label": "Flow 编排层"
+    },
+    {
+      "id": "pagelane",
+      "label": "页面对象层"
+    }
+  ],
+  "phases": [
+    {
+      "id": "assert",
+      "label": "业务断言",
+      "fromCol": 0,
+      "toCol": 0,
+      "variant": "emphasis"
+    },
+    {
+      "id": "orchestrate",
+      "label": "流程编排",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "locate",
+      "label": "定位与动作",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "tests",
+    "pflow",
+    "checkout"
+  ],
+  "nodes": [
+    {
+      "id": "tests",
+      "lane": "main",
+      "col": 0,
+      "type": "frontend",
+      "label": "POM 核心 6 用例",
+      "width": 170,
+      "sublabel": "业务断言 · 零 findElement"
+    },
+    {
+      "id": "pflow",
+      "lane": "flowlane",
+      "col": 1,
+      "type": "backend",
+      "label": "PurchaseFlow",
+      "width": 170,
+      "sublabel": "登录门 · 结算编排 · 步骤日志"
+    },
+    {
+      "id": "checkout",
+      "lane": "pagelane",
+      "col": 2,
+      "type": "backend",
+      "label": "CheckoutPage",
+      "width": 150,
+      "sublabel": "地址 · 支付 · 下单"
+    },
+    {
+      "id": "cart",
+      "lane": "pagelane",
+      "col": 3,
+      "type": "backend",
+      "label": "ProductPage",
+      "width": 150,
+      "sublabel": "详情 · 购物车 · 角标"
+    },
+    {
+      "id": "catalog",
+      "lane": "pagelane",
+      "col": 4,
+      "type": "backend",
+      "label": "CatalogPage",
+      "width": 150,
+      "sublabel": "滚动累计 · 排序"
+    },
+    {
+      "id": "login",
+      "lane": "pagelane",
+      "col": 5,
+      "type": "backend",
+      "label": "LoginPage",
+      "width": 150,
+      "sublabel": "建议自动填充登录"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "tests",
+      "to": "pflow",
+      "variant": "emphasis",
+      "label": "结算用例调用"
+    },
+    {
+      "id": "e2",
+      "from": "pflow",
+      "to": "checkout",
+      "variant": "emphasis",
+      "label": "编排页面动作"
+    },
+    {
+      "id": "e3",
+      "from": "tests",
+      "to": "cart",
+      "variant": "dashed",
+      "label": "直调 Page"
+    },
+    {
+      "id": "e4",
+      "from": "tests",
+      "to": "catalog",
+      "variant": "dashed",
+      "label": "直调 Page"
+    },
+    {
+      "id": "e5",
+      "from": "tests",
+      "to": "login",
+      "variant": "dashed",
+      "label": "直调 Page"
+    }
+  ]
+}

@@ -38,15 +38,15 @@
 
 ## 📊 总进度
 
-进度：██████████░░░░░░░░░░░░░░ 7/14 (50%)
+进度：████████████████████████ 14/14 (100%)
 
 | 阶段 | 项目数 | 已完成 |
 |:---|:---:|:---:|
 | 第一阶段：环境与定位 | 2 | 2 |
 | 第二阶段：核心交易链路 | 4 | 4 |
-| 第三阶段：移动专项能力 | 4 | 1 |
-| 第四阶段：工程化与交付 | 4 | 0 |
-| **合计** | **14** | **7** |
+| 第三阶段：移动专项能力 | 4 | 4 |
+| 第四阶段：工程化与交付 | 4 | 4 |
+| **合计** | **14** | **14** |
 
 ---
 
@@ -195,7 +195,7 @@
 
 ---
 
-### [ ] 项目 8：WebView 混合应用（Context 切换）
+### [x] 项目 8：WebView 混合应用（Context 切换）
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -209,12 +209,12 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「WebView 混合应用」。请给我约 220 行 Java + TestNG 代码：从 Menu 进入 Webview，点击 Go To Site，轮询 getContextHandles 直到出现 WEBVIEW，切换后断言标题或 URL，再切回 NATIVE 并返回 Catalog；设置 webviewConnectTimeout，context 不出现时给出清晰失败信息。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：**该构建 WKWebView 未开 inspectable，WEBVIEW context 永不出现**（30 秒轮询只有 NATIVE_APP；模拟器级 `defaults write` 强制开启也无效；iOS 16.4+ 起 inspectable 是 App 侧代码 `webView.isInspectable = true` 的事）——触发规划的 fallback 条款：native 树断言 Web 内容（Web 文本以 StaticText 暴露），不假装切换成功；用例按"拿到 context 就切、拿不到走 fallback"双向设计，未来 App 开启 inspectable 自动升级。**默认 URL `https://www.website.com` 不可达**（广告停放域名，永远 Loading），`webview.sh apply` 起本机 8923 静态页（configs/webview-page.html）替代外网。**返回箭头 name/label 全 null 且 x/y 不能用于 NSPredicate**（实测谓词零命中），只能遍历按钮按 rect 左上角过滤。**返回菜单页时 URL 框自动聚焦弹键盘吞掉 tab 点击**，需二次返回到 More 页让焦点随导航离开。**离开 WebView 后可达性树短暂陈旧**（屏幕有 "Products" 源码没有），等 `Product Name` presence + 重切 tab 恢复。实际 Java 270 行（规划 ~220）。
 
 ---
 
-### [ ] 项目 9：生物识别与系统弹窗（Face ID 模拟）
+### [x] 项目 9：生物识别与系统弹窗（Face ID 模拟）
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -228,12 +228,12 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「生物识别与系统弹窗」。请给我约 240 行 Java + TestNG 代码：在 iOS Simulator 上先 enrollBiometric，再分别模拟 Face ID match=true/false，验证登录成功与失败；处理系统 alert，设置 autoAcceptAlerts；说明 applesimutils 只用于权限类能力。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：Biometrics 页的开关是图标按钮 `SwitchUnselected Icons`（不是 Switch 控件），**拨动后图标名实测不变**，开关状态的断言用功能信号——Login 页出现 `FaceId Icons` 按钮即生效。**系统人脸提示是系统级覆盖层**：不在应用源码、点不到，弹出期间应用"卡住"属正常，必须用 `sendBiometricMatch(type=faceId, match=bool)` 应答；match=true 登录成功后落到 "Enter a shipping address" 结算地址页（该 App 的登录表单就是结算登录门），match=false 无错误文案、唯一可观察结果是停留登录页。`autoAcceptAlerts(true)` 兜底权限类弹窗，Face ID 提示不归它管；applesimutils 本机未装，按规划跳过权限精细分支。`clearApp` 会清 Face ID 开关状态，每条用例需重新打开。实际 Java 199 行（规划 ~240）。
 
 ---
 
-### [ ] 项目 10：应用生命周期与状态恢复
+### [x] 项目 10：应用生命周期与状态恢复
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -247,8 +247,8 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「生命周期与状态恢复」。请给我约 220 行 Java + TestNG 代码：后台 5 秒再激活、terminate 后重新 launch、queryAppState 断言、Menu 里 Reset App State 清空购物车；说明该 App 无自定义 URL scheme，深链接只用 simctl openurl 演示。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：`backgroundApp` 带 duration 参数（`{"appId":..., "duration":5}`）实测是"后台 5 秒后**自动回前台**"——命令返回时 queryAppState 已是 4，要保持后台必须不带 duration 由测试自己 sleep。`queryAppState` 返回数字（前台 4 / 后台 3 / 终止后 1 / 未安装 0），Java 客户端返回 Object 需转 Number。**状态恢复是不对称的实测行为**：terminate 后重启购物车清空（未持久化，进程死亡即消失）但登录态保留（Keychain/UserDefaults 不随进程死亡丢失），断言按实际写并在消息里注明"实测行为"。RESET APP 确认后的 tab 栏粘滞状态（07 同款）用 terminate+launch 重启绕开。深链接：该 App 未注册自定义 URL scheme，`simctl openurl` 只开 Safari，仅 README 说明不做断言。实际 Java 235 行（规划 ~220）。**至此第三阶段收官：移动专项能力（手势/WebView/生物识别/生命周期）4/4 完成。**
 
 ---
 
@@ -256,7 +256,7 @@
 
 > **目标**：把前面 10 个项目的能力收进一套可维护、可诊断、可并行、能证明稳定的回归体系
 
-### [ ] 项目 11：数据驱动与测试数据隔离
+### [x] 项目 11：数据驱动与测试数据隔离
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -270,12 +270,12 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「数据驱动与隔离」。请给我约 200 行 Java + TestNG 代码：用 DataProvider 从 checkout-cases.json 读 5 组地址/支付数据，每组生成唯一收件人并跑完整结算；每例开始前重置 App 状态，保证顺序执行和失败重跑都不互相污染。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：直接复用 06 的 `flows/CheckoutFlow` 编排器（自包含拷贝到本工程），DataProvider 用 Jackson 读 `testdata/checkout-cases.json`（pom 新增 jackson-databind 2.17.2 test 依赖）。**唯一收件人是数据生效的关键断言**：姓名 + 毫秒后缀（36 进制）保证跨组不重名，Review 页源码含唯一姓名 = 本组数据确实被应用采用（原始姓名会跨组重复，残留场景下断言也绿）。每条数据前 BeforeMethod clearApp 强隔离。5 组数据含中国地址（"李雷" CJK sendKeys 直填正常）、德国长地名、日本短邮编（含连字符），全部跑通。实际 Java 362 行（BaseTest 82 + 测试 78 + 复用的 CheckoutFlow 234，新增 ~160）。
 
 ---
 
-### [ ] 项目 12：POM / 组件对象重构
+### [x] 项目 12：POM / 组件对象重构
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -289,12 +289,12 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「POM 重构」。请给我约 350 行 Java + TestNG 代码：把登录、目录、商品详情、购物车、结算抽成 Screen Object + Component Object + Flow；BasePage 统一显式等待和动作封装；业务断言保留在测试层；重构后 6 条核心用例全绿。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：分层结构落定为 pageobjects/BasePage（click/type/exists/isVisible + 三种等待）+ 4 个屏幕类（LoginPage/CatalogPage/ProductPage/CheckoutPage，其中 ProductPage 一个类管详情与购物车两个屏）+ flows/PurchaseFlow（登录门条件分支 + 结算编排 + 步骤日志）。**测试层零定位器**是硬验收：4 个 *PomTest 的 findElement 计数为 0，业务断言（角标=1、全序一致、到达完成页）全部留在测试层，Page 只提供事实查询方法。**visible 标志怪癖贯穿始终**："Remove Item" 同名按钮与 StaticText 并存（删除只点按钮类型、删到按钮消失）、购物车页需等 "My Cart" 标题可见再读源码（No Items 空态元素常驻源码，cartHasItems 按可见性判断而非源码包含）。BasePage 的"子类不直接碰 driver"最初写成绝对表述，被自己的代码推翻（滚动加载/Webview 演示必须直接用 driver），如实改为"以这些方法为主"。实际新增 ~500 行（规划 ~350）。
 
 ---
 
-### [ ] 项目 13：报告、截图与失败诊断（Allure）
+### [x] 项目 13：报告、截图与失败诊断（Allure）
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -308,12 +308,12 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「报告与失败诊断」。请给我约 220 行 Java + TestNG 代码：实现 ITestListener，用例失败时自动截图、保存 page source、附加 Appium 日志；接入 Allure 报告；给一条故意失败的演示用例和 allure serve 命令；成功用例不产生多余附件。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：**监听器注册顺序是头号坑**——Allure 处理失败时会关闭用例的结果上下文，DiagnosticListener 排在 AllureTestNg 之后的话附件全部掉进容器（container.json）而非用例，报告里看不到；解法是 pom 配置 `suiteXmlFiles` 指向 configs/testng.xml 并把 DiagnosticListener 放在 AllureTestNg 之前（**`mvn test` 默认不读测试文件里的 testng.xml**，不配 suiteXmlFiles 监听器完全失效，实测踩过）。`Allure.addAttachment` 没有 byte[] 重载，需包 ByteArrayInputStream。录屏按"失败才停才存"实现，成功用例零附件。Allure CLI 2.46.1 brew 安装。注意：`all` 命令末步 clean 会删 target/（报告与录屏），想看报告单独跑 observe。实际 Java ~260 行（规划 ~220）。
 
 ---
 
-### [ ] 项目 14：🏁 终极回归套件与本地流水线（双模拟器并行 + 10 连跑）
+### [x] 项目 14：🏁 终极回归套件与本地流水线（双模拟器并行 + 10 连跑）
 
 | 项目信息 | 详情 |
 |:---|:---|
@@ -327,8 +327,8 @@
 **🤖 开始提示词**：
 > `我要开始 Appium iOS 项目「终极回归套件」。请给我约 300 行 Java + TestNG + shell：TestNG suite 分 smoke/regression 两组，在两台 iPhone 模拟器上并行，每个 session 配唯一 wdaLocalPort 和 derivedDataPath；加 RetryAnalyzer 和 10 连跑统计脚本 run_suite.sh；输出总用例数、通过率、flaky 率。只输出代码。`
 
-**完成日期**：________
-**踩坑记录**：________
+**完成日期**：2026-10-23
+**踩坑记录**：**双模拟器并行必须资源隔离**——两个 session 各配独立 `wdaLocalPort`（8100/8101）与 `derivedDataPath`，共用会让 WDA 互相覆盖。第二台模拟器用 `simctl clone` 创建（连应用一起复制，比单独安装省事）。**reset 后 tab 栏粘滞**在并行负载下更明显：Cart tab 可见可点但点击被吞，openCart 用"重启回目录 + 重试"兜底；Reset 断言改用角标消失（避开导航雷区）。**10 连跑实测 292 条用例、291 通过、1 失败**——唯一失败是 run 8 的 smoke08（Reset 后粘滞导致 Cart 导航被吞，重试后仍失败），属间歇性环境问题而非 flaky（RetryAnalyzer 计数 0）；通过率 99.7%。**flaky 统计**：RetryAnalyzer 在首次失败与重试后通过时打"⚠️ flaky："标记，run_suite.sh 用 grep 统计标记数；注意 TestNG 只在失败时调 retry()，"静态计数器记重试后通过"的写法是不可达的死代码。实际新增 ~600 行（规划 ~300，含双机编排与统计脚本）。
 
 ---
 
@@ -346,11 +346,11 @@
 ## 🏆 里程碑
 
 - [x] **完成项目 1-2** → 能独立建立 iOS Appium 会话，并按优先级稳定定位元素
-- [ ] **完成项目 3-6** → 购物主链路自动化：登录 → 目录 → 加购 → 购物车 → 结算下单
-- [ ] **完成项目 7-10** → 移动专项能力：手势、WebView、Face ID、生命周期
-- [ ] **完成项目 11-12** → 套件工程化：数据驱动 + POM，可维护可扩展
-- [ ] **完成项目 13-14** → 一键回归 + 失败证据链 + 10 连跑稳定性证明
-- [ ] **全部完成** → 具备独立搭建 iOS Appium 回归体系的能力
+- [x] **完成项目 3-6** → 购物主链路自动化：登录 → 目录 → 加购 → 购物车 → 结算下单
+- [x] **完成项目 7-10** → 移动专项能力：手势、WebView、Face ID、生命周期
+- [x] **完成项目 11-12** → 套件工程化：数据驱动 + POM，可维护可扩展
+- [x] **完成项目 13-14** → 一键回归 + 失败证据链 + 10 连跑稳定性证明
+- [x] **全部完成** → 具备独立搭建 iOS Appium 回归体系的能力
 
 ## 🔧 环境配置
 
@@ -438,9 +438,9 @@ XCUITestOptions options = new XCUITestOptions()
 | App 安装/启动 | 项目 1 | ✅ `com.saucelabs.mydemo.app.ios` 安装并启动成功 |
 | Appium 3 + XCUITest 会话 | 项目 1 | ✅ session 创建成功，WDA 首次构建通过 |
 | page source / accessibility id | 项目 2 | ✅ 取到 `Catalog-tab-item` 等 75 个元素 |
-| Face ID 模拟 | 项目 9 | ⚠️ 待验证（`mobile: enrollBiometric` / `sendBiometricMatch`）|
-| WebView context 切换 | 项目 8 | ⚠️ 待验证（WKWebView 需 `webviewConnectTimeout`）|
-| 双模拟器并行 | 项目 14 | ⚠️ 待验证（需唯一 `wdaLocalPort` / `derivedDataPath`）|
+| Face ID 模拟 | 项目 9 | ✅ `enrollBiometric` + `sendBiometricMatch` true/false 双路径实测通过 |
+| WebView context 切换 | 项目 8 | ⚠️ 部分验证：本地页加载成功，但该构建 WKWebView 未开 inspectable，WEBVIEW context 不可切（native fallback 断言）|
+| 双模拟器并行 | 项目 14 | ✅ 10 连跑实测：292 条用例 291 通过（99.7%），1 条为 Reset 后粘滞的间歇失败 |
 | Android 双端 | 可选 | ⚠️ 本机 AVD `hvtest` 已存在，未纳入本清单验收 |
 | 真机 | 不在范围 | ❌ 需要签名/开发者账号与设备，本清单不涉及 |
 

@@ -1,0 +1,116 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "应用生命周期：状态迁移与 queryAppState",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/10_lifecycle/images/app-lifecycle.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "应用状态"
+    },
+    {
+      "id": "resetlane",
+      "label": "数据清理"
+    }
+  ],
+  "phases": [
+    {
+      "id": "lifecycle",
+      "label": "生命周期迁移",
+      "fromCol": 0,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "nr",
+    "fg",
+    "bg"
+  ],
+  "nodes": [
+    {
+      "id": "nr",
+      "lane": "main",
+      "col": 0,
+      "type": "security",
+      "label": "未运行",
+      "width": 150,
+      "sublabel": "queryAppState = 1",
+      "tag": "terminateApp 后"
+    },
+    {
+      "id": "fg",
+      "lane": "main",
+      "col": 2,
+      "type": "frontend",
+      "label": "前台",
+      "width": 150,
+      "sublabel": "queryAppState = 4"
+    },
+    {
+      "id": "bg",
+      "lane": "main",
+      "col": 4,
+      "type": "backend",
+      "label": "后台",
+      "width": 150,
+      "sublabel": "queryAppState = 3"
+    },
+    {
+      "id": "reset",
+      "lane": "resetlane",
+      "col": 2,
+      "type": "security",
+      "label": "Reset App State",
+      "width": 150,
+      "sublabel": "确认框后清空购物车"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "nr",
+      "to": "fg",
+      "variant": "emphasis",
+      "label": "launch / activate"
+    },
+    {
+      "id": "e2",
+      "from": "fg",
+      "to": "nr",
+      "variant": "security",
+      "label": "terminateApp"
+    },
+    {
+      "id": "e3",
+      "from": "fg",
+      "to": "bg",
+      "variant": "emphasis",
+      "label": "backgroundApp"
+    },
+    {
+      "id": "e4",
+      "from": "bg",
+      "to": "fg",
+      "variant": "default",
+      "label": "activateApp"
+    },
+    {
+      "id": "e5",
+      "from": "fg",
+      "to": "reset",
+      "variant": "dashed",
+      "label": "数据清空"
+    }
+  ]
+}

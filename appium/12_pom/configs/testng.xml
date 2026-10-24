@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="pom">
+    <test name="pom-core">
+        <classes>
+            <class name="dev.handson.appium.LoginPomTest"/>
+            <class name="dev.handson.appium.CatalogPomTest"/>
+            <class name="dev.handson.appium.CartPomTest"/>
+            <class name="dev.handson.appium.CheckoutPomTest"/>
+        </classes>
+    </test>
+</suite>

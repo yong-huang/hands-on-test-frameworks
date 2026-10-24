@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="reporting">
+    <listeners>
+        <!-- 顺序关键：DiagnosticListener 先于 Allure 处理失败，附件才能挂进用例 -->
+        <listener class-name="dev.handson.appium.diag.DiagnosticListener"/>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+    <test name="reporting-demo">
+        <classes>
+            <class name="dev.handson.appium.ReportingTest"/>
+        </classes>
+    </test>
+</suite>

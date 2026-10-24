@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "数据驱动结算：JSON 数据源到 5 次独立结算",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/appium/11_data_driven/images/data-driven-flow.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "数据管线"
+    },
+    {
+      "id": "isolane",
+      "label": "隔离手段"
+    }
+  ],
+  "phases": [
+    {
+      "id": "source",
+      "label": "数据源",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "pipeline",
+      "label": "结算管线",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "assert",
+      "label": "断言",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "json",
+    "provider",
+    "flow",
+    "review",
+    "complete"
+  ],
+  "nodes": [
+    {
+      "id": "json",
+      "lane": "main",
+      "col": 0,
+      "type": "database",
+      "label": "checkout-cases.json",
+      "width": 165,
+      "sublabel": "5 组地址与支付数据"
+    },
+    {
+      "id": "provider",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "DataProvider",
+      "width": 165,
+      "sublabel": "Jackson 解析 · 唯一收件人",
+      "tag": "姓名 + 毫秒后缀"
+    },
+    {
+      "id": "clearapp",
+      "lane": "isolane",
+      "col": 2,
+      "type": "security",
+      "label": "clearApp 重置",
+      "width": 165,
+      "sublabel": "每条数据前清空状态"
+    },
+    {
+      "id": "flow",
+      "lane": "main",
+      "col": 3,
+      "type": "backend",
+      "label": "CheckoutFlow",
+      "width": 165,
+      "sublabel": "加购 → 结算全流程",
+      "tag": "复用 06 编排器"
+    },
+    {
+      "id": "review",
+      "lane": "isolane",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Review 页核验",
+      "width": 165,
+      "sublabel": "源码含唯一姓名"
+    },
+    {
+      "id": "complete",
+      "lane": "main",
+      "col": 5,
+      "type": "frontend",
+      "label": "CheckoutComplete",
+      "width": 165,
+      "sublabel": "5 次运行 1 个方法"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "json",
+      "to": "provider",
+      "variant": "emphasis",
+      "label": "5 组用例"
+    },
+    {
+      "id": "e2",
+      "from": "provider",
+      "to": "flow",
+      "variant": "emphasis",
+      "label": "唯一收件人姓名"
+    },
+    {
+      "id": "e3",
+      "from": "flow",
+      "to": "review",
+      "variant": "default",
+      "label": "Review Order"
+    },
+    {
+      "id": "e4",
+      "from": "review",
+      "to": "complete",
+      "variant": "emphasis",
+      "label": "Place Order"
+    },
+    {
+      "id": "e5",
+      "from": "clearapp",
+      "to": "flow",
+      "variant": "dashed",
+      "label": "白纸起点"
+    }
+  ]
+}

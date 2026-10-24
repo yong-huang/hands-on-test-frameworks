@@ -59,9 +59,11 @@ start_appium() {
         return 0
     fi
     step "apply" "启动 Appium server（端口 ${APPIUM_PORT}）"
-    nohup "$APPIUM_BIN" server --port "$APPIUM_PORT" --base-path "$APPIUM_BASE_PATH" > "$LOG" 2>&1 &
-    echo $! > "$PIDFILE"
-    disown $! 2>/dev/null || true   # 脱离作业表：stop_appium 杀它时 bash 不会报 Terminated
+    # 脱管包装壳：appium 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env APPIUM_BIN="$APPIUM_BIN" APPIUM_PORT="$APPIUM_PORT" APPIUM_BASE_PATH="$APPIUM_BASE_PATH" \
+        LOG="$LOG" PIDFILE="$PIDFILE" \
+        bash -c 'trap "" TERM INT; "$APPIUM_BIN" server --port "$APPIUM_PORT" --base-path "$APPIUM_BASE_PATH" > "$LOG" 2>&1 & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null &
     for _ in $(seq 1 40); do
         if is_appium_up; then
             echo "  Appium 就绪：$APPIUM_URL"
