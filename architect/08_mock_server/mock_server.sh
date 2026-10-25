@@ -22,16 +22,28 @@ step() { echo; echo "=====> [$1] $2"; }
 
 start_bg() {  # nohup 脱管启动，pid 存 reports/
     local name="$1"; shift
-    nohup "$PY" mockserver.py "$@" </dev/null >>reports/servers.log 2>&1 &
-    echo $! > "reports/$name.pid"
-    disown 2>/dev/null || true
+    # 脱管包装壳：mockserver 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）。
+    # 但 SIG_IGN 处置会被后台子进程继承，python 从此无视 SIGTERM、清理静默失效——
+    # 所以内层子壳先 trap - 恢复默认处置再 exec（exec 后同 PID，pidfile 记的就是 python 自己）
+    nohup env PY="$PY" PIDFILE="$PWD/reports/$name.pid" \
+        bash -c 'trap "" TERM INT; ( trap - TERM INT; exec "$PY" mockserver.py "$@" ) </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' mockserver "$@" \
+        </dev/null >>reports/servers.log 2>&1 &
+}
+
+kill_port() {  # TERM 优雅杀 → 仍占则 KILL 兜底 → 端口空闲（防残留实例接答）
+    local pids
+    pids=$(lsof -ti ":$1" 2>/dev/null) || true
+    [ -n "$pids" ] && kill $pids 2>/dev/null || true
+    sleep 0.5
+    pids=$(lsof -ti ":$1" 2>/dev/null) || true
+    [ -n "$pids" ] && kill -9 $pids 2>/dev/null || true
+    sleep 0.2
 }
 
 do_apply() {
     step "apply" "① 清场（含上次中断的残留端口）+ 起假第三方网关(:$UP)与录制模式挡板(:$MOCK)"
-    lsof -ti ":$UP" 2>/dev/null | xargs kill 2>/dev/null || true
-    lsof -ti ":$MOCK" 2>/dev/null | xargs kill 2>/dev/null || true
-    sleep 0.3
+    for f in reports/*.pid; do [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null || true; done
+    kill_port "$UP"; kill_port "$MOCK"
     mkdir -p reports
     rm -f reports/cassette.json reports/mock_stats.json reports/*.pid
     start_bg upstream upstream --port "$UP"
@@ -78,10 +90,11 @@ EOF
 do_clean() {
     step "clean" "杀服务、删磁带与产物——环境回到实验前状态"
     for f in reports/*.pid; do [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null || true; done
-    lsof -ti ":$UP" 2>/dev/null | xargs kill 2>/dev/null || true
-    lsof -ti ":$MOCK" 2>/dev/null | xargs kill 2>/dev/null || true
+    kill_port "$UP"; kill_port "$MOCK"
     rm -rf reports __pycache__
-    echo "已清理"
+    lsof -ti ":$UP" >/dev/null 2>&1 && { echo "❌ 端口 $UP 仍被占用"; exit 1; }
+    lsof -ti ":$MOCK" >/dev/null 2>&1 && { echo "❌ 端口 $MOCK 仍被占用"; exit 1; }
+    echo "已清理（端口 $UP/$MOCK 确认空闲）"
 }
 
 main() {

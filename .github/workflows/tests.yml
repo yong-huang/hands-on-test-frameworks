@@ -42,7 +42,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: labs/12 API 套件
         run: |
-          pip install pytest httpx fastapi "uvicorn[standard]"
+          pip install pytest pytest-xdist httpx fastapi "uvicorn[standard]"
           cd labs/12_api_tests && ./api_tests.sh
 
   # ---------- 第 3 层：E2E（Playwright Chromium） ----------

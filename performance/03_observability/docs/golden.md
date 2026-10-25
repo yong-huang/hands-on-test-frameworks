@@ -1,19 +1,19 @@
 # 03 · 黄金信号观测报告
 
-- 生成时间：2026-09-08T01:21:55
+- 生成时间：2026-10-25T19:16:34
 - 证据口径：压测后 2 分钟窗口的 PromQL 查询值（非截图，可复算）
 
 | 信号 | 实测值 |
 |:---|:---|
-| shop RPS | =121.152 |
+| shop RPS | =283.825 |
 | shorturl RPS | =0.000 |
-| shop P95(s) | =4.384 |
-| shorturl P95(s) | =10.000 |
-| shop 进程CPU(核) | shop=1.062 |
+| shop P95(s) | =0.010 |
+| shorturl P95(s) | =0.098 |
+| shop 进程CPU(核) | shop=0.145 |
 | shorturl 进程CPU(核) | shorturl=0.000 |
-| shop RSS(MB) | shop=82.883 |
-| shorturl RSS(MB) | shorturl=19.480 |
-| PG 事务/s | postgres=0.035; postgres=126.702; postgres=0.696; postgres=0.000; postgres=0.035 |
+| shop RSS(MB) | shop=51.980 |
+| shorturl RSS(MB) | shorturl=16.273 |
+| PG 事务/s | postgres=0.035; postgres=263.100; postgres=0.696; postgres=0.000; postgres=0.035 |
 
 ## 告警触发证据
 

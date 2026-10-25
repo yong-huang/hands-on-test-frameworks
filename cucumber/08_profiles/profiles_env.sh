@@ -7,8 +7,9 @@ SUT="../../playwright/02_pw_sut/server.mjs"
 
 case "${1:-up}" in
     up)
-        PORT=9108 nohup node "$SUT" </dev/null > .sut-dev.log 2>&1 & echo $! > .dev.pid; disown
-        PORT=9109 nohup node "$SUT" </dev/null > .sut-staging.log 2>&1 & echo $! > .staging.pid; disown
+    # 脱管包装壳：node 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+        nohup env PORT=9108 SUT="$SUT" PIDFILE="$PWD/.dev.pid" bash -c 'trap "" TERM INT; node "$SUT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' </dev/null > .sut-dev.log 2>&1 &
+        nohup env PORT=9109 SUT="$SUT" PIDFILE="$PWD/.staging.pid" bash -c 'trap "" TERM INT; node "$SUT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' </dev/null > .sut-staging.log 2>&1 &
         sleep 1.5
         curl -sf http://127.0.0.1:9108/api/health >/dev/null && echo "dev(9108) ✓"
         curl -sf http://127.0.0.1:9109/api/health >/dev/null && echo "staging(9109) ✓"

@@ -15,6 +15,8 @@ step() { echo; echo "=====> [$1] $2"; }
 do_apply() {
     step "apply" "① 清空隔离区与历史报告（植入的 flaky 用例常驻 tests/，注释即声明）"
     rm -f reports/quarantine.yaml reports/flaky.json
+    # 顺序依赖靶子靠 .shared_state 残留制造「首轮绿、后续红」；上次中止留下的残留会让 10 轮全红而漏检
+    rm -f tests/.shared_state
     mkdir -p reports
     echo "植入清单：test_random_flake（随机失败）+ test_order_dependent_victim（顺序依赖）"
 }

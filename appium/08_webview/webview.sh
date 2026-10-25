@@ -12,6 +12,8 @@ do_apply() {
     step "apply" "复用 01 的 Appium / 模拟器 / App 环境"
     (cd "$ENV_LAB" && ./ios_session.sh apply)
     step "apply" "启动本地 WebView 测试页（http://127.0.0.1:${WEB_PORT}/）"
+    # http.server 的 / 只认 index.html；仓库仅跟踪 webview-page.html，apply 时生成入口副本
+    cp -f "$WEB_ROOT/webview-page.html" "$WEB_ROOT/index.html"
     lsof -ti ":${WEB_PORT}" 2>/dev/null | xargs kill 2>/dev/null || true
     nohup python3 -m http.server "$WEB_PORT" --directory "$WEB_ROOT" \
         </dev/null > /dev/null 2>&1 &
@@ -34,6 +36,7 @@ do_observe() {
 do_clean() {
     step "clean" "停本地页、删除构建产物，并复用 01 的清理"
     lsof -ti ":${WEB_PORT}" 2>/dev/null | xargs kill 2>/dev/null || true
+    rm -f "$WEB_ROOT/index.html"
     rm -rf target test-results
     (cd "$ENV_LAB" && ./ios_session.sh clean) || true
     echo "已清理"

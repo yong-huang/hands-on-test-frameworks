@@ -35,7 +35,10 @@ do_profile() {
         -v "$PWD/.py-spy-pkgs:/pkgs:ro" -v "$PWD/reports:/out" \
         python:3.13-slim bash -c \
         "pip install --no-index --find-links /pkgs -q py-spy \
-         && py-spy record --pid 1 --idle --duration 50 --rate 50 \
+         && PID=\$(for p in /proc/[0-9]*; do read -r c < \$p/comm 2>/dev/null; \
+                   case \$c in python*|uvicorn*) basename \$p; break;; esac; done) \
+         && [ -n \"\$PID\" ] || { echo '未找到 python 进程' >&2; exit 1; } \
+         && py-spy record --pid \$PID --idle --duration 50 --rate 50 \
             --format flamegraph -o /out/flame_$TAG.svg" \
         > /dev/null 2>&1 \
     || { echo "❌ 容器内 py-spy 失败（首次运行检查 wheel 与 PID namespace）"; exit 1; }

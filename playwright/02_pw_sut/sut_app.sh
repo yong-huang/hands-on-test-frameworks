@@ -14,8 +14,10 @@ PIDFILE=".sut.pid"
 step() { echo; echo "=====> [$1] $2"; }
 
 start_server() {
-    nohup node server.mjs </dev/null > .sut.log 2>&1 &
-    echo $! > "$PIDFILE"; disown
+    # 脱管包装壳：node 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env SUT="server.mjs" PIDFILE="$PWD/$PIDFILE" \
+        bash -c 'trap "" TERM INT; node "$SUT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > .sut.log 2>&1 &
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && return 0
         sleep 0.25

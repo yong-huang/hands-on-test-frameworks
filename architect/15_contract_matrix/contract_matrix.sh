@@ -18,19 +18,20 @@ start_v1() {  # 真 SUT :8899（种子数据 + 健康轮询，同 lab 01 模式�
     ( cd "$SUT_DIR" && rm -f app/orders.db && "$PY" app/seed.py --db app/orders.db )
     local here="$PWD"
     cd "$SUT_DIR/app"
-    SUT_DB="$PWD/orders.db" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 \
+    # 脱管包装壳：uvicorn v1 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env APP_DIR="$PWD" SUT_DB="$PWD/orders.db" PY="$PY" PIDFILE="$here/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 </dev/null & U=$!; echo $U >> "$PIDFILE"; wait $U; exit 0' \
         </dev/null > "$here/.v1.log" 2>&1 &
-    echo $! >> "$here/$PIDFILE"
-    disown 2>/dev/null || true
     cd "$here"
 }
 
 start_v2() {  # 破坏变体 :8902（middleware 把 customer 改名 clientName）
     local here="$PWD"
     cd "$REPO/labs/11_sut_app/app"
-    PYTHONPATH="$PWD" nohup "$PY" "$here/broken_provider.py" </dev/null > "$here/.v2.log" 2>&1 &
-    echo $! >> "$here/$PIDFILE"
-    disown 2>/dev/null || true
+    # 脱管包装壳：v2 provider 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env APP_DIR="$PWD" TARGET="$here/broken_provider.py" PY="$PY" PIDFILE="$here/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; PYTHONPATH="$APP_DIR" "$PY" "$TARGET" </dev/null & U=$!; echo $U >> "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > "$here/.v2.log" 2>&1 &
     cd "$here"
 }
 

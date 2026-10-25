@@ -15,10 +15,11 @@ step() { echo; echo "=====> [$1] $2"; }
 
 start_sut() {
     local here="$PWD"
-    ( cd "$SUT_DIR/app"
-      SUT_DB="$PWD/orders.db" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 \
-          </dev/null > "$here/.sut.log" 2>&1 & echo $! > "$here/.sut.pid" )
-    disown 2>/dev/null || true
+    # 脱管包装壳：uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    local app_dir; app_dir="$(cd "$SUT_DIR/app" && pwd)"
+    nohup env APP_DIR="$app_dir" SUT_DB="$app_dir/orders.db" PY="$PY" PIDFILE="$here/.sut.pid" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > "$here/.sut.log" 2>&1 &
     cd "$here"
     for i in $(seq 1 40); do
         curl -sf -m 2 "http://127.0.0.1:8899/api/health" >/dev/null 2>&1 && { echo "SUT 就绪"; return 0; }

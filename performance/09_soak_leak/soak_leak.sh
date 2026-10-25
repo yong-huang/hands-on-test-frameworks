@@ -58,8 +58,8 @@ do_soak() {
     python3 - "$SOAK_MODE" <<'EOF'
 import sys
 rows = [l.split() for l in open(f"reports/soak_{sys.argv[1]}_samples.txt") if l.strip()]
-rss = [float(r[2]) for r in rows]
-gor = [int(r[3]) for r in rows]
+rss = [float(r[1]) for r in rows]
+gor = [int(r[2]) for r in rows]
 rise = rss[-1] - rss[0]
 g_rise = gor[-1] - gor[0]
 verdict = "LEAK_DETECTED" if (sys.argv[1] == "heap" and rise > 50) or (sys.argv[1] == "goroutine" and g_rise > 100) else "STABLE"
@@ -119,7 +119,7 @@ main() {
             python3 - "$SOAK_MODE" <<'EOF'
 import sys
 rows = [l.split() for l in open(f"reports/soak_{sys.argv[1]}_samples.txt") if l.strip()]
-rss = [float(r[2]) for r in rows]; gor = [int(r[3]) for r in rows]
+rss = [float(r[1]) for r in rows]; gor = [int(r[2]) for r in rows]
 verdict = "LEAK_DETECTED" if (sys.argv[1] == "heap" and rss[-1]-rss[0] > 50) or (sys.argv[1] == "goroutine" and gor[-1]-gor[0] > 100) else "STABLE"
 print(f"exp=soak mode={sys.argv[1]} rss {rss[0]:.0f}→{rss[-1]:.0f}MB (Δ{rss[-1]-rss[0]:+.0f}) "
       f"goroutines {gor[0]}→{gor[-1]} (Δ{gor[-1]-gor[0]:+d}) verdict={verdict}")
@@ -137,7 +137,7 @@ EOF
             wait $KP || true
             python3 - <<'EOF'
 rows = [l.split() for l in open("reports/soak_fixed_samples.txt") if l.strip()]
-rss = [float(r[2]) for r in rows]
+rss = [float(r[1]) for r in rows]
 print(f"exp=soak mode=fixed rss {rss[0]:.0f}→{rss[-1]:.0f}MB (Δ{rss[-1]-rss[0]:+.0f}) "
       f"verdict={'STABLE' if abs(rss[-1]-rss[0]) < 30 else 'CHECK'}")
 open("reports/soak_fixed_summary.txt","w").write(

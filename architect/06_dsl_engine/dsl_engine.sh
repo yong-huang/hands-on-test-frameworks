@@ -22,12 +22,12 @@ start_server() {
         echo "SUT 已在运行 (pid $(cat "$PIDFILE"))"; return 0
     fi
     local here="$PWD"
-    cd "$SUT_DIR/app"
-    SUT_DB="$PWD/orders.db" nohup "$PY" -m uvicorn main:app \
-        --host 127.0.0.1 --port "$SUT_PORT" </dev/null > "$here/$LOG" 2>&1 &
-    echo $! > "$here/$PIDFILE"
-    disown 2>/dev/null || true
-    cd "$here"
+    # 脱管包装壳：uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    local app_dir; app_dir="$(cd "$SUT_DIR/app" && pwd)"
+    nohup env APP_DIR="$app_dir" SUT_DB="$app_dir/orders.db" PY="$PY" \
+        PORT="$SUT_PORT" PIDFILE="$here/$PIDFILE" LOG="$here/$LOG" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > "$here/$LOG" 2>&1 &
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && { echo "SUT 就绪"; return 0; }
         sleep 0.25

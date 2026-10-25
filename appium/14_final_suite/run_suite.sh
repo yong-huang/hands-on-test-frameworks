@@ -12,6 +12,8 @@ export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Develope
 step() { echo; echo "=====> [$1] $2"; }
 
 setup() {
+    # 复用 01 的 Appium/模拟器环境（幂等：服务已起则跳过）——本脚本自己不启停 Appium
+    (cd "$ENV_LAB" && ./ios_session.sh apply)
     step "setup" "启动双模拟器"
     xcrun simctl boot "$UDID1" 2>/dev/null || true
     xcrun simctl boot "$UDID2" 2>/dev/null || true

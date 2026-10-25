@@ -16,9 +16,12 @@ step() { echo; echo "=====> [$1] $2"; }
 
 start_sut() {
     rm -f "$SUT_DIR/app/test_orders.db"
-    (cd "$SUT_DIR/app" && SUT_DB="$PWD/test_orders.db" nohup "$PY" -m uvicorn main:app \
-        --host 127.0.0.1 --port "$SUT_PORT" </dev/null > ../.sut_pw.log 2>&1 &
-    echo $! > "../../labs/18_pw_pom/${PIDFILE}"; disown)
+    # 脱管包装壳：内层 uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0
+    # （uvicorn 收到 TERM 后按信号语义退出，若被任何 bash 当作业收尸会打印 Terminated 噪声）
+    nohup env APP_DIR="$PWD/$SUT_DIR/app" SUT_DB="$PWD/$SUT_DIR/app/test_orders.db" \
+        PY="$PY" PORT="$SUT_PORT" PIDFILE="$PWD/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > ../.sut_pw.log 2>&1 &
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && return 0
         sleep 0.25

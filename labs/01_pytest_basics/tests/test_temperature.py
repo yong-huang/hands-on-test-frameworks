@@ -77,7 +77,10 @@ def test_k2c_rejects_negative():
 # ---------- Thermostat 分支：3 条 ----------
 @pytest.mark.parametrize("temp,expected", [(10, "heating"), (22, "comfort"), (30, "cooling")])
 def test_thermostat_modes(temp, expected):
-    assert Thermostat().mode(temp) == expected
+    mode = Thermostat().mode(temp)
+    # 这行 print 是 observe ④ 的教具：默认被 pytest 捕获（看不到），-s 时直达终端
+    print(f"\n  thermostat: {temp}°C -> {mode}（期望 {expected}）")
+    assert mode == expected
 
 
 def test_thermostat_custom_thresholds():

@@ -38,3 +38,9 @@ performance/01_perf_baseline/shorturl/shorturl
 # pw-store 运行期上传目录
 .uploads/
 playwright/07_pw_component/playwright/.cache/
+
+# 运行期杂项（clean 步骤漏网时的兜底）
+*.pid
+.shared_state
+target/
+generated/

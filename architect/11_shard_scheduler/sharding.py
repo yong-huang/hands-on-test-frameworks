@@ -66,14 +66,24 @@ def node_ids_from_history(history: dict) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------- LPT 分片
+# 顺序依赖的模块必须同片：labs/09 的污染演示用例 step_2/3 靠 step_1 留下的全局状态才能过，
+# 拆到不同进程必红——分片的前提是用例独立，不独立的只能整体钉在一片
+KEEP_TOGETHER = {"labs/09_xdist/tests/test_pollution.py"}
+
+
 def lpt_shard(times: dict[str, float], n: int) -> list[list[str]]:
-    order = sorted(times, key=lambda k: -times[k])
+    groups: dict[str, list[str]] = {}
+    for key in times:
+        mod = key.split("::")[0]
+        groups.setdefault(mod if mod in KEEP_TOGETHER else key, []).append(key)
+    gtimes = {g: sum(times[k] for k in ks) for g, ks in groups.items()}
+    order = sorted(gtimes, key=lambda g: -gtimes[g])
     shards: list[list[str]] = [[] for _ in range(n)]
     loads = [0.0] * n
-    for key in order:
+    for g in order:
         i = loads.index(min(loads))                 # 永远给当前最轻的片
-        shards[i].append(key)
-        loads[i] += times[key]
+        shards[i].extend(groups[g])
+        loads[i] += gtimes[g]
     return shards
 
 

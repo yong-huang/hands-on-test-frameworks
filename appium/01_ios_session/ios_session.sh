@@ -99,9 +99,10 @@ ensure_simulator() {
 }
 
 ensure_app() {
+    # 每次强制重装：App 容器/Keychain 的陈旧状态 clearApp 清不掉，多轮 noReset 会话
+    # 累积后会卡死生物识别等依赖持久状态的流程（2026-10-25 全量回归实测：重装即愈）
     if xcrun simctl get_app_container "$SIM_NAME" "$BUNDLE_ID" app >/dev/null 2>&1; then
-        echo "  App 已安装：$BUNDLE_ID"
-        return 0
+        xcrun simctl uninstall "$SIM_NAME" "$BUNDLE_ID" >/dev/null 2>&1 || true
     fi
     step "apply" "安装被测 App：SauceLabs My Demo App ${APP_VERSION}"
     mkdir -p "$CACHE"

@@ -42,8 +42,10 @@ do_observe() {
     step "observe" "② 宿主机分片加速对照：全量串行 vs 4 分片并行"
     # 预起共享 SUT（4 个分片同时起跑时会撞端口，服务必须先在位）
     lsof -ti ":${PORT}" 2>/dev/null | xargs kill 2>/dev/null || true
-    nohup node "$SUT/server.mjs" </dev/null > /dev/null 2>&1 &
-    disown $! 2>/dev/null || true   # 脱离作业表：clean 杀它时 bash 不会报 Terminated
+    # 脱管包装壳：node 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env SUT="$SUT/server.mjs" \
+        bash -c 'trap "" TERM INT; node "$SUT" </dev/null & U=$!; wait $U; exit 0' \
+        </dev/null > /dev/null 2>&1 &
     SUT_ENV_PORT=${PORT}
     for i in $(seq 1 40); do
         curl -sf -m 2 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && break

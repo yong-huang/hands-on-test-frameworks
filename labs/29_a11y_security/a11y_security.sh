@@ -5,7 +5,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-PY="$PWD/../../.venv/bin/python"
+PY="$PWD/../../.venv/bin/python"          # 仓库标准环境（load_resources.sh 建）
+[ -x "$PY" ] || PY="$(command -v python3)"  # 回退：CI/裸克隆等无 venv 环境用系统 python3
 SUT_PORT=8929
 BASE_URL="http://127.0.0.1:${SUT_PORT}"
 SUT_DIR="../11_sut_app"
@@ -15,9 +16,12 @@ step() { echo; echo "=====> [$1] $2"; }
 
 start_sut() {
     rm -f "$SUT_DIR/app/test_orders.db"
-    (cd "$SUT_DIR/app" && SUT_DB="$PWD/test_orders.db" nohup "$PY" -m uvicorn main:app \
-        --host 127.0.0.1 --port "$SUT_PORT" </dev/null > ../.sut_a11y.log 2>&1 &
-    echo $! > "../../labs/29_a11y_security/${PIDFILE}"; disown)
+    # 脱管包装壳：内层 uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0
+    # （uvicorn 收到 TERM 后按信号语义退出，若被任何 bash 当作业收尸会打印 Terminated 噪声）
+    nohup env APP_DIR="$PWD/$SUT_DIR/app" SUT_DB="$PWD/$SUT_DIR/app/test_orders.db" \
+        PY="$PY" PORT="$SUT_PORT" PIDFILE="$PWD/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > ../.sut_a11y.log 2>&1 &
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && return 0
         sleep 0.25
@@ -41,7 +45,12 @@ do_observe() {
     echo ">>> 上面若红：SUT 出现了新的 High 级违例，先修页面再合入"
 
     step "observe" "② ZAP 基线扫描（docker，被动扫 + 爬虫；WARN 不阻断，清单落 docs/）"
-    docker run --rm -v "$PWD/docs:/zap/wrk" -t zaproxy/zap-stable \
+    # 更新源指向 127.0.0.1：ZAP 2.17 无头模式下「启动检查更新→下载→装完等重启」会死锁
+    # （2026-10-25 实测两次复现，各挂 20+ 分钟）；断网更新源让检查秒失败，扫描本体不受影响
+    docker run --rm --add-host=host.docker.internal:host-gateway \
+        --add-host=raw.githubusercontent.com:127.0.0.1 \
+        --add-host=zap-download-files.s3.amazonaws.com:127.0.0.1 \
+        -v "$PWD/docs:/zap/wrk" -t zaproxy/zap-stable \
         zap-baseline.py -t "http://host.docker.internal:${SUT_PORT}/" \
         -r zap_report.html -I 2>&1 | grep -E "FAIL-NEW|WARN-NEW|PASS:" | tail -3
     echo ">>> 报告: docs/zap_report.html（浏览器打开可看全部告警明细）"

@@ -32,7 +32,9 @@ do_observe() {
     # -x 会在 regression_demo 失败处刹车，属预期，|| true 放行
     $PY -m pytest $INI -x -q || true
 
-    step "observe" "④ -s 捕获关闭：print 直接到终端（用例里无 print 时输出无差异，仅演示开关）"
+    step "observe" "④ -s 捕获关闭：同一条命令，print 先被捕获吞掉、加 -s 后直达终端"
+    $PY -m pytest $INI -k "thermostat_modes" -q
+    echo ">>> 上一步看不到 print？默认输出捕获把它吞了。加 -s 关闭捕获看对比："
     $PY -m pytest $INI -k "thermostat_modes" -s -q
 }
 

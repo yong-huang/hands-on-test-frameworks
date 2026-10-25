@@ -33,9 +33,9 @@ do_observe() {
     [ -n "$TRACE" ] || { echo "未找到 trace.zip" >&2; exit 1; }
     echo ">>> 样本: $TRACE"
     unzip -l "$TRACE" | awk '{print $4}' | grep -E '\.trace$|\.png$|network' | head -6
-    PNGS=$(unzip -l "$TRACE" | grep -c '\.png')
-    [ "$PNGS" -ge 3 ] && echo ">>> 逐步截图 $PNGS 张 ✓（每步动作都有留影）"
-    unzip -l "$TRACE" | grep -q 'network' && echo ">>> 网络快照存在 ✓"
+    PNGS=$(unzip -l "$TRACE" | grep -cE '\.png|\.jpeg')
+    if [ "$PNGS" -ge 3 ]; then echo ">>> 逐步截图 $PNGS 张 ✓（每步动作都有留影）"; fi
+    if unzip -l "$TRACE" | grep -q 'network'; then echo ">>> 网络快照存在 ✓"; fi
 
     step "observe" "③ 四个调试工具的打开方式（GUI，请手动执行）"
     echo ">>> trace viewer : npx playwright show-trace $TRACE"

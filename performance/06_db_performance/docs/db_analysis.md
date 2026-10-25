@@ -4,9 +4,9 @@
 
 | 阶段 | 扫描方式 | 目标表 | 该节点实际耗时 |
 |:---|:---|:---|---:|
-| 建索引前 | Seq Scan | 116,504 行 | 7.792 ms |
-| 建索引后 | Index Scan | 50 行 | 0.054 ms |
-| **变化** | Seq Scan → Index Scan | | **144x** |
+| 建索引前 | Seq Scan | 44,971 行 | 2.345 ms |
+| 建索引后 | Index Scan | 50 行 | 0.025 ms |
+| **变化** | Seq Scan → Index Scan | | **94x** |
 
 证据文件：`reports/explain_before.json` / `reports/explain_after.json`（ANALYZE + BUFFERS 全量计划）
 
@@ -17,13 +17,13 @@
 ```
 total_ms | calls | mean_ms |                            query                             
 ----------+-------+---------+--------------------------------------------------------------
-  44262.6 |  1874 |   23.62 | UPDATE stock SET qty = qty - $1 WHERE product_id = $2 AND qt
-  42163.4 |  3778 |   11.16 | SELECT p.id, p.name, p.price, COALESCE(s.qty, $3)           +
+  36127.3 |  2484 |   14.54 | UPDATE stock SET qty = qty - $1 WHERE product_id = $2 AND qt
+  21710.6 |  4971 |    4.37 | SELECT p.id, p.name, p.price, COALESCE(s.qty, $3)           +
           |       |         |           
-     61.4 |  3778 |    0.02 | SELECT p.id, p.name, p.price, COALESCE(r.score, $2)         +
-          |       |         |         
-     24.0 |  1874 |    0.01 | INSERT INTO orders (user_id, product_id, qty) VALUES ($1, $2
-      2.6 |  9450 |    0.00 | BEGIN
+     76.6 |  4971 |    0.02 | SELECT p.id, p.name, p.price, COALESCE(r.score, 0)          +
+          |       |         |          
+     30.8 |  2484 |    0.01 | INSERT INTO orders (user_id, product_id, qty) VALUES ($1, $2
+      6.7 |    35 |    0.19 | SELECT pg_database_size($1)
 (5 rows)
 ```
 
@@ -32,13 +32,13 @@ total_ms | calls | mean_ms |                            query
 ```
 total_ms | calls | mean_ms |                            query                             
 ----------+-------+---------+--------------------------------------------------------------
-  40988.3 |  1922 |   21.33 | UPDATE stock SET qty = qty - $1 WHERE product_id = $2 AND qt
-    126.9 |  3883 |    0.03 | SELECT p.id, p.name, p.price, COALESCE(s.qty, $3)           +
+  18992.2 |  2016 |    9.42 | UPDATE stock SET qty = qty - $1 WHERE product_id = $2 AND qt
+    137.0 |  4068 |    0.03 | SELECT p.id, p.name, p.price, COALESCE(s.qty, $3)           +
           |       |         |           
-     60.0 |  3883 |    0.02 | SELECT p.id, p.name, p.price, COALESCE(r.score, 0)          +
+     66.8 |  4068 |    0.02 | SELECT p.id, p.name, p.price, COALESCE(r.score, 0)          +
           |       |         |          
-     26.1 |  1922 |    0.01 | INSERT INTO orders (user_id, product_id, qty) VALUES ($1, $2
-      2.1 |  9712 |    0.00 | BEGIN
+     29.4 |  2016 |    0.01 | INSERT INTO orders (user_id, product_id, qty) VALUES ($1, $2
+      6.5 |    30 |    0.22 | SELECT pg_database_size($1)
 (5 rows)
 ```
 
@@ -46,8 +46,8 @@ total_ms | calls | mean_ms |                            query
 
 | 阶段 | 池上限 | PG 活跃连接峰值 | RPS | P95(ms) | 错误率% |
 |:---|---:|---:|---:|---:|---:|
-| 调参前 | 10 | 10 | 20.7 | 13082.0 | 6.11 |
-| 调参后 | 40 | 40 | 21.9 | 27076.9 | 7.84 |
+| 调参前 | 10 | 11 | 61.7 | 11024.3 | 2.12 |
+| 调参后 | 40 | 10 | 9.7 | 35097.9 | 12.18 |
 
 判读：调参前活跃连接被池钉死在 10（100 VU 在应用侧排队直到池超时）；
 调参后峰值 10→40，池钳制确认解除。P95 没有同步下降——因为 pg_stat 排行

@@ -16,10 +16,11 @@ step() { echo; echo "=====> [$1] $2"; }
 
 start_canary() {  # $1=ERR_RATE $2=LAT_MS
     local here="$PWD"
-    ( cd "$SUT_DIR/app"
-      ERR_RATE="$1" LAT_MS="$2" PORT=8903 PYTHONPATH="$PWD" nohup "$PY" "$here/degrade_canary.py" \
-          </dev/null > "$here/.canary.log" 2>&1 & echo $! > "$here/$PIDFILE" )
-    disown 2>/dev/null || true
+    # 脱管包装壳：canary 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env ERR_RATE="$1" LAT_MS="$2" PORT=8903 PYTHONPATH="$SUT_DIR/app" APP_DIR="$SUT_DIR/app" \
+        TARGET="$here/degrade_canary.py" PY="$PY" PIDFILE="$here/$PIDFILE" LOG="$here/.canary.log" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" "$TARGET" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > "$here/.canary.log" 2>&1 &
     cd "$here"
     for i in $(seq 1 40); do
         curl -sf -m 2 "http://127.0.0.1:8903/api/health" >/dev/null 2>&1 && { echo "canary 就绪"; return 0; }
@@ -38,10 +39,10 @@ do_apply() {
     step "apply" "① 起 baseline（真 SUT :8899）与健康 canary（:8903，零劣化）"
     ( cd "$SUT_DIR" && rm -f app/orders.db && "$PY" app/seed.py --db app/orders.db )
     local here="$PWD"
-    ( cd "$SUT_DIR/app"
-      SUT_DB="$PWD/orders.db" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 \
-          </dev/null > "$here/.baseline.log" 2>&1 & echo $! > "$here/$PIDFILE" )
-    disown 2>/dev/null || true
+    # 脱管包装壳：baseline uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0（根除 Terminated 噪声）
+    nohup env APP_DIR="$SUT_DIR/app" SUT_DB="$SUT_DIR/app/orders.db" PY="$PY" PIDFILE="$here/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port 8899 </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > "$here/.baseline.log" 2>&1 &
     cd "$here"
     for i in $(seq 1 40); do
         curl -sf -m 2 "http://127.0.0.1:8899/api/health" >/dev/null 2>&1 && break

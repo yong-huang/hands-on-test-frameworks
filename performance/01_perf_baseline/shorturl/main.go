@@ -36,20 +36,6 @@ var (
 
 const seedCount = 5000
 
-// 泄漏注入钩子（项目 9）：LEAK_MODE=heap|goroutine，默认 off
-// heap：每请求向全局切片塞 64KB 且永不释放；goroutine：每请求孵一个永久阻塞的 goroutine
-var leakBuf [][]byte
-
-func maybeLeak() {
-	switch os.Getenv("LEAK_MODE") {
-	case "heap":
-		leakBuf = append(leakBuf, make([]byte, 65536))
-	case "goroutine":
-		ch := make(chan struct{})
-		go func() { <-ch }()
-	}
-}
-
 var (
 	httpDuration = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
@@ -126,7 +112,6 @@ func seedIndex(pairs [][2]string) {
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
-	maybeLeak() // 泄漏注入点： soaking 时打开
 	code := r.URL.Path[len("/"):]
 	mu.RLock() // 【D6 修复】读锁：并发读之间不再互斥
 	url, ok := links[code]

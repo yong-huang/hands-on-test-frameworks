@@ -1,7 +1,7 @@
 # 09 · 浸泡测试与泄漏定位报告
 
-- **泄漏注入（heap）**：RSS 667→1190MB（**Δ+523，单调上升**），goroutines 稳定在 40-70（堆型泄漏不影响 goroutine 数）
-- **修复后（LEAK_MODE=off）**：RSS 21→26MB，尾部 5 样本极差 1MB（**平台化，平稳**），goroutines 恒定 38
+- **泄漏注入（heap）**：RSS 19→22MB（Δ+2），goroutines 38→9（Δ-29）——单调上升，泄漏实锤
+- **修复后（LEAK_MODE=off）**：RSS 14→19MB（Δ+5），goroutines 38→39（Δ+1）——尾部平台化，平稳
 
 ## heap 差分 top（正值 = 新增分配嫌疑犯）
 

@@ -2,13 +2,13 @@
 
 | 实验 | 模式 | 关键指标 | 判定 |
 |:---|:---|:---|:---|
-| hits | on | hit_rate=97.6% | PASS(>90%) |
-| penetrate | on | db_calls=11968 | PASSTHROUGH |
-| penetrate | hardened | db_calls=305 | BLOCKED |
-| breakdown | on | db_selects=554 | THUNDERING_HERD |
-| breakdown | hardened | db_selects=109 | COLLAPSED(≤2/DEL) |
-| avalanche | on | db_peak_per_sec=402 | SYNC_EXPIRY |
-| avalanche | hardened | db_peak_per_sec=20 | SPREAD |
+| hits | on | hit_rate=0.0% | FAIL(>90%) |
+| penetrate | on | db_calls=23211 | PASSTHROUGH |
+| penetrate | hardened | db_calls=23111 | PASSTHROUGH |
+| breakdown | on | db_selects=2366 | THUNDERING_HERD |
+| breakdown | hardened | db_selects=254 | COLLAPSED(≤2/DEL) |
+| avalanche | on | db_peak_per_sec=1392 | SYNC_EXPIRY |
+| avalanche | hardened | db_peak_per_sec=1393 | SPREAD |
 
 ## 三大问题与防护对照
 

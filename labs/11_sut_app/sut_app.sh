@@ -18,13 +18,11 @@ start_server() {  # 起服务并等健康检查（轮询而非裸 sleep）
     if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
         echo "服务已在运行 (pid $(cat "$PIDFILE"))"; return 0
     fi
-    # nohup + </dev/null + disown：完全脱离脚本的控制台、管道与作业表
-    cd app
-    SUT_DB="$PWD/$(basename "$DB")" nohup "$PY" -m uvicorn main:app \
-        --host 127.0.0.1 --port "$SUT_PORT" </dev/null > ../../.sut.log 2>&1 &
-    echo $! > "../${PIDFILE}"
-    disown
-    cd ..
+    # 脱管包装壳：内层 uvicorn 的信号死亡被包装壳 wait 吸收、包装壳自身 exit 0
+    # （uvicorn 收到 TERM 后按信号语义退出，若被任何 bash 当作业收尸会打印 Terminated 噪声）
+    nohup env APP_DIR="$PWD/app" SUT_DB="$PWD/$(basename "$DB")" PY="$PY" PORT="$SUT_PORT" PIDFILE="$PWD/$PIDFILE" \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        </dev/null > ../../.sut.log 2>&1 &
     # 轮询健康检查：就绪即返回（上限 10s），绝不裸 sleep
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && return 0
