@@ -13,6 +13,8 @@
 <main>
   <form id="order-form">
     <label>客户称呼 <input type="text" id="customer" name="customer"></label>
+    <label>收货地址 <textarea id="address" name="address" rows="2"></textarea></label>
+    <span id="form-error" style="color:#c0392b;" hidden></span>
     <label>券码（值只在 input 事件时同步进状态） <input type="text" id="coupon" name="coupon"></label>
     <label>下单渠道
       <select id="channel" name="channel">
@@ -50,8 +52,17 @@ document.getElementById("coupon").addEventListener("input", (e) => { state.coupo
 
 document.getElementById("order-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  const err = document.getElementById("form-error");
+  const address = document.getElementById("address").value.trim();
+  if (!address) {                                    // 项目 11 素材：负向组（空地址）在客户端被拦
+    err.textContent = "地址必填，不能提交";
+    err.hidden = false;
+    return;
+  }
+  err.hidden = true;
   const payload = {
     customer: document.getElementById("customer").value,
+    address: address,
     coupon: state.coupon,
     channel: document.getElementById("channel").value,
     tags: [...document.getElementById("tags").selectedOptions].map(o => o.value),

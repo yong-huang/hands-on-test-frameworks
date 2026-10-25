@@ -1,0 +1,12 @@
+{
+  "valid": [
+    {"label": "中国地址", "customer": "李雷", "address": "北京市海淀区中关村大街 1 号 3 层 301"},
+    {"label": "英文地址", "customer": "Alice", "address": "221B Baker Street, London NW1 6XE, UK"},
+    {"label": "日文地址", "customer": "佐藤太郎", "address": "東京都渋谷区神南1-1-1 アパート301"},
+    {"label": "德文地址", "customer": "Klaus Müller", "address": "Kurfürstendamm 21, 10719 Berlin, Deutschland"},
+    {"label": "特殊字符地址", "customer": "李雷 ⚡<QA>", "address": "Unit 4-2 <高层> #A-01, 타워빌딩, Seoul"}
+  ],
+  "invalid": [
+    {"label": "空地址", "customer": "负向实验员", "address": "   "}
+  ]
+}
