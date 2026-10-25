@@ -1,0 +1,148 @@
+# 契约即真理（contract-first）：先写这份文件，再写实现。
+# 实现与契约的任何偏离，schemathesis 的 property-based 测试会立刻抓出来。
+# 变更规则：先改契约（本文件进 git）→ 实现跟进 → 测试转绿。反向操作就是漂移，报红。
+openapi: 3.1.0
+info:
+  title: Ministore Items API
+  version: 1.0.0
+  description: 商品子集契约（health + CRUD），由测试左移项目 05 维护
+paths:
+  /api/health:
+    get:
+      operationId: health
+      summary: 健康检查
+      responses:
+        "200":
+          description: 应用存活
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string }
+  /api/items:
+    get:
+      operationId: listItems
+      summary: 商品列表
+      responses:
+        "200":
+          description: 列表与总数
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Item" }
+                  total: { type: integer }
+    post:
+      operationId: createItem
+      summary: 创建商品
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, price]
+              properties:
+                name: { type: string, minLength: 1 }
+                price: { type: number, minimum: 0 }
+      responses:
+        "201":
+          description: 已创建
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Item" }
+        "400":
+          description: 请求体不是合法 JSON（FastAPI 返回 detail 为字符串）
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [detail]
+                properties:
+                  detail: { type: string }
+        "422":
+          description: 请求不合法（FastAPI 校验错误，detail 为错误对象数组）
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [detail]
+                properties:
+                  detail:
+                    type: array
+                    items:
+                      type: object
+  /api/items/{id}:
+    get:
+      operationId: getItem
+      summary: 商品详情
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: 商品详情
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Item" }
+        "404":
+          description: 不存在
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [detail]
+                properties:
+                  detail: { type: string }
+        "422":
+          description: 路径参数不合法
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [detail]
+                properties:
+                  detail:
+                    type: array
+                    items:
+                      type: object
+    delete:
+      operationId: deleteItem
+      summary: 删除商品
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: 已删除
+        "422":
+          description: 路径参数不合法（detail 为错误对象数组）
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [detail]
+                properties:
+                  detail:
+                    type: array
+                    items:
+                      type: object
+components:
+  schemas:
+    Item:
+      type: object
+      required: [id, name, price]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        price: { type: number }

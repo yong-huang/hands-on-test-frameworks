@@ -1,0 +1,14 @@
+# 缺口演示版：删掉了 REQ-003 的唯一覆盖（test_list_orders），门禁应报未覆盖需求。
+# 为什么外挂：labs/11 是共有资产，本线不改它的测试文件；在映射文件里挂 REQ，
+# 等价于 @pytest.mark.req 标记但零侵入（ architect 线同款治理手法）。
+# 键是节点 ID 的子串；一个键可挂多条需求；键匹配不到任何节点会被报"陈旧映射"。
+mapping:
+  test_health_ok: [REQ-001]
+  test_create_order_returns_201_and_id: [REQ-002]
+  test_get_order_detail_by_id: [REQ-004]
+  test_patch_order_status_flows: [REQ-005]
+  test_delete_order_returns_204_then_404: [REQ-006]
+  test_login_issues_token: [REQ-007]
+  test_admin_stats_requires_admin_role: [REQ-008]
+  test_create_and_delete_roundtrip: [REQ-002, REQ-006]  # labs/11 存量冒烟，双覆盖
+  # 注意：labs/11 的 test_sut_smoke.py::test_health 故意不挂——它是孤儿演示样例

@@ -1,0 +1,10 @@
+# 静态门禁分级表（严格档）：F401 从 warning 升级为 error——未使用的导入也开始阻断。
+# 与 gate_rules.toml 的唯一差异就是 F401 的位置，演示「升降级改配置即生效」。
+
+[error]
+ruff = ["F821", "B006", "F632", "F401"]
+mypy = ["mypy:assignment", "mypy:return-value", "mypy:arg-type", "mypy:name-defined"]
+
+[warning]
+ruff = ["E501", "E711"]
+mypy = []

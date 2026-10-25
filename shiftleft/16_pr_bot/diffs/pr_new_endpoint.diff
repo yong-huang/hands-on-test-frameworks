@@ -1,0 +1,13 @@
+diff --git a/src/orders.py b/src/orders.py
+--- a/src/orders.py
++++ b/src/orders.py
+@@ -40,3 +40,9 @@ def get_order(order_id: int):
++@app.post("/api/orders/export")
++def export_orders():
++    return export_csv()
+diff --git a/tests/test_export.py b/tests/test_export.py
+--- /dev/null
++++ b/tests/test_export.py
+@@ -0,0 +1,2 @@
++def test_export_called():
++    assert export_csv.called

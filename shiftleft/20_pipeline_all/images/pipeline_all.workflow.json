@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "🏁 左移流水线全景：19 个实验 · 一条链跑完",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/20_pipeline_all/images/pipeline_all.html",
+    "viewBox": [1100, 540]
+  },
+  "lanes": [
+    {"id": "left", "label": "左移拦截"},
+    {"id": "right", "label": "度量与汇报"}
+  ],
+  "phases": [
+    {"id": "req", "label": "需求评审", "fromCol": 0, "toCol": 0},
+    {"id": "code", "label": "编码", "fromCol": 1, "toCol": 1},
+    {"id": "submit", "label": "提交", "fromCol": 2, "toCol": 2},
+    {"id": "ci", "label": "CI", "fromCol": 3, "toCol": 3},
+    {"id": "out", "label": "产出", "fromCol": 4, "toCol": 5}
+  ],
+  "mainPath": ["audit", "antipattern", "gate", "supply", "funnel", "pitch"],
+  "nodes": [
+    {"id": "audit", "lane": "left", "col": 0, "type": "backend", "label": "可测性审计", "width": 132, "sublabel": "项目 02 · 需求评审"},
+    {"id": "antipattern", "lane": "left", "col": 1, "type": "backend", "label": "反模式检测", "width": 132, "sublabel": "项目 10 · 编码层"},
+    {"id": "gate", "lane": "left", "col": 2, "type": "backend", "label": "分级门禁", "width": 132, "sublabel": "项目 11 · 提交层"},
+    {"id": "supply", "lane": "left", "col": 3, "type": "backend", "label": "供应链扫描", "width": 132, "sublabel": "项目 13 · CI 层"},
+    {"id": "funnel", "lane": "right", "col": 4, "type": "frontend", "label": "成本漏斗", "width": 132, "sublabel": "项目 01 · 杠杆 96×"},
+    {"id": "pitch", "lane": "right", "col": 5, "type": "frontend", "label": "左移方案书", "width": 132, "sublabel": "一页汇报 · pitch.md"}
+  ],
+  "edges": [
+    {"from": "audit", "to": "antipattern", "variant": "default"},
+    {"from": "antipattern", "to": "gate", "variant": "default"},
+    {"from": "gate", "to": "supply", "variant": "default"},
+    {"from": "supply", "to": "funnel", "variant": "default"},
+    {"from": "funnel", "to": "pitch", "variant": "default"}
+  ]
+}

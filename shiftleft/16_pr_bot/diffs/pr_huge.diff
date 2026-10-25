@@ -1,0 +1,423 @@
+diff --git a/src/bulk.py b/src/bulk.py
+--- a/src/bulk.py
++++ b/src/bulk.py
++def bulk_handler_0(payload):
++    return payload.get('n', 0)
++def bulk_handler_1(payload):
++    return payload.get('n', 1)
++def bulk_handler_2(payload):
++    return payload.get('n', 2)
++def bulk_handler_3(payload):
++    return payload.get('n', 3)
++def bulk_handler_4(payload):
++    return payload.get('n', 4)
++def bulk_handler_5(payload):
++    return payload.get('n', 5)
++def bulk_handler_6(payload):
++    return payload.get('n', 6)
++def bulk_handler_7(payload):
++    return payload.get('n', 7)
++def bulk_handler_8(payload):
++    return payload.get('n', 8)
++def bulk_handler_9(payload):
++    return payload.get('n', 9)
++def bulk_handler_10(payload):
++    return payload.get('n', 10)
++def bulk_handler_11(payload):
++    return payload.get('n', 11)
++def bulk_handler_12(payload):
++    return payload.get('n', 12)
++def bulk_handler_13(payload):
++    return payload.get('n', 13)
++def bulk_handler_14(payload):
++    return payload.get('n', 14)
++def bulk_handler_15(payload):
++    return payload.get('n', 15)
++def bulk_handler_16(payload):
++    return payload.get('n', 16)
++def bulk_handler_17(payload):
++    return payload.get('n', 17)
++def bulk_handler_18(payload):
++    return payload.get('n', 18)
++def bulk_handler_19(payload):
++    return payload.get('n', 19)
++def bulk_handler_20(payload):
++    return payload.get('n', 20)
++def bulk_handler_21(payload):
++    return payload.get('n', 21)
++def bulk_handler_22(payload):
++    return payload.get('n', 22)
++def bulk_handler_23(payload):
++    return payload.get('n', 23)
++def bulk_handler_24(payload):
++    return payload.get('n', 24)
++def bulk_handler_25(payload):
++    return payload.get('n', 25)
++def bulk_handler_26(payload):
++    return payload.get('n', 26)
++def bulk_handler_27(payload):
++    return payload.get('n', 27)
++def bulk_handler_28(payload):
++    return payload.get('n', 28)
++def bulk_handler_29(payload):
++    return payload.get('n', 29)
++def bulk_handler_30(payload):
++    return payload.get('n', 30)
++def bulk_handler_31(payload):
++    return payload.get('n', 31)
++def bulk_handler_32(payload):
++    return payload.get('n', 32)
++def bulk_handler_33(payload):
++    return payload.get('n', 33)
++def bulk_handler_34(payload):
++    return payload.get('n', 34)
++def bulk_handler_35(payload):
++    return payload.get('n', 35)
++def bulk_handler_36(payload):
++    return payload.get('n', 36)
++def bulk_handler_37(payload):
++    return payload.get('n', 37)
++def bulk_handler_38(payload):
++    return payload.get('n', 38)
++def bulk_handler_39(payload):
++    return payload.get('n', 39)
++def bulk_handler_40(payload):
++    return payload.get('n', 40)
++def bulk_handler_41(payload):
++    return payload.get('n', 41)
++def bulk_handler_42(payload):
++    return payload.get('n', 42)
++def bulk_handler_43(payload):
++    return payload.get('n', 43)
++def bulk_handler_44(payload):
++    return payload.get('n', 44)
++def bulk_handler_45(payload):
++    return payload.get('n', 45)
++def bulk_handler_46(payload):
++    return payload.get('n', 46)
++def bulk_handler_47(payload):
++    return payload.get('n', 47)
++def bulk_handler_48(payload):
++    return payload.get('n', 48)
++def bulk_handler_49(payload):
++    return payload.get('n', 49)
++def bulk_handler_50(payload):
++    return payload.get('n', 50)
++def bulk_handler_51(payload):
++    return payload.get('n', 51)
++def bulk_handler_52(payload):
++    return payload.get('n', 52)
++def bulk_handler_53(payload):
++    return payload.get('n', 53)
++def bulk_handler_54(payload):
++    return payload.get('n', 54)
++def bulk_handler_55(payload):
++    return payload.get('n', 55)
++def bulk_handler_56(payload):
++    return payload.get('n', 56)
++def bulk_handler_57(payload):
++    return payload.get('n', 57)
++def bulk_handler_58(payload):
++    return payload.get('n', 58)
++def bulk_handler_59(payload):
++    return payload.get('n', 59)
++def bulk_handler_60(payload):
++    return payload.get('n', 60)
++def bulk_handler_61(payload):
++    return payload.get('n', 61)
++def bulk_handler_62(payload):
++    return payload.get('n', 62)
++def bulk_handler_63(payload):
++    return payload.get('n', 63)
++def bulk_handler_64(payload):
++    return payload.get('n', 64)
++def bulk_handler_65(payload):
++    return payload.get('n', 65)
++def bulk_handler_66(payload):
++    return payload.get('n', 66)
++def bulk_handler_67(payload):
++    return payload.get('n', 67)
++def bulk_handler_68(payload):
++    return payload.get('n', 68)
++def bulk_handler_69(payload):
++    return payload.get('n', 69)
++def bulk_handler_70(payload):
++    return payload.get('n', 70)
++def bulk_handler_71(payload):
++    return payload.get('n', 71)
++def bulk_handler_72(payload):
++    return payload.get('n', 72)
++def bulk_handler_73(payload):
++    return payload.get('n', 73)
++def bulk_handler_74(payload):
++    return payload.get('n', 74)
++def bulk_handler_75(payload):
++    return payload.get('n', 75)
++def bulk_handler_76(payload):
++    return payload.get('n', 76)
++def bulk_handler_77(payload):
++    return payload.get('n', 77)
++def bulk_handler_78(payload):
++    return payload.get('n', 78)
++def bulk_handler_79(payload):
++    return payload.get('n', 79)
++def bulk_handler_80(payload):
++    return payload.get('n', 80)
++def bulk_handler_81(payload):
++    return payload.get('n', 81)
++def bulk_handler_82(payload):
++    return payload.get('n', 82)
++def bulk_handler_83(payload):
++    return payload.get('n', 83)
++def bulk_handler_84(payload):
++    return payload.get('n', 84)
++def bulk_handler_85(payload):
++    return payload.get('n', 85)
++def bulk_handler_86(payload):
++    return payload.get('n', 86)
++def bulk_handler_87(payload):
++    return payload.get('n', 87)
++def bulk_handler_88(payload):
++    return payload.get('n', 88)
++def bulk_handler_89(payload):
++    return payload.get('n', 89)
++def bulk_handler_90(payload):
++    return payload.get('n', 90)
++def bulk_handler_91(payload):
++    return payload.get('n', 91)
++def bulk_handler_92(payload):
++    return payload.get('n', 92)
++def bulk_handler_93(payload):
++    return payload.get('n', 93)
++def bulk_handler_94(payload):
++    return payload.get('n', 94)
++def bulk_handler_95(payload):
++    return payload.get('n', 95)
++def bulk_handler_96(payload):
++    return payload.get('n', 96)
++def bulk_handler_97(payload):
++    return payload.get('n', 97)
++def bulk_handler_98(payload):
++    return payload.get('n', 98)
++def bulk_handler_99(payload):
++    return payload.get('n', 99)
++def bulk_handler_100(payload):
++    return payload.get('n', 100)
++def bulk_handler_101(payload):
++    return payload.get('n', 101)
++def bulk_handler_102(payload):
++    return payload.get('n', 102)
++def bulk_handler_103(payload):
++    return payload.get('n', 103)
++def bulk_handler_104(payload):
++    return payload.get('n', 104)
++def bulk_handler_105(payload):
++    return payload.get('n', 105)
++def bulk_handler_106(payload):
++    return payload.get('n', 106)
++def bulk_handler_107(payload):
++    return payload.get('n', 107)
++def bulk_handler_108(payload):
++    return payload.get('n', 108)
++def bulk_handler_109(payload):
++    return payload.get('n', 109)
++def bulk_handler_110(payload):
++    return payload.get('n', 110)
++def bulk_handler_111(payload):
++    return payload.get('n', 111)
++def bulk_handler_112(payload):
++    return payload.get('n', 112)
++def bulk_handler_113(payload):
++    return payload.get('n', 113)
++def bulk_handler_114(payload):
++    return payload.get('n', 114)
++def bulk_handler_115(payload):
++    return payload.get('n', 115)
++def bulk_handler_116(payload):
++    return payload.get('n', 116)
++def bulk_handler_117(payload):
++    return payload.get('n', 117)
++def bulk_handler_118(payload):
++    return payload.get('n', 118)
++def bulk_handler_119(payload):
++    return payload.get('n', 119)
++def bulk_handler_120(payload):
++    return payload.get('n', 120)
++def bulk_handler_121(payload):
++    return payload.get('n', 121)
++def bulk_handler_122(payload):
++    return payload.get('n', 122)
++def bulk_handler_123(payload):
++    return payload.get('n', 123)
++def bulk_handler_124(payload):
++    return payload.get('n', 124)
++def bulk_handler_125(payload):
++    return payload.get('n', 125)
++def bulk_handler_126(payload):
++    return payload.get('n', 126)
++def bulk_handler_127(payload):
++    return payload.get('n', 127)
++def bulk_handler_128(payload):
++    return payload.get('n', 128)
++def bulk_handler_129(payload):
++    return payload.get('n', 129)
++def bulk_handler_130(payload):
++    return payload.get('n', 130)
++def bulk_handler_131(payload):
++    return payload.get('n', 131)
++def bulk_handler_132(payload):
++    return payload.get('n', 132)
++def bulk_handler_133(payload):
++    return payload.get('n', 133)
++def bulk_handler_134(payload):
++    return payload.get('n', 134)
++def bulk_handler_135(payload):
++    return payload.get('n', 135)
++def bulk_handler_136(payload):
++    return payload.get('n', 136)
++def bulk_handler_137(payload):
++    return payload.get('n', 137)
++def bulk_handler_138(payload):
++    return payload.get('n', 138)
++def bulk_handler_139(payload):
++    return payload.get('n', 139)
++def bulk_handler_140(payload):
++    return payload.get('n', 140)
++def bulk_handler_141(payload):
++    return payload.get('n', 141)
++def bulk_handler_142(payload):
++    return payload.get('n', 142)
++def bulk_handler_143(payload):
++    return payload.get('n', 143)
++def bulk_handler_144(payload):
++    return payload.get('n', 144)
++def bulk_handler_145(payload):
++    return payload.get('n', 145)
++def bulk_handler_146(payload):
++    return payload.get('n', 146)
++def bulk_handler_147(payload):
++    return payload.get('n', 147)
++def bulk_handler_148(payload):
++    return payload.get('n', 148)
++def bulk_handler_149(payload):
++    return payload.get('n', 149)
++def bulk_handler_150(payload):
++    return payload.get('n', 150)
++def bulk_handler_151(payload):
++    return payload.get('n', 151)
++def bulk_handler_152(payload):
++    return payload.get('n', 152)
++def bulk_handler_153(payload):
++    return payload.get('n', 153)
++def bulk_handler_154(payload):
++    return payload.get('n', 154)
++def bulk_handler_155(payload):
++    return payload.get('n', 155)
++def bulk_handler_156(payload):
++    return payload.get('n', 156)
++def bulk_handler_157(payload):
++    return payload.get('n', 157)
++def bulk_handler_158(payload):
++    return payload.get('n', 158)
++def bulk_handler_159(payload):
++    return payload.get('n', 159)
++def bulk_handler_160(payload):
++    return payload.get('n', 160)
++def bulk_handler_161(payload):
++    return payload.get('n', 161)
++def bulk_handler_162(payload):
++    return payload.get('n', 162)
++def bulk_handler_163(payload):
++    return payload.get('n', 163)
++def bulk_handler_164(payload):
++    return payload.get('n', 164)
++def bulk_handler_165(payload):
++    return payload.get('n', 165)
++def bulk_handler_166(payload):
++    return payload.get('n', 166)
++def bulk_handler_167(payload):
++    return payload.get('n', 167)
++def bulk_handler_168(payload):
++    return payload.get('n', 168)
++def bulk_handler_169(payload):
++    return payload.get('n', 169)
++def bulk_handler_170(payload):
++    return payload.get('n', 170)
++def bulk_handler_171(payload):
++    return payload.get('n', 171)
++def bulk_handler_172(payload):
++    return payload.get('n', 172)
++def bulk_handler_173(payload):
++    return payload.get('n', 173)
++def bulk_handler_174(payload):
++    return payload.get('n', 174)
++def bulk_handler_175(payload):
++    return payload.get('n', 175)
++def bulk_handler_176(payload):
++    return payload.get('n', 176)
++def bulk_handler_177(payload):
++    return payload.get('n', 177)
++def bulk_handler_178(payload):
++    return payload.get('n', 178)
++def bulk_handler_179(payload):
++    return payload.get('n', 179)
++def bulk_handler_180(payload):
++    return payload.get('n', 180)
++def bulk_handler_181(payload):
++    return payload.get('n', 181)
++def bulk_handler_182(payload):
++    return payload.get('n', 182)
++def bulk_handler_183(payload):
++    return payload.get('n', 183)
++def bulk_handler_184(payload):
++    return payload.get('n', 184)
++def bulk_handler_185(payload):
++    return payload.get('n', 185)
++def bulk_handler_186(payload):
++    return payload.get('n', 186)
++def bulk_handler_187(payload):
++    return payload.get('n', 187)
++def bulk_handler_188(payload):
++    return payload.get('n', 188)
++def bulk_handler_189(payload):
++    return payload.get('n', 189)
++def bulk_handler_190(payload):
++    return payload.get('n', 190)
++def bulk_handler_191(payload):
++    return payload.get('n', 191)
++def bulk_handler_192(payload):
++    return payload.get('n', 192)
++def bulk_handler_193(payload):
++    return payload.get('n', 193)
++def bulk_handler_194(payload):
++    return payload.get('n', 194)
++def bulk_handler_195(payload):
++    return payload.get('n', 195)
++def bulk_handler_196(payload):
++    return payload.get('n', 196)
++def bulk_handler_197(payload):
++    return payload.get('n', 197)
++def bulk_handler_198(payload):
++    return payload.get('n', 198)
++def bulk_handler_199(payload):
++    return payload.get('n', 199)
++def bulk_handler_200(payload):
++    return payload.get('n', 200)
++def bulk_handler_201(payload):
++    return payload.get('n', 201)
++def bulk_handler_202(payload):
++    return payload.get('n', 202)
++def bulk_handler_203(payload):
++    return payload.get('n', 203)
++def bulk_handler_204(payload):
++    return payload.get('n', 204)
++def bulk_handler_205(payload):
++    return payload.get('n', 205)
++def bulk_handler_206(payload):
++    return payload.get('n', 206)
++def bulk_handler_207(payload):
++    return payload.get('n', 207)
++def bulk_handler_208(payload):
++    return payload.get('n', 208)
++def bulk_handler_209(payload):
++    return payload.get('n', 209)

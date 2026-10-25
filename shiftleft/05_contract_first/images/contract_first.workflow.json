@@ -1,0 +1,160 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "契约先行：契约、实现、生成的三边防漂移",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/05_contract_first/images/contract_first.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "生成与执行"
+    },
+    {
+      "id": "out",
+      "label": "判定"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "唯一真理",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "gen",
+      "label": "生成与调用",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "check",
+      "label": "契约校验",
+      "fromCol": 3,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "判定",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "contract",
+    "generate",
+    "call",
+    "validate",
+    "green"
+  ],
+  "nodes": [
+    {
+      "id": "contract",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "contract.yaml",
+      "width": 132,
+      "sublabel": "进 git · 唯一真理"
+    },
+    {
+      "id": "impl",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "被测实现",
+      "width": 132,
+      "sublabel": "APP_IMPL 热切换"
+    },
+    {
+      "id": "generate",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "hypothesis 生成",
+      "width": 132,
+      "sublabel": "合法 + 非法两阶段"
+    },
+    {
+      "id": "call",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "真实 HTTP 调用",
+      "width": 132,
+      "sublabel": "每操作一个测试项"
+    },
+    {
+      "id": "validate",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "契约校验四件套",
+      "width": 132,
+      "sublabel": "状态码/类型/schema/无 5xx"
+    },
+    {
+      "id": "green",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "全绿放行",
+      "width": 132,
+      "sublabel": "364 条案例 · 规模可配"
+    },
+    {
+      "id": "drift",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "漂移报红",
+      "width": 132,
+      "sublabel": "违反点 + curl 复现"
+    }
+  ],
+  "edges": [
+    {
+      "from": "contract",
+      "to": "generate",
+      "variant": "default"
+    },
+    {
+      "from": "impl",
+      "to": "call",
+      "variant": "dashed"
+    },
+    {
+      "from": "generate",
+      "to": "call",
+      "variant": "default"
+    },
+    {
+      "from": "call",
+      "to": "validate",
+      "variant": "default"
+    },
+    {
+      "from": "validate",
+      "to": "green",
+      "variant": "default"
+    },
+    {
+      "from": "validate",
+      "to": "drift",
+      "variant": "default"
+    }
+  ]
+}

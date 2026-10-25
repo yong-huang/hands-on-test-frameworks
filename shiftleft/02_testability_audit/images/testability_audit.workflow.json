@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "需求可测性审计：五类规则与两个封顶",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/02_testability_audit/images/testability_audit.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "审计引擎"
+    },
+    {
+      "id": "out",
+      "label": "审计产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "待审输入",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "detect",
+      "label": "逐条检测",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "judge",
+      "label": "打分分档",
+      "fromCol": 3,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "建议与门禁",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "stories",
+    "scan",
+    "cap",
+    "score",
+    "suggest",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "stories",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "用户故事 backlog",
+      "width": 132,
+      "sublabel": "验收条件逐条被扫"
+    },
+    {
+      "id": "rules",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "rules.yaml",
+      "width": 132,
+      "sublabel": "词表 · 权重 · 档位线"
+    },
+    {
+      "id": "scan",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "五类规则检测",
+      "width": 132,
+      "sublabel": "歧义/可观察/线索/依赖/连接"
+    },
+    {
+      "id": "cap",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "结构封顶",
+      "width": 132,
+      "sublabel": "无 AC→40 · 超 7 条→55"
+    },
+    {
+      "id": "score",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "打分与分档",
+      "width": 132,
+      "sublabel": "100−Σ扣分 · 档位线 80/60"
+    },
+    {
+      "id": "suggest",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "改写建议",
+      "width": 132,
+      "sublabel": "每类违规绑定一条改法"
+    },
+    {
+      "id": "gate",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "报告与门禁",
+      "width": 132,
+      "sublabel": "md/json · 不可测→exit 1"
+    }
+  ],
+  "edges": [
+    {
+      "from": "stories",
+      "to": "scan",
+      "variant": "default"
+    },
+    {
+      "from": "rules",
+      "to": "scan",
+      "variant": "dashed"
+    },
+    {
+      "from": "scan",
+      "to": "cap",
+      "variant": "default"
+    },
+    {
+      "from": "cap",
+      "to": "score",
+      "variant": "default"
+    },
+    {
+      "from": "score",
+      "to": "suggest",
+      "variant": "default"
+    },
+    {
+      "from": "suggest",
+      "to": "gate",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "契约生成挡板：消费方先行，provider 换装透明",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/06_mock_first/images/mock_first.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "挡板与消费方"
+    },
+    {
+      "id": "out",
+      "label": "验收与切换"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "唯一输入",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "mock",
+      "label": "动态挡板",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "verify",
+      "label": "三重验收",
+      "fromCol": 3,
+      "toCol": 4
+    },
+    {
+      "id": "swap",
+      "label": "换装",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "contract",
+    "generate",
+    "inject",
+    "consume",
+    "schemaCheck",
+    "swap"
+  ],
+  "nodes": [
+    {
+      "id": "contract",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "contract.yaml",
+      "width": 132,
+      "sublabel": "复制自项目 5 · 唯一输入"
+    },
+    {
+      "id": "generate",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "动态挡板",
+      "width": 132,
+      "sublabel": "按 schema 生成示例"
+    },
+    {
+      "id": "inject",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "错误/延迟注入",
+      "width": 132,
+      "sublabel": "X-Mock-Fault · X-Mock-Delay"
+    },
+    {
+      "id": "consume",
+      "lane": "engine",
+      "col": 3,
+      "type": "frontend",
+      "label": "消费方测试",
+      "width": 132,
+      "sublabel": "5 条 · 只断言契约结构"
+    },
+    {
+      "id": "schemaCheck",
+      "lane": "engine",
+      "col": 4,
+      "type": "backend",
+      "label": "jsonschema 校验",
+      "width": 132,
+      "sublabel": "逐操作 · 零错误放行"
+    },
+    {
+      "id": "swap",
+      "lane": "out",
+      "col": 5,
+      "type": "external",
+      "label": "真 provider",
+      "width": 132,
+      "sublabel": "测试零改动 · 依旧全绿"
+    }
+  ],
+  "edges": [
+    {
+      "from": "contract",
+      "to": "generate",
+      "variant": "default"
+    },
+    {
+      "from": "generate",
+      "to": "inject",
+      "variant": "default"
+    },
+    {
+      "from": "inject",
+      "to": "consume",
+      "variant": "default"
+    },
+    {
+      "from": "consume",
+      "to": "schemaCheck",
+      "variant": "default"
+    },
+    {
+      "from": "schemaCheck",
+      "to": "swap",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "SAST 自定义规则：三路验证一条规则集",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/12_sast_rules/images/sast_rules.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "核心产出"
+    },
+    {
+      "id": "engine",
+      "label": "semgrep 引擎"
+    },
+    {
+      "id": "out",
+      "label": "三路验证"
+    }
+  ],
+  "phases": [
+    {
+      "id": "rules",
+      "label": "规则产出",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "match",
+      "label": "模式匹配",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "verify",
+      "label": "验证与对照",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "yml",
+    "validate",
+    "targets",
+    "match",
+    "blind",
+    "baseline"
+  ],
+  "nodes": [
+    {
+      "id": "yml",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "fastapi_rules.yaml",
+      "width": 132,
+      "sublabel": "3 条规则 · 团队评审资产"
+    },
+    {
+      "id": "validate",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "semgrep validate",
+      "width": 132,
+      "sublabel": "语法与模式合法性"
+    },
+    {
+      "id": "targets",
+      "lane": "engine",
+      "col": 2,
+      "type": "external",
+      "label": "靶场与对照",
+      "width": 132,
+      "sublabel": "5 埋点 / 干净文件"
+    },
+    {
+      "id": "match",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "模式匹配",
+      "width": 132,
+      "sublabel": "\"...\" 通配 · metavariable"
+    },
+    {
+      "id": "blind",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "盲区披露",
+      "width": 132,
+      "sublabel": "按名匹配漏按值密钥"
+    },
+    {
+      "id": "baseline",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "社区基线留档",
+      "width": 132,
+      "sublabel": "labs/11 实扫 2 条"
+    }
+  ],
+  "edges": [
+    {
+      "from": "yml",
+      "to": "validate",
+      "variant": "default"
+    },
+    {
+      "from": "validate",
+      "to": "targets",
+      "variant": "default"
+    },
+    {
+      "from": "targets",
+      "to": "match",
+      "variant": "default"
+    },
+    {
+      "from": "match",
+      "to": "blind",
+      "variant": "default"
+    },
+    {
+      "from": "blind",
+      "to": "baseline",
+      "variant": "default"
+    }
+  ]
+}

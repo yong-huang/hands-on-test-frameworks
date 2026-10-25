@@ -1,0 +1,50 @@
+# 左移检查的 PR 流水线：三层分层编排（本文件同时是 local_sim.py 的驱动配置）。
+# 分层：快层（秒级反馈）→ 安全层 → 接口层；needs 链保证失败短路，不浪费后层算力。
+# 预算：timeout-minutes 即每层预算，local_sim 会实测耗时并写预算报表。
+name: shiftleft-pr
+on: pull_request
+
+jobs:
+  fast:
+    name: "快层 lint+单测"
+    runs-on: ubuntu-latest
+    timeout-minutes: 2 # 预算 120s
+    steps:
+      - uses: actions/checkout@v4
+      - name: lint
+        run: ruff check --select E,F,B sample/
+      - name: types
+        run: mypy --no-error-summary sample/app.py
+      - name: tests
+        run: pytest sample -q
+      - name: record
+        if: always()
+        run: echo "fast=${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+
+  security:
+    name: "安全层 SAST+密钥"
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 3 # 预算 180s
+    steps:
+      - uses: actions/checkout@v4
+      - name: sast
+        run: semgrep scan --config auto --error --metrics=off sample/
+      - name: secrets
+        run: gitleaks detect --no-git --redact
+      - name: record
+        if: always()
+        run: echo "security=${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+
+  api:
+    name: "接口层契约测试"
+    needs: [fast, security]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4 # 预算 240s
+    steps:
+      - uses: actions/checkout@v4
+      - name: contract
+        run: pytest ../05_contract_first/test_contract.py -q
+      - name: record
+        if: always()
+        run: echo "api=${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"

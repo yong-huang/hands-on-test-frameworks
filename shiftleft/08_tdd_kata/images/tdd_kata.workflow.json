@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "TDD 红绿重构：提交历史为纪律作证",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/08_tdd_kata/images/tdd_kata.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "cycle",
+      "label": "红绿节拍"
+    },
+    {
+      "id": "log",
+      "label": "账本"
+    },
+    {
+      "id": "audit",
+      "label": "审计"
+    }
+  ],
+  "phases": [
+    {
+      "id": "loop",
+      "label": "五轮循环",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "refactor",
+      "label": "重构保绿",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "audit",
+      "label": "核验",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "red",
+    "green",
+    "refactor",
+    "runslog",
+    "gitlog",
+    "verify"
+  ],
+  "nodes": [
+    {
+      "id": "red",
+      "lane": "cycle",
+      "col": 0,
+      "type": "frontend",
+      "label": "🔴 先写失败测试",
+      "width": 132,
+      "sublabel": "提交即实测 · 必须红"
+    },
+    {
+      "id": "green",
+      "lane": "cycle",
+      "col": 1,
+      "type": "frontend",
+      "label": "🟢 最小实现",
+      "width": 132,
+      "sublabel": "只让当前红变绿"
+    },
+    {
+      "id": "refactor",
+      "lane": "cycle",
+      "col": 2,
+      "type": "backend",
+      "label": "🔵 重构",
+      "width": 132,
+      "sublabel": "只动实现 · 绿保持"
+    },
+    {
+      "id": "runslog",
+      "lane": "log",
+      "col": 3,
+      "type": "database",
+      "label": "runs.log",
+      "width": 132,
+      "sublabel": "11 条运行留档"
+    },
+    {
+      "id": "gitlog",
+      "lane": "log",
+      "col": 4,
+      "type": "database",
+      "label": "git 历史",
+      "width": 132,
+      "sublabel": "时间线红绿配对"
+    },
+    {
+      "id": "verify",
+      "lane": "audit",
+      "col": 5,
+      "type": "frontend",
+      "label": "五条断言核验",
+      "width": 132,
+      "sublabel": "脚本审计 · 终局全绿"
+    }
+  ],
+  "edges": [
+    {
+      "from": "red",
+      "to": "green",
+      "variant": "default"
+    },
+    {
+      "from": "green",
+      "to": "refactor",
+      "variant": "default"
+    },
+    {
+      "from": "refactor",
+      "to": "runslog",
+      "variant": "default"
+    },
+    {
+      "from": "runslog",
+      "to": "gitlog",
+      "variant": "default"
+    },
+    {
+      "from": "gitlog",
+      "to": "verify",
+      "variant": "default"
+    }
+  ]
+}

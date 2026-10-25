@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pre-commit 门禁链：快层挡提交、重层管深查",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/14_precommit_chain/images/precommit_chain.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "src",
+      "label": "编排来源"
+    },
+    {
+      "id": "chain",
+      "label": "门禁链"
+    },
+    {
+      "id": "out",
+      "label": "反馈"
+    }
+  ],
+  "phases": [
+    {
+      "id": "reuse",
+      "label": "编排复用",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "commit",
+      "label": "提交时秒级",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "manual",
+      "label": "手动深查",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "config",
+    "ruff",
+    "gitleaks",
+    "block",
+    "manual"
+  ],
+  "nodes": [
+    {
+      "id": "config",
+      "lane": "src",
+      "col": 0,
+      "type": "database",
+      "label": "pre-commit 配置",
+      "width": 132,
+      "sublabel": "进 git · 全组同款"
+    },
+    {
+      "id": "reuse",
+      "lane": "src",
+      "col": 1,
+      "type": "external",
+      "label": "前序四项目引擎",
+      "width": 132,
+      "sublabel": "10/11/12/13 · 单一维护源"
+    },
+    {
+      "id": "ruff",
+      "lane": "chain",
+      "col": 2,
+      "type": "backend",
+      "label": "ruff + mypy",
+      "width": 132,
+      "sublabel": "快层 · commit 自动"
+    },
+    {
+      "id": "gitleaks",
+      "lane": "chain",
+      "col": 3,
+      "type": "backend",
+      "label": "gitleaks 暂存区",
+      "width": 132,
+      "sublabel": "快层 · 假密钥阻断"
+    },
+    {
+      "id": "block",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "0.5s 反馈",
+      "width": 132,
+      "sublabel": "实测 · 约 589× 于 CI 预算"
+    },
+    {
+      "id": "manual",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "重层手动深查",
+      "width": 132,
+      "sublabel": "detector + semgrep · 2.6s"
+    },
+    {
+      "id": "timing",
+      "lane": "chain",
+      "col": 4,
+      "type": "frontend",
+      "label": "证据双文件",
+      "width": 132,
+      "sublabel": "blocked_evidence + timing"
+    }
+  ],
+  "edges": [
+    {
+      "from": "config",
+      "to": "ruff",
+      "variant": "default"
+    },
+    {
+      "from": "reuse",
+      "to": "ruff",
+      "variant": "dashed"
+    },
+    {
+      "from": "ruff",
+      "to": "gitleaks",
+      "variant": "default"
+    },
+    {
+      "from": "gitleaks",
+      "to": "block",
+      "variant": "default"
+    },
+    {
+      "from": "block",
+      "to": "manual",
+      "variant": "default"
+    },
+    {
+      "from": "manual",
+      "to": "timing",
+      "variant": "default"
+    }
+  ]
+}

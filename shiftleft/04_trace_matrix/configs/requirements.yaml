@@ -1,0 +1,18 @@
+# 治理对象：labs/11 FastAPI 订单应用的需求清单（从真实端点整理，REQ-ID 唯一）。
+requirements:
+  - id: REQ-001
+    text: 健康检查端点可用（GET /api/health 返回 200 与 status ok）
+  - id: REQ-002
+    text: 可创建订单（POST /api/orders 返回 201 与订单号）
+  - id: REQ-003
+    text: 订单列表支持分页与总数（GET /api/orders 返回 items/total/limit/offset）
+  - id: REQ-004
+    text: 可按订单号查询详情（GET /api/orders/{id}，不存在返回 404）
+  - id: REQ-005
+    text: 订单状态可在 created/paid/shipped/cancelled 间流转（PATCH）
+  - id: REQ-006
+    text: 可取消订单（DELETE 返回 204，取消后查询返回 404）
+  - id: REQ-007
+    text: 登录签发访问令牌（POST /api/login，正确帐密返回 token 与角色）
+  - id: REQ-008
+    text: 管理统计仅 admin 角色可访问（GET /api/admin/stats 无 admin 令牌返回 403）

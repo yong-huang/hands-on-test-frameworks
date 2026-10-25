@@ -1,0 +1,21 @@
+# 防复发规则库（semgrep 侧）：每个历史 bug 沉淀一条「同类缺陷再出现即拦」的模式。
+# 来源映射：money-float-arith ← bug01 金额精度；naive-datetime-now ← bug03 时区。
+# bug02 并发超卖不走模式匹配（竞态不是语法形状），由并发复现模板拦截（tests/test_concurrency_template.py）。
+rules:
+  - id: money-float-arith
+    message: 金额变量用 float 承接（bug01 同款缺陷，必然丢分）——金额一律 Decimal
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern: float($Y)
+      - pattern-inside: |
+          $X = ...
+      - metavariable-regex:
+          metavariable: $X
+          regex: (?i).*(price|total|amount|discount|money|subtotal|payable).*
+
+  - id: naive-datetime-now
+    message: datetime.now() 未带时区（bug03 同款缺陷，跨时区必错）——用 now(ZoneInfo(...))
+    severity: ERROR
+    languages: [python]
+    pattern: datetime.now(...)

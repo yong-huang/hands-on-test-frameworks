@@ -1,0 +1,44 @@
+# 本地门禁链编排：快层（提交时秒级反馈）+ 重层（手动触发的深度检查）。
+# 四道检查全部复用前序项目的产出，本文件只做编排——
+#   ruff/mypy/gitleaks        ← 项目 11/13 的工具
+#   反模式检测器 detector.py  ← 项目 10 的引擎（跨目录引用，单一维护源）
+#   semgrep 规则集            ← 项目 12 的 fastapi_rules.yaml
+repos:
+  - repo: local
+    hooks:
+      # ---------- 快层：git commit 时自动跑，秒级反馈 ----------
+      - id: ruff-fast
+        name: ruff 快层（风格与缺陷）
+        entry: ruff check --select E,F,B
+        language: system
+        types: [python]
+
+      - id: mypy-fast
+        name: mypy 快层（类型检查）
+        entry: python -m mypy --no-error-summary
+        language: system
+        types: [python]
+
+      - id: gitleaks-protect
+        name: gitleaks 快层（密钥闸·暂存区扫描）
+        entry: gitleaks protect --staged --redact
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      # ---------- 重层：手动触发（pre-commit run --hook-stage manual）----------
+      - id: antipattern-manual
+        name: 反模式检测（重层·项目 10 引擎）
+        entry: python ../../10_antipattern/detector.py --path . --no-save --gate
+        language: system
+        files: \.py$
+        stages: [manual]
+        pass_filenames: false
+
+      - id: semgrep-manual
+        name: semgrep SAST（重层·项目 12 规则）
+        entry: semgrep scan --config ../../12_sast_rules/rules --error
+        language: system
+        files: \.py$
+        stages: [manual]
+        pass_filenames: false

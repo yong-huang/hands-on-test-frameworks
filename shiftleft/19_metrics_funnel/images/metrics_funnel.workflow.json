@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "左移度量漏斗：七阶段拦截分布",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/19_metrics_funnel/images/metrics_funnel.html",
+    "viewBox": [1100, 540]
+  },
+  "lanes": [
+    {"id": "in", "label": "数据源"},
+    {"id": "engine", "label": "漏斗引擎"},
+    {"id": "out", "label": "看板"}
+  ],
+  "phases": [
+    {"id": "data", "label": "缺陷数据", "fromCol": 0, "toCol": 0},
+    {"id": "compute", "label": "按阶段归类", "fromCol": 1, "toCol": 2},
+    {"id": "out", "label": "漏斗与左移率", "fromCol": 3, "toCol": 4}
+  ],
+  "mainPath": ["data", "classify", "funnel", "report"],
+  "nodes": [
+    {"id": "data", "lane": "in", "col": 0, "type": "database", "label": "defects.yaml", "width": 132, "sublabel": "30 条缺陷 · 7 阶段"},
+    {"id": "classify", "lane": "engine", "col": 1, "type": "backend", "label": "阶段归类", "width": 132, "sublabel": "需求→生产 · 七枚举"},
+    {"id": "funnel", "lane": "engine", "col": 2, "type": "backend", "label": "漏斗计算", "width": 132, "sublabel": "左移率 = CI前拦截/总数"},
+    {"id": "report", "lane": "out", "col": 3, "type": "frontend", "label": "漏斗看板", "width": 132, "sublabel": "md/json · 左移率 77%"},
+    {"id": "blindspot", "lane": "out", "col": 4, "type": "frontend", "label": "盲区标注", "width": 132, "sublabel": "生产逃逸 3 条 · 未建闸"}
+  ],
+  "edges": [
+    {"from": "data", "to": "classify", "variant": "default"},
+    {"from": "classify", "to": "funnel", "variant": "default"},
+    {"from": "funnel", "to": "report", "variant": "default"}
+  ]
+}

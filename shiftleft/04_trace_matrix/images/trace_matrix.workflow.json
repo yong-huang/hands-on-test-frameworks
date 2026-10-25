@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "需求↔测试追溯矩阵：三方对账",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/04_trace_matrix/images/trace_matrix.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "三方数据"
+    },
+    {
+      "id": "engine",
+      "label": "对账引擎"
+    },
+    {
+      "id": "out",
+      "label": "矩阵与门禁"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "真实测试与需求",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "recon",
+      "label": "子串匹配缝合",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "产出",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "collect",
+    "reconcile",
+    "consistency",
+    "matrix",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "collect",
+      "lane": "engine",
+      "col": 0,
+      "type": "backend",
+      "label": "pytest 收集",
+      "width": 132,
+      "sublabel": "collect-only · 一条不多"
+    },
+    {
+      "id": "reqs",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "requirements.yaml",
+      "width": 132,
+      "sublabel": "8 条需求 · 要什么"
+    },
+    {
+      "id": "mapping",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "外挂映射",
+      "width": 132,
+      "sublabel": "测试子串 → REQ · 零侵入"
+    },
+    {
+      "id": "reconcile",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "三方缝合",
+      "width": 132,
+      "sublabel": "双向矩阵 · 参数化逐实例"
+    },
+    {
+      "id": "consistency",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "机械一致",
+      "width": 132,
+      "sublabel": "收集=报告=映射+孤儿"
+    },
+    {
+      "id": "matrix",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "双向矩阵",
+      "width": 132,
+      "sublabel": "孤儿/陈旧 → 告警"
+    },
+    {
+      "id": "gate",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "覆盖门禁",
+      "width": 132,
+      "sublabel": "未覆盖需求 → exit 1"
+    }
+  ],
+  "edges": [
+    {
+      "from": "collect",
+      "to": "reconcile",
+      "variant": "default"
+    },
+    {
+      "from": "reqs",
+      "to": "reconcile",
+      "variant": "dashed"
+    },
+    {
+      "from": "mapping",
+      "to": "reconcile",
+      "variant": "dashed"
+    },
+    {
+      "from": "reconcile",
+      "to": "consistency",
+      "variant": "default"
+    },
+    {
+      "from": "consistency",
+      "to": "matrix",
+      "variant": "default"
+    },
+    {
+      "from": "matrix",
+      "to": "gate",
+      "variant": "default"
+    }
+  ]
+}

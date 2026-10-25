@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "供应链左移双闸：依赖 CVE 与密钥扫描",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/13_supply_chain/images/supply_chain.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "dep",
+      "label": "依赖闸"
+    },
+    {
+      "id": "engine",
+      "label": "工具与退出码"
+    },
+    {
+      "id": "secret",
+      "label": "密钥闸"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "靶场与对照",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "scan",
+      "label": "扫描",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "验收汇总",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "vulnreq",
+    "pipaudit",
+    "summary"
+  ],
+  "nodes": [
+    {
+      "id": "vulnreq",
+      "lane": "dep",
+      "col": 0,
+      "type": "external",
+      "label": "requirements 靶场",
+      "width": 132,
+      "sublabel": "requests==2.19.1"
+    },
+    {
+      "id": "cleanreq",
+      "lane": "dep",
+      "col": 1,
+      "type": "external",
+      "label": "干净基线",
+      "width": 132,
+      "sublabel": "requests==2.33.0"
+    },
+    {
+      "id": "pipaudit",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "pip-audit -s osv",
+      "width": 132,
+      "sublabel": "--aliases on · CVE 别名"
+    },
+    {
+      "id": "gitleaks",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "gitleaks --no-git",
+      "width": 132,
+      "sublabel": "默认规则 + 熵值 · --redact"
+    },
+    {
+      "id": "leaksrc",
+      "lane": "secret",
+      "col": 3,
+      "type": "external",
+      "label": "假钥匙靶场",
+      "width": 132,
+      "sublabel": "ghp_ 令牌 · secret 赋值"
+    },
+    {
+      "id": "cleansrc",
+      "lane": "secret",
+      "col": 4,
+      "type": "external",
+      "label": "环境变量对照",
+      "width": 132,
+      "sublabel": "零字面量钥匙"
+    },
+    {
+      "id": "summary",
+      "lane": "engine",
+      "col": 5,
+      "type": "frontend",
+      "label": "四项验收汇总",
+      "width": 132,
+      "sublabel": "红绿由退出码说话 · JSON 留档"
+    }
+  ],
+  "edges": [
+    {
+      "from": "vulnreq",
+      "to": "pipaudit",
+      "variant": "default"
+    },
+    {
+      "from": "cleanreq",
+      "to": "pipaudit",
+      "variant": "dashed"
+    },
+    {
+      "from": "pipaudit",
+      "to": "summary",
+      "variant": "default"
+    },
+    {
+      "from": "gitleaks",
+      "to": "summary",
+      "variant": "default"
+    },
+    {
+      "from": "leaksrc",
+      "to": "gitleaks",
+      "variant": "dashed"
+    },
+    {
+      "from": "cleansrc",
+      "to": "gitleaks",
+      "variant": "dashed"
+    }
+  ]
+}

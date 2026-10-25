@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "CI 左移分层：needs 短路、预算与报表",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/17_ci_tiers/images/ci_tiers.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "三层流水线"
+    },
+    {
+      "id": "out",
+      "label": "报表与留档"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "配置与样例",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "tiers",
+      "label": "分层执行",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "验收",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "yml",
+    "fast",
+    "security",
+    "api",
+    "summary"
+  ],
+  "nodes": [
+    {
+      "id": "yml",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "ci_workflow.yml",
+      "width": 132,
+      "sublabel": "双引擎同源 · actionlint 校验"
+    },
+    {
+      "id": "bad",
+      "lane": "in",
+      "col": 1,
+      "type": "external",
+      "label": "埋错样例",
+      "width": 132,
+      "sublabel": "F401 · 短路演示靶"
+    },
+    {
+      "id": "fast",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "快层 lint+单测",
+      "width": 132,
+      "sublabel": "预算 2min · 秒级反馈"
+    },
+    {
+      "id": "security",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "安全层 SAST+密钥",
+      "width": 132,
+      "sublabel": "needs: fast · 预算 3min"
+    },
+    {
+      "id": "api",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "接口层契约测试",
+      "width": 132,
+      "sublabel": "needs 双层 · 预算 4min"
+    },
+    {
+      "id": "skip",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "失败短路",
+      "width": 132,
+      "sublabel": "上游红 · 下游 ⏭️ 跳过"
+    },
+    {
+      "id": "summary",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "预算报表",
+      "width": 132,
+      "sublabel": "耗时/预算/达标 · summary.md"
+    }
+  ],
+  "edges": [
+    {
+      "from": "yml",
+      "to": "fast",
+      "variant": "default"
+    },
+    {
+      "from": "bad",
+      "to": "fast",
+      "variant": "dashed"
+    },
+    {
+      "from": "fast",
+      "to": "security",
+      "variant": "default"
+    },
+    {
+      "from": "security",
+      "to": "api",
+      "variant": "default"
+    },
+    {
+      "from": "fast",
+      "to": "skip",
+      "variant": "dashed"
+    },
+    {
+      "from": "api",
+      "to": "summary",
+      "variant": "default"
+    }
+  ]
+}

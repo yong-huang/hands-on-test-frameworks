@@ -1,0 +1,13 @@
+diff --git a/src/orders.py b/src/orders.py
+--- a/src/orders.py
++++ b/src/orders.py
+@@ -55,5 +55,6 @@ def cancel_order(order_id: int):
+ def cancel_order(order_id: int):
++    # TODO: 支持批量取消
+     delete(order_id)
+diff --git a/tests/test_cancel.py b/tests/test_cancel.py
+--- a/tests/test_cancel.py
++++ b/tests/test_cancel.py
+@@ -3,3 +3,6 @@ def test_cancel_ok():
++def test_cancel_ok():
++    assert cancel_order(1) is None

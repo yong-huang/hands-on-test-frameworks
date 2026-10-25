@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "变异测试体检：给测试本身做体检",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/09_mutation/images/mutation.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "变异引擎"
+    },
+    {
+      "id": "out",
+      "label": "两轮体检"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "被测与用例",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "gen",
+      "label": "生成与判定",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "报告与边界",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "pricing",
+    "gen",
+    "judge",
+    "round1",
+    "round2",
+    "equiv"
+  ],
+  "nodes": [
+    {
+      "id": "pricing",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "pricing.py",
+      "width": 132,
+      "sublabel": "满减定价 · 被变异目标"
+    },
+    {
+      "id": "gen",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "AST 变异器",
+      "width": 132,
+      "sublabel": "四类变异 · 7 个变异体"
+    },
+    {
+      "id": "judge",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "逐体替换跑测试",
+      "width": 132,
+      "sublabel": "非零=杀死 · 清缓存防串味"
+    },
+    {
+      "id": "round1",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "第一轮 弱测试",
+      "width": 132,
+      "sublabel": "存活 5 · score 28.6%"
+    },
+    {
+      "id": "round2",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "第二轮 强测试",
+      "width": 132,
+      "sublabel": "85.7% · +57.1pp"
+    },
+    {
+      "id": "equiv",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "等价变异标注",
+      "width": 132,
+      "sublabel": "quantize 吸收 · 理论边界"
+    }
+  ],
+  "edges": [
+    {
+      "from": "pricing",
+      "to": "gen",
+      "variant": "default"
+    },
+    {
+      "from": "gen",
+      "to": "judge",
+      "variant": "default"
+    },
+    {
+      "from": "judge",
+      "to": "round1",
+      "variant": "default"
+    },
+    {
+      "from": "round1",
+      "to": "round2",
+      "variant": "default"
+    },
+    {
+      "from": "round2",
+      "to": "equiv",
+      "variant": "default"
+    }
+  ]
+}

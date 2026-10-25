@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "性能预算左移：预算即测试，超支即红",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/18_perf_budget/images/perf_budget.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "预算引擎"
+    },
+    {
+      "id": "out",
+      "label": "报告"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "SUT 与预算",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "sample",
+      "label": "并发取样与断言",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "报告",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "sut",
+    "sample",
+    "p95",
+    "assert",
+    "green"
+  ],
+  "nodes": [
+    {
+      "id": "sut",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "labs/11 SUT",
+      "width": 132,
+      "sublabel": "FastAPI + SQLite"
+    },
+    {
+      "id": "budget",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "budget.yaml",
+      "width": 132,
+      "sublabel": "p95/错误率 · 改了即变"
+    },
+    {
+      "id": "sample",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "10 并发取样",
+      "width": 132,
+      "sublabel": "httpx · 20 取样/接口"
+    },
+    {
+      "id": "p95",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "p95 统计",
+      "width": 132,
+      "sublabel": "排序 · 95 百分位最近邻"
+    },
+    {
+      "id": "assert",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "预算断言",
+      "width": 132,
+      "sublabel": "实测 vs 预算 · 超支即红"
+    },
+    {
+      "id": "green",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "全绿放行",
+      "width": 132,
+      "sublabel": "健康 30ms · 列表 39ms"
+    },
+    {
+      "id": "red",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "超支报红",
+      "width": 132,
+      "sublabel": "slow-config 1533ms vs 200ms"
+    }
+  ],
+  "edges": [
+    {
+      "from": "sut",
+      "to": "sample",
+      "variant": "default"
+    },
+    {
+      "from": "budget",
+      "to": "assert",
+      "variant": "dashed"
+    },
+    {
+      "from": "sample",
+      "to": "p95",
+      "variant": "default"
+    },
+    {
+      "from": "p95",
+      "to": "assert",
+      "variant": "default"
+    },
+    {
+      "from": "assert",
+      "to": "green",
+      "variant": "default"
+    },
+    {
+      "from": "assert",
+      "to": "red",
+      "variant": "default"
+    }
+  ]
+}

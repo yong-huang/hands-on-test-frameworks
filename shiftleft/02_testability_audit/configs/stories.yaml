@@ -1,0 +1,63 @@
+# 10 条样例用户故事：5 条可测性良好（G），5 条典型反模式（B）。
+# 这是审计器的演示输入——真实团队里这就是待评审的迭代 backlog。
+stories:
+  # ---------- 可测性良好：量化预期 + 接口线索 + 无依赖 ----------
+  - id: US-G1
+    title: 未满门槛用券被拒绝
+    acceptance_criteria:
+      - 当订单小计 < 100 时调用 POST /api/orders/coupon，返回 422，error_code 字段为 COUPON_THRESHOLD_NOT_MET
+
+  - id: US-G2
+    title: 券抵扣金额精确
+    acceptance_criteria:
+      - 应付金额 = 小计 − 20.00，接口响应 total 字段等于 80.09
+
+  - id: US-G3
+    title: 下单扣减库存
+    acceptance_criteria:
+      - 下单成功调用 PUT /api/stock 后库存字段减 1，返回 200
+
+  - id: US-G4
+    title: 幂等防重放
+    acceptance_criteria:
+      - 携带同一 idempotency-key 的重复请求提交 2 次，服务端仅创建 1 笔订单
+
+  - id: US-G5
+    title: 订单分页查询
+    acceptance_criteria:
+      - GET /api/orders?page=2&page_size=50 返回恰好 50 条，total 字段为整数
+
+  # ---------- 可测性差：每条埋一类典型反模式 ----------
+  - id: US-B1
+    title: 体验优化
+    acceptance_criteria:
+      - 系统响应要快速
+      - 界面必须友好
+      - 服务保持稳定
+
+  - id: US-B2
+    title: 查询提速
+    acceptance_criteria:
+      - 优化订单查询性能，让用户满意
+
+  - id: US-B3
+    title: 优惠券全家桶（故事过大）
+    acceptance_criteria:
+      - 支持创建面额 20.00 的优惠券
+      - 支持设置门槛 100.00
+      - 支持设置有效期 30 天
+      - 支持每单限用 1 张
+      - 支持叠加规则配置
+      - 支持作废与恢复
+      - 支持导出发放记录 CSV
+      - 支持按用户分组发放
+      - 支持防重复领取校验
+
+  - id: US-B4
+    title: 金额库存联动验证
+    acceptance_criteria:
+      - 在前置故事上线完成后，同时验证订单金额与库存余量都正确更新
+
+  - id: US-B5
+    title: 消息通知（有想法没验收）
+    acceptance_criteria: []

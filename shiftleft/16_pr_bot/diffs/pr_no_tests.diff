@@ -1,0 +1,9 @@
+diff --git a/src/orders.py b/src/orders.py
+--- a/src/orders.py
++++ b/src/orders.py
+@@ -10,6 +10,9 @@ def create_order(order: OrderIn):
+ def create_order(order: OrderIn):
+-    total = compute(order)
++    total = compute(order, apply_tax=True)
++    audit.log("create", order.customer)
+     return {"id": order.id, "total": total}

@@ -1,0 +1,15 @@
+diff --git a/src/orders.py b/src/orders.py
+--- a/src/orders.py
++++ b/src/orders.py
+@@ -20,4 +20,4 @@ def get_order(order_id: int):
+ def get_order(order_id: int):
+-    row = db.fetch(order_id)
++    row = db.fetch(order_id, include_items=True)
+     return render(row)
+diff --git a/tests/test_orders.py b/tests/test_orders.py
+--- a/tests/test_orders.py
++++ b/tests/test_orders.py
+@@ -8,3 +8,6 @@ def test_get_order():
++def test_get_order_includes_items():
++    row = db.fetch(1, include_items=True)
++    assert row["items"]

@@ -1,0 +1,22 @@
+# 性能预算（集中配置）：每个接口的 p95 与错误率上限。
+# 本文件是「预算即测试」的唯一真相——改预算重跑，红绿立即变化。
+# 所有路径相对于 SUT base_url；concurrent 为并发线程数；requests 为总取样数。
+
+base_url: "http://127.0.0.1:8940"
+concurrent: 10
+requests_per_endpoint: 20  # 每接口取样数（并发×轮次≈此值，取整即可）
+
+endpoints:
+  - path: /api/health
+    method: GET
+    p95_ms: 200
+    max_error_rate: 0.0
+  - path: /api/orders
+    method: GET
+    p95_ms: 200
+    max_error_rate: 0.0
+  - path: /api/admin/stats
+    method: GET
+    headers: { Authorization: "Bearer dummy" }
+    p95_ms: 200
+    max_error_rate: 1.0  # 403 也算"正常响应"（非 5xx），仅要求不超时

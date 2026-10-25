@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "静态分析分级门禁：发现经分级表分流",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/11_static_gate/images/static_gate.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "门禁引擎"
+    },
+    {
+      "id": "out",
+      "label": "两级出口"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "代码与分级表",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "scan",
+      "label": "双工具扫描",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "route",
+      "label": "查表分级",
+      "fromCol": 3,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "处置",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "code",
+    "ruff",
+    "classify",
+    "block"
+  ],
+  "nodes": [
+    {
+      "id": "code",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "fixtures 代码",
+      "width": 132,
+      "sublabel": "三坏一净"
+    },
+    {
+      "id": "tiers",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "分级表 TOML",
+      "width": 132,
+      "sublabel": "error/warning · 改表即治理"
+    },
+    {
+      "id": "ruff",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "ruff 扫描",
+      "width": 132,
+      "sublabel": "JSON 输出 · 缺陷/风格"
+    },
+    {
+      "id": "mypy",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "mypy 扫描",
+      "width": 132,
+      "sublabel": "类型错误 · mypy: 前缀"
+    },
+    {
+      "id": "classify",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "查表分级",
+      "width": 132,
+      "sublabel": "纯查表 · 未分级默认放行"
+    },
+    {
+      "id": "block",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "⛔ error 阻断",
+      "width": 132,
+      "sublabel": "规则码清单 · exit 1"
+    },
+    {
+      "id": "warn",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "⚠️ warning 台账",
+      "width": 132,
+      "sublabel": "JSON 留档 · 供升降级评审"
+    }
+  ],
+  "edges": [
+    {
+      "from": "code",
+      "to": "ruff",
+      "variant": "default"
+    },
+    {
+      "from": "tiers",
+      "to": "classify",
+      "variant": "dashed"
+    },
+    {
+      "from": "ruff",
+      "to": "classify",
+      "variant": "default"
+    },
+    {
+      "from": "mypy",
+      "to": "classify",
+      "variant": "default"
+    },
+    {
+      "from": "classify",
+      "to": "block",
+      "variant": "default"
+    },
+    {
+      "from": "classify",
+      "to": "warn",
+      "variant": "default"
+    }
+  ]
+}

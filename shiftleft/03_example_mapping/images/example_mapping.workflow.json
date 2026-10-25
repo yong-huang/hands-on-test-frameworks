@@ -1,0 +1,146 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Example Mapping 三色卡片到 Gherkin 骨架",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/03_example_mapping/images/example_mapping.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "三色卡片"
+    },
+    {
+      "id": "engine",
+      "label": "转化与校验"
+    },
+    {
+      "id": "out",
+      "label": "产物"
+    }
+  ],
+  "phases": [
+    {
+      "id": "cards",
+      "label": "会议录入",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "transform",
+      "label": "转化与告警",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "check",
+      "label": "官方解析",
+      "fromCol": 3,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "进迭代",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "cards",
+    "transform",
+    "warn",
+    "parse",
+    "feature"
+  ],
+  "nodes": [
+    {
+      "id": "cards",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "三色卡片 YAML",
+      "width": 132,
+      "sublabel": "规则 / 例子 / 疑问"
+    },
+    {
+      "id": "transform",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "三色映射",
+      "width": 132,
+      "sublabel": "规则→大纲 · 例子→Examples"
+    },
+    {
+      "id": "warn",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "缺卡告警",
+      "width": 132,
+      "sublabel": "空规则 · 无例子 · 列名不一致"
+    },
+    {
+      "id": "parse",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "gherkin 42 解析",
+      "width": 132,
+      "sublabel": "官方方言校验 · 零错误放行"
+    },
+    {
+      "id": "feature",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "feature 骨架",
+      "width": 132,
+      "sublabel": "结构合法 · 待三 amigos 精修"
+    },
+    {
+      "id": "questions",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "疑问清单",
+      "width": 132,
+      "sublabel": "owner 认领 · 全 closed 进迭代"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cards",
+      "to": "transform",
+      "variant": "default"
+    },
+    {
+      "from": "transform",
+      "to": "warn",
+      "variant": "default"
+    },
+    {
+      "from": "warn",
+      "to": "parse",
+      "variant": "default"
+    },
+    {
+      "from": "parse",
+      "to": "feature",
+      "variant": "default"
+    },
+    {
+      "from": "parse",
+      "to": "questions",
+      "variant": "default"
+    }
+  ]
+}

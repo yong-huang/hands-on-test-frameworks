@@ -1,0 +1,135 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "PR 评审机器人：diff 形状的四条清单规则",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/16_pr_bot/images/pr_bot.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "评审引擎"
+    },
+    {
+      "id": "out",
+      "label": "五 PR 靶场"
+    }
+  ],
+  "phases": [
+    {
+      "id": "src",
+      "label": "diff 靶场",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "parse",
+      "label": "解析与规则",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "汇总",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "diffs",
+    "parse",
+    "rules",
+    "json",
+    "summary"
+  ],
+  "nodes": [
+    {
+      "id": "diffs",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "5 个预制 PR",
+      "width": 132,
+      "sublabel": "4 问题 + 1 干净"
+    },
+    {
+      "id": "parse",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "unified diff 解析",
+      "width": 132,
+      "sublabel": "文件/增删/新增行"
+    },
+    {
+      "id": "rules",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "四条清单规则",
+      "width": 132,
+      "sublabel": "大diff/缺测试/契约/TODO"
+    },
+    {
+      "id": "json",
+      "lane": "engine",
+      "col": 3,
+      "type": "database",
+      "label": "JSON 留档",
+      "width": 132,
+      "sublabel": "reports/pr_bot_report.json"
+    },
+    {
+      "id": "summary",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "4/4 全命中",
+      "width": 132,
+      "sublabel": "干净 PR 零警告 · 亚秒级"
+    },
+    {
+      "id": "github",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "接真实平台（选做）",
+      "width": 132,
+      "sublabel": "只换 diff 来源"
+    }
+  ],
+  "edges": [
+    {
+      "from": "diffs",
+      "to": "parse",
+      "variant": "default"
+    },
+    {
+      "from": "parse",
+      "to": "rules",
+      "variant": "default"
+    },
+    {
+      "from": "rules",
+      "to": "json",
+      "variant": "default"
+    },
+    {
+      "from": "json",
+      "to": "summary",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# 静态门禁分级表（默认档）：error 阻断（exit 1），warning 放行但记录。
+# 代码不带前缀 = ruff 规则码；`mypy:` 前缀 = mypy 的错误码（--show-error-codes 输出）。
+# 治理动作：把某个码从 [warning] 挪进 [error] 即「升级」（重新生效，无需改引擎）。
+
+[error]
+ruff = ["F821", "B006", "F632"]
+mypy = ["mypy:assignment", "mypy:return-value", "mypy:arg-type", "mypy:name-defined"]
+
+[warning]
+ruff = ["E501", "F401", "E711"]
+mypy = []

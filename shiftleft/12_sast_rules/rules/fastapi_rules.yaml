@@ -1,0 +1,28 @@
+# 面向 FastAPI/Python 服务的自定义 SAST 规则——本实验的核心产出。
+# 三条规则各自盯一类「错一分钱就出事」的漏洞模式：
+#   sql-fstring        f-string 拼 SQL（注入面）
+#   eval-call          eval 动态执行（代码注入面）
+#   hardcoded-secret   密钥/令牌硬编码（凭据泄漏面）
+# 每条都可在团队评审中继续收紧 pattern——规则是活的治理资产。
+rules:
+  - id: sql-fstring
+    message: SQL 语句用 f-string 拼接，存在 SQL 注入风险——改用参数化查询（占位符 + 参数元组）
+    severity: ERROR
+    languages: [python]
+    pattern: $CURSOR.execute(f"...")
+
+  - id: eval-call
+    message: 使用 eval 动态执行字符串，存在代码注入风险——改用 ast.literal_eval 或显式解析
+    severity: ERROR
+    languages: [python]
+    pattern: eval(...)
+
+  - id: hardcoded-secret
+    message: 密钥/令牌硬编码在源码里——改从环境变量或密钥管理服务读取
+    severity: WARNING
+    languages: [python]
+    patterns:
+      - pattern: $KEY = "..."      # "..." 匹配任意字符串字面量（环境变量读取不匹配）
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: (?i)^(.*_)?(key|token|secret|password)(_.*)?$

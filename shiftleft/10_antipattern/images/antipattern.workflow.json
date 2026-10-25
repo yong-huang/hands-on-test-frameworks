@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "测试反模式检测：靶场、对照与真实资产",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/10_antipattern/images/antipattern.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "输入"
+    },
+    {
+      "id": "engine",
+      "label": "AST 检测引擎"
+    },
+    {
+      "id": "out",
+      "label": "三条验收通路"
+    }
+  ],
+  "phases": [
+    {
+      "id": "rules",
+      "label": "九类规则",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "scan",
+      "label": "只读扫描",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "out",
+      "label": "报告与卡点",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "rules",
+    "walk",
+    "filter",
+    "bad",
+    "good",
+    "labs"
+  ],
+  "nodes": [
+    {
+      "id": "rules",
+      "lane": "in",
+      "col": 0,
+      "type": "database",
+      "label": "九类规则表",
+      "width": 132,
+      "sublabel": "空断言/永真/裸except…"
+    },
+    {
+      "id": "walk",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "AST 只读遍历",
+      "width": 132,
+      "sublabel": "断言三形态 · 毫秒级"
+    },
+    {
+      "id": "filter",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "边界过滤",
+      "width": 132,
+      "sublabel": "跳过 .venv/点目录"
+    },
+    {
+      "id": "bad",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "靶场 10/10",
+      "width": 132,
+      "sublabel": "坏样本埋点全命中"
+    },
+    {
+      "id": "good",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "对照零误报",
+      "width": 132,
+      "sublabel": "gate 退出码 0"
+    },
+    {
+      "id": "labs",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "labs 真实清单",
+      "width": 132,
+      "sublabel": "37 文件 · 22 个反模式点"
+    }
+  ],
+  "edges": [
+    {
+      "from": "rules",
+      "to": "walk",
+      "variant": "default"
+    },
+    {
+      "from": "walk",
+      "to": "filter",
+      "variant": "default"
+    },
+    {
+      "from": "filter",
+      "to": "bad",
+      "variant": "default"
+    },
+    {
+      "from": "bad",
+      "to": "good",
+      "variant": "default"
+    },
+    {
+      "from": "good",
+      "to": "labs",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "缺陷成本漏斗：一个 float 金额缺陷的六关拦截",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/01_cost_funnel/images/cost_funnel.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "缺陷与成本"
+    },
+    {
+      "id": "gates",
+      "label": "六道拦截关卡"
+    },
+    {
+      "id": "out",
+      "label": "成本与产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "prevent",
+      "label": "预防层",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "code",
+      "label": "编码层",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "test",
+      "label": "测试层",
+      "fromCol": 3,
+      "toCol": 4
+    },
+    {
+      "id": "prod",
+      "label": "生产与产出",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "story",
+    "g1",
+    "g2",
+    "g3",
+    "g4",
+    "g5",
+    "g6",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "story",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "float 金额缺陷",
+      "width": 132,
+      "sublabel": "19.99+80.10 ≠ 100.09"
+    },
+    {
+      "id": "costs",
+      "lane": "out",
+      "col": 4,
+      "type": "database",
+      "label": "costs.yaml 成本模型",
+      "width": 132,
+      "sublabel": "人工分钟估算 · 自动化实测"
+    },
+    {
+      "id": "g1",
+      "lane": "gates",
+      "col": 0,
+      "type": "backend",
+      "label": "① 需求评审",
+      "width": 132,
+      "sublabel": "AC↔用例映射 · 约 5 分钟"
+    },
+    {
+      "id": "g2",
+      "lane": "gates",
+      "col": 1,
+      "type": "backend",
+      "label": "② 单元测试",
+      "width": 132,
+      "sublabel": "精确到分断言 · 约 2 分钟"
+    },
+    {
+      "id": "g3",
+      "lane": "gates",
+      "col": 2,
+      "type": "backend",
+      "label": "③ 静态分析",
+      "width": 132,
+      "sublabel": "MONEY-FLOAT 规则 · 约 1 分钟"
+    },
+    {
+      "id": "g4",
+      "lane": "gates",
+      "col": 3,
+      "type": "backend",
+      "label": "④ CI 接口",
+      "width": 132,
+      "sublabel": "total 黑盒断言 · 约 15 分钟"
+    },
+    {
+      "id": "g5",
+      "lane": "gates",
+      "col": 4,
+      "type": "backend",
+      "label": "⑤ E2E",
+      "width": 132,
+      "sublabel": "回执文本校验 · 约 40 分钟"
+    },
+    {
+      "id": "g6",
+      "lane": "gates",
+      "col": 5,
+      "type": "backend",
+      "label": "⑥ 生产对账",
+      "width": 132,
+      "sublabel": "日结零差异 · 约 480 分钟"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "成本漏斗报告",
+      "width": 132,
+      "sublabel": "最左 vs 最右 96×"
+    }
+  ],
+  "edges": [
+    {
+      "from": "story",
+      "to": "g1",
+      "variant": "default"
+    },
+    {
+      "from": "g1",
+      "to": "g2",
+      "variant": "default"
+    },
+    {
+      "from": "g2",
+      "to": "g3",
+      "variant": "default"
+    },
+    {
+      "from": "g3",
+      "to": "g4",
+      "variant": "default"
+    },
+    {
+      "from": "g4",
+      "to": "g5",
+      "variant": "default"
+    },
+    {
+      "from": "g5",
+      "to": "g6",
+      "variant": "default"
+    },
+    {
+      "from": "g6",
+      "to": "report",
+      "variant": "default"
+    },
+    {
+      "from": "costs",
+      "to": "report",
+      "variant": "dashed"
+    }
+  ]
+}

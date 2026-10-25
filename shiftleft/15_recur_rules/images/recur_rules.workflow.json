@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "缺陷防复发：坏红修绿，沉淀资产拦同类",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/15_recur_rules/images/recur_rules.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "历史 bug"
+    },
+    {
+      "id": "engine",
+      "label": "复现与沉淀"
+    },
+    {
+      "id": "out",
+      "label": "拦截同类"
+    }
+  ],
+  "phases": [
+    {
+      "id": "repro",
+      "label": "复现先行",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "assets",
+      "label": "沉淀资产",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "intercept",
+      "label": "拦截新代码",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "bugs",
+    "repro",
+    "assets",
+    "newcode",
+    "intercept"
+  ],
+  "nodes": [
+    {
+      "id": "bugs",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "三个真实 bug 域",
+      "width": 132,
+      "sublabel": "金额精度/并发超卖/时区"
+    },
+    {
+      "id": "repro",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "复现测试先行",
+      "width": 132,
+      "sublabel": "坏红 3 / 修绿 3"
+    },
+    {
+      "id": "assets",
+      "lane": "engine",
+      "col": 2,
+      "type": "database",
+      "label": "沉淀资产",
+      "width": 132,
+      "sublabel": "2 条规则 + 1 个并发模板"
+    },
+    {
+      "id": "newcode",
+      "lane": "engine",
+      "col": 3,
+      "type": "external",
+      "label": "同类缺陷新代码",
+      "width": 132,
+      "sublabel": "写法全新 · 缺陷同类"
+    },
+    {
+      "id": "semgrep",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "模式拦截",
+      "width": 132,
+      "sublabel": "float 金额 / 裸 now()"
+    },
+    {
+      "id": "intercept",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "模板拦截",
+      "width": 132,
+      "sublabel": "60 并发抢 10 · 超卖即红"
+    }
+  ],
+  "edges": [
+    {
+      "from": "bugs",
+      "to": "repro",
+      "variant": "default"
+    },
+    {
+      "from": "repro",
+      "to": "assets",
+      "variant": "default"
+    },
+    {
+      "from": "assets",
+      "to": "newcode",
+      "variant": "default"
+    },
+    {
+      "from": "newcode",
+      "to": "semgrep",
+      "variant": "default"
+    },
+    {
+      "from": "newcode",
+      "to": "intercept",
+      "variant": "default"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+# Example Mapping 的"脏"样例：埋两类典型未完成状态，用于演示警告检测。
+# R1 空规则（蓝卡没写字）；R2 有规则没例子（绿卡缺失）；R3 正常。
+story:
+  id: US-202
+  title: 优惠券叠加（半成品）
+  goal: 多券叠加的先后顺序与上限
+
+rules:
+  - id: R1
+    text: ""
+    examples:
+      - 输入: 任意
+        预期: 待定
+
+  - id: R2
+    text: 券叠加数量不超过 3 张
+    examples: []
+
+  - id: R3
+    text: 叠加顺序按面额从大到小生效
+    examples:
+      - 输入: 20 元券 + 10 元券
+        预期: 先减 20 再减 10
+
+questions:
+  - q: 叠加上限 3 张包含运费券吗？
+    owner: 待定
+    status: open

@@ -1,0 +1,29 @@
+# 六个关卡的检出成本模型。
+# human_minutes：该关发现并定位缺陷的人工投入估算（评审看报告 / 读失败栈 / 生产排查链），
+#                是估算值——漏斗的结论看数量级，不看个位数。
+# 自动化时长不在这里配：引擎每次真实运行各关卡检测器并计时（实测数据，非估算）。
+gates:
+  - n: 1
+    stage: 需求评审
+    mechanism: AC↔用例映射检查器发现 AC-2 无测试覆盖，评审会当场要求补齐
+    human_minutes: 5
+  - n: 2
+    stage: 单元测试
+    mechanism: pytest 精确到分断言失败，失败栈直接指向 pricing 函数
+    human_minutes: 2
+  - n: 3
+    stage: 静态分析
+    mechanism: AST 规则扫出金额算术含 float 字面量，违规行号直接给出
+    human_minutes: 1
+  - n: 4
+    stage: CI 接口测试
+    mechanism: POST /api/orders 响应 total 断言 80.09 失败，需要进实现层定位
+    human_minutes: 15
+  - n: 5
+    stage: E2E 测试
+    mechanism: 下单→回执完整用户路径，回执文本显示 ¥80.08999999999999
+    human_minutes: 40
+  - n: 6
+    stage: 生产模拟
+    mechanism: 日结对账（系统册 vs 支付册）非零差异告警，值班排查链走一圈
+    human_minutes: 480

@@ -1,0 +1,168 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "可测性重构：硬编码三件套 vs 端口注入",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/shiftleft/07_dft_refactor/images/dft_refactor.html",
+    "viewBox": [
+      1100,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "legacy",
+      "label": "重构前"
+    },
+    {
+      "id": "judge",
+      "label": "等价裁判"
+    },
+    {
+      "id": "di",
+      "label": "重构后"
+    }
+  ],
+  "phases": [
+    {
+      "id": "impl",
+      "label": "两种机制",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "test",
+      "label": "行为测试",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "out",
+      "label": "度量结论",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "hardcoded",
+    "legacyTest",
+    "behavior",
+    "report",
+    "fast"
+  ],
+  "nodes": [
+    {
+      "id": "hardcoded",
+      "lane": "legacy",
+      "col": 0,
+      "type": "backend",
+      "label": "硬编码三件套",
+      "width": 132,
+      "sublabel": "secrets/monotonic/全局字典"
+    },
+    {
+      "id": "legacyTest",
+      "lane": "legacy",
+      "col": 1,
+      "type": "backend",
+      "label": "撬：patch+真睡",
+      "width": 132,
+      "sublabel": "过期 1.05s · 触碰全局 2"
+    },
+    {
+      "id": "ports",
+      "lane": "di",
+      "col": 1,
+      "type": "backend",
+      "label": "端口三件套",
+      "width": 132,
+      "sublabel": "Clock · IdGenerator · Store"
+    },
+    {
+      "id": "diTest",
+      "lane": "di",
+      "col": 2,
+      "type": "backend",
+      "label": "注入：拨针",
+      "width": 132,
+      "sublabel": "过期 5µs · 触碰 0"
+    },
+    {
+      "id": "behavior",
+      "lane": "judge",
+      "col": 2,
+      "type": "frontend",
+      "label": "行为测试 ×2 实现",
+      "width": 132,
+      "sublabel": "4 用例双实现全绿"
+    },
+    {
+      "id": "report",
+      "lane": "judge",
+      "col": 3,
+      "type": "frontend",
+      "label": "度量报告",
+      "width": 132,
+      "sublabel": "墙钟/触碰/行数 可复核"
+    },
+    {
+      "id": "fast",
+      "lane": "di",
+      "col": 4,
+      "type": "frontend",
+      "label": "快且隔离",
+      "width": 132,
+      "sublabel": "显式代价换速度"
+    },
+    {
+      "id": "swap",
+      "lane": "di",
+      "col": 5,
+      "type": "frontend",
+      "label": "端口第二收益",
+      "width": 132,
+      "sublabel": "换存储不动业务"
+    }
+  ],
+  "edges": [
+    {
+      "from": "hardcoded",
+      "to": "legacyTest",
+      "variant": "default"
+    },
+    {
+      "from": "ports",
+      "to": "diTest",
+      "variant": "default"
+    },
+    {
+      "from": "legacyTest",
+      "to": "behavior",
+      "variant": "default"
+    },
+    {
+      "from": "diTest",
+      "to": "behavior",
+      "variant": "default"
+    },
+    {
+      "from": "behavior",
+      "to": "report",
+      "variant": "default"
+    },
+    {
+      "from": "report",
+      "to": "fast",
+      "variant": "default"
+    },
+    {
+      "from": "report",
+      "to": "swap",
+      "variant": "default"
+    }
+  ]
+}

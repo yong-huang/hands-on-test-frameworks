@@ -1,0 +1,33 @@
+# 构造缺陷数据集：30 条跨阶段缺陷（含真实前序实验产物 + 合理补充）。
+# stage 枚举：需求评审/设计/编码/提交/CI/测试/生产
+# detected_by 记录拦截手段（对应前序实验产出或人工发现）
+- {id: D-01, desc: 优惠券门槛写反（< 变 >）,           stage: 需求评审, detected_by: 可测性审计器（项目 2）, experiment: "02"}
+- {id: D-02, desc: AC 缺少量化指标「快速响应」,       stage: 需求评审, detected_by: 可测性审计器（项目 2）, experiment: "02"}
+- {id: D-03, desc: AC 无可观察预期值,               stage: 需求评审, detected_by: 可测性审计器（项目 2）, experiment: "02"}
+- {id: D-04, desc: AC 无法自动化（纯 UI 感受）,      stage: 需求评审, detected_by: 可测性审计器（项目 2）, experiment: "02"}
+- {id: D-05, desc: 接口契约缺字段 createdAt,         stage: 设计,     detected_by: 契约测试 schemathesis（项目 5）, experiment: "05"}
+- {id: D-06, desc: 契约 drift——实现返回缺 price,    stage: 设计,     detected_by: 契约测试 schemathesis（项目 5）, experiment: "05"}
+- {id: D-07, desc: float 金额精度缺陷,              stage: 编码,     detected_by: TDD 复现测试（项目 8）, experiment: "08"}
+- {id: D-08, desc: 优惠券门槛边界条件遗漏,            stage: 编码,     detected_by: TDD 复现测试（项目 8）, experiment: "08"}
+- {id: D-09, desc: assert True 空断言,              stage: 编码,     detected_by: 反模式检测器（项目 10）, experiment: "10"}
+- {id: D-10, desc: pytest.raises(Exception) 裸异常, stage: 编码,     detected_by: 反模式检测器（项目 10）, experiment: "10"}
+- {id: D-11, desc: time.sleep 阻塞测试,             stage: 编码,     detected_by: 反模式检测器（项目 10）, experiment: "10"}
+- {id: D-12, desc: 无断言测试,                      stage: 编码,     detected_by: 反模式检测器（项目 10）, experiment: "10"}
+- {id: D-13, desc: 未使用的导入 os,                  stage: 提交,     detected_by: pre-commit ruff（项目 14）, experiment: "14"}
+- {id: D-14, desc: 行超长 E501,                     stage: 提交,     detected_by: pre-commit ruff（项目 14）, experiment: "14"}
+- {id: D-15, desc: B006 可变默认值,                 stage: 提交,     detected_by: pre-commit ruff（项目 14）, experiment: "14"}
+- {id: D-16, desc: mypy 返回类型不匹配,              stage: 提交,     detected_by: pre-commit mypy（项目 14）, experiment: "14"}
+- {id: D-17, desc: GitHub PAT 泄漏,                 stage: 提交,     detected_by: pre-commit gitleaks（项目 14）, experiment: "14"}
+- {id: D-18, desc: SQL f-string 拼接,               stage: CI,      detected_by: semgrep SAST（项目 12）, experiment: "12"}
+- {id: D-19, desc: eval 动态执行,                   stage: CI,      detected_by: semgrep SAST（项目 12）, experiment: "12"}
+- {id: D-20, desc: 依赖 CVE（requests 2.19.1）,     stage: CI,      detected_by: pip-audit（项目 13）, experiment: "13"}
+- {id: D-21, desc: 硬编码密钥,                      stage: CI,      detected_by: gitleaks CI（项目 13）, experiment: "13"}
+- {id: D-22, desc: 接口 p95 超预算（slow-config）,   stage: 测试,     detected_by: 性能预算测试（项目 18）, experiment: "18"}
+- {id: D-23, desc: 功能回归——删除订单后查 404,       stage: 测试,     detected_by: 回归测试套件（项目 4 追溯矩阵覆盖）, experiment: "04"}
+- {id: D-24, desc: 并发超卖——无锁扣减,              stage: 生产,     detected_by: 用户投诉（无自动拦截——本线未覆盖）, experiment: ""}
+- {id: D-25, desc: 时区混用导致截单时间错位,          stage: 生产,     detected_by: 客服反馈（无自动拦截——本线未覆盖）, experiment: ""}
+- {id: D-26, desc: 金额精度 float 累加误差,          stage: 生产,     detected_by: 财务对账发现（左移前遗留）, experiment: ""}
+- {id: D-27, desc: 需求变更未同步 AC,               stage: 需求评审, detected_by: 追溯矩阵缺口（项目 4）, experiment: "04"}
+- {id: D-28, desc: 挡板响应与真实 API 不一致,        stage: 测试,     detected_by: 集成测试（挡板限制）, experiment: "06"}
+- {id: D-29, desc: 可变默认参数导致状态泄漏,          stage: 提交,     detected_by: pre-commit ruff B006（项目 14）, experiment: "14"}
+- {id: D-30, desc: TDD 漏测幂等场景,                stage: 测试,     detected_by: 集成测试补充, experiment: "08"}
