@@ -1,0 +1,72 @@
+services:
+  # ── REST 契约/状态化 mock：WireMock 承载 02/03 的 mappings ──
+  wiremock:
+    image: wiremock/wiremock:3.13.0
+    container_name: m18-wiremock
+    ports: ["9820:8080"]
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings:ro
+
+  # ── GraphQL mock：复用 11 的 schema 与场景化 resolver ──
+  graphql:
+    build: ../11_graphql_mock
+    container_name: m18-graphql
+    ports: ["9821:9750"]
+    environment:
+      - X_MOCK_SCENE_DEFAULT=a
+
+  # ── gRPC 替身：复用 12 的 proto 与服务端 ──
+  grpc:
+    build: ../12_grpc_mock
+    container_name: m18-grpc
+    ports: ["9822:9850"]
+
+  # ── 下游依赖链：BFF + 声明式替身（复用 15，虚拟化模式） ──
+  bff:
+    image: python:3.12-slim
+    container_name: m18-bff
+    working_dir: /app
+    ports: ["9824:9804"]
+    volumes:
+      - ../15_downstream_chain/bff.py:/app/bff.py:ro
+    command: sh -c "pip install --quiet httpx && python /app/bff.py"
+    environment:
+      - DOWNSTREAM_MODE=mock
+      - PAY_BASE=http://mockdown:9810
+      - RISK_BASE=http://mockdown:9810
+      - SMS_BASE=http://mockdown:9810
+    depends_on:
+      - mockdown
+  mockdown:
+    image: python:3.12-slim
+    container_name: m18-mockdown
+    working_dir: /app
+    volumes:
+      - ../01_declarative_mock/mockserver.py:/app/mockserver.py:ro
+      - ../15_downstream_chain/stubs_normal:/app/stubs:ro
+    command: python /app/mockserver.py --port 9810 --stubs /app/stubs
+    ports: ["9811:9810"]
+
+  # ── 消息事件：Redpanda（Kafka 兼容，arm64 原生）+ 编排 worker ──
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: m18-redpanda
+    command:
+      - start
+      - --mode=dev-container
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092
+    expose: ["9092"]
+
+  events-worker:
+    build:
+      context: ../14_event_mock
+      dockerfile: compose.Dockerfile
+    container_name: m18-events
+    environment:
+      - BOOTSTRAP=redpanda:9092
+      - RESULT_PATH=/results/events.json
+    volumes:
+      - ./results:/results
+    depends_on:
+      - redpanda

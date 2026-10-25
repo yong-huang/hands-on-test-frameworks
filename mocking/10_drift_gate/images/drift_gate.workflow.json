@@ -1,0 +1,144 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "漂移巡检门禁：真服务是基准，mock 对表",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/10_drift_gate/images/drift_gate.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "real",
+      "label": "基准侧"
+    },
+    {
+      "id": "mock",
+      "label": "被检侧"
+    },
+    {
+      "id": "gate",
+      "label": "巡检门禁"
+    }
+  ],
+  "phases": [
+    {
+      "id": "sample",
+      "label": "取样",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "diff",
+      "label": "对比",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "verdict",
+      "label": "裁决",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "realsvc",
+    "gate",
+    "report",
+    "verdict"
+  ],
+  "nodes": [
+    {
+      "id": "realsvc",
+      "lane": "real",
+      "col": 0,
+      "type": "backend",
+      "label": "真服务",
+      "width": 92,
+      "sublabel": "结构基准"
+    },
+    {
+      "id": "prism",
+      "lane": "mock",
+      "col": 1,
+      "type": "backend",
+      "label": "Prism mock",
+      "width": 104,
+      "sublabel": "吃契约应答"
+    },
+    {
+      "id": "contract",
+      "lane": "mock",
+      "col": 0,
+      "type": "database",
+      "label": "契约 YAML",
+      "width": 100,
+      "sublabel": "可注入漂移"
+    },
+    {
+      "id": "gate",
+      "lane": "gate",
+      "col": 2,
+      "type": "security",
+      "label": "结构 diff",
+      "width": 92,
+      "sublabel": "缺/多/类型 三类"
+    },
+    {
+      "id": "report",
+      "lane": "gate",
+      "col": 3,
+      "type": "database",
+      "label": "漂移报告",
+      "width": 96,
+      "sublabel": "定位到字段"
+    },
+    {
+      "id": "verdict",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "退出码门禁",
+      "width": 110,
+      "sublabel": "0 放行 · 1 拦截"
+    }
+  ],
+  "edges": [
+    {
+      "from": "prism",
+      "to": "contract",
+      "variant": "dashed",
+      "label": "启动加载"
+    },
+    {
+      "from": "realsvc",
+      "to": "gate",
+      "variant": "default",
+      "label": "真响应"
+    },
+    {
+      "from": "prism",
+      "to": "gate",
+      "variant": "default",
+      "label": "mock 响应"
+    },
+    {
+      "from": "gate",
+      "to": "report",
+      "variant": "default",
+      "label": "逐处定位"
+    },
+    {
+      "from": "report",
+      "to": "verdict",
+      "variant": "default",
+      "label": "有漂移=1"
+    }
+  ]
+}

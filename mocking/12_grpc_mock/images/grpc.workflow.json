@@ -1,0 +1,160 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "gRPC 替身：proto 驱动，反射探针可达",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/12_grpc_mock/images/grpc.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "契约真源"
+    },
+    {
+      "id": "engine",
+      "label": "gRPC 引擎"
+    },
+    {
+      "id": "probe",
+      "label": "双探针"
+    }
+  ],
+  "phases": [
+    {
+      "id": "gen",
+      "label": "生成",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "serve",
+      "label": "服务",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "verify",
+      "label": "验收",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "proto",
+    "stubs",
+    "server",
+    "pythonprobe",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "proto",
+      "lane": "source",
+      "col": 0,
+      "type": "database",
+      "label": "order.proto",
+      "width": 104,
+      "sublabel": "唯一的真源"
+    },
+    {
+      "id": "stubs",
+      "lane": "engine",
+      "col": 1,
+      "type": "database",
+      "label": "protoc 生成桩",
+      "width": 124,
+      "sublabel": "pb2 + pb2_grpc"
+    },
+    {
+      "id": "server",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "替身服务端",
+      "width": 110,
+      "sublabel": "反射开启 :9850"
+    },
+    {
+      "id": "validate",
+      "lane": "engine",
+      "col": 3,
+      "type": "security",
+      "label": "字段校验",
+      "width": 96,
+      "sublabel": "空 order_id 拒收"
+    },
+    {
+      "id": "grpcurl",
+      "lane": "probe",
+      "col": 2,
+      "type": "frontend",
+      "label": "grpcurl",
+      "width": 86,
+      "sublabel": "unary/校验探针"
+    },
+    {
+      "id": "pythonprobe",
+      "lane": "probe",
+      "col": 3,
+      "type": "frontend",
+      "label": "Python 探针",
+      "width": 104,
+      "sublabel": "流式顺序断言"
+    },
+    {
+      "id": "report",
+      "lane": "probe",
+      "col": 4,
+      "type": "frontend",
+      "label": "5 条有序全收",
+      "width": 116,
+      "sublabel": "seq 1..5 断言"
+    }
+  ],
+  "edges": [
+    {
+      "from": "proto",
+      "to": "stubs",
+      "variant": "default",
+      "label": "protoc 编译"
+    },
+    {
+      "from": "stubs",
+      "to": "server",
+      "variant": "default",
+      "label": "装配"
+    },
+    {
+      "from": "grpcurl",
+      "to": "server",
+      "variant": "dashed",
+      "label": "反射发现"
+    },
+    {
+      "from": "server",
+      "to": "validate",
+      "variant": "default",
+      "label": "先验字段"
+    },
+    {
+      "from": "server",
+      "to": "pythonprobe",
+      "variant": "default",
+      "label": "流式 5 条"
+    },
+    {
+      "from": "pythonprobe",
+      "to": "report",
+      "variant": "default",
+      "label": "顺序断言"
+    }
+  ]
+}

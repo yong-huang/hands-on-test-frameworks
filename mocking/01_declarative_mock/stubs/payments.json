@@ -1,0 +1,29 @@
+[
+  {
+    "id": "pay-visa-fast",
+    "description": "Visa 直通：要求幂等键存在（值 \"*\" = 只查存在）且卡令牌是 tok_visa，10+20=30 分",
+    "match": {
+      "method": "POST",
+      "path": "/payments",
+      "headers": { "Idempotency-Key": "*" },
+      "body": [ { "path": "$.card_token", "op": "==", "value": "tok_visa" } ]
+    },
+    "response": {
+      "status": 200,
+      "body": { "payment_id": "PAY-VISA-0001", "state": "settled" }
+    }
+  },
+  {
+    "id": "pay-other-review",
+    "description": "非 Visa 复核：只要求幂等键存在（10 分），被 Visa 规则赢走 Visa 流量",
+    "match": {
+      "method": "POST",
+      "path": "/payments",
+      "headers": { "Idempotency-Key": "*" }
+    },
+    "response": {
+      "status": 200,
+      "body": { "payment_id": "PAY-REV-0002", "state": "under_review" }
+    }
+  }
+]

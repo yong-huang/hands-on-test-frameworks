@@ -1,0 +1,158 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "ws",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/13_ws_mock/images/ws.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "s1",
+      "label": "场景① 全量接收"
+    },
+    {
+      "id": "s2",
+      "label": "场景② 断线续传"
+    },
+    {
+      "id": "s3",
+      "label": "场景③ 心跳踢线"
+    }
+  ],
+  "phases": [
+    {
+      "id": "a",
+      "label": "订阅",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "b",
+      "label": "断线",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "c",
+      "label": "重连/踢线",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "push",
+    "seq"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "s1",
+      "col": 0,
+      "type": "frontend",
+      "label": "WS 客户端",
+      "width": 108,
+      "sublabel": "subscribe"
+    },
+    {
+      "id": "push",
+      "lane": "s1",
+      "col": 1,
+      "type": "backend",
+      "label": "推送协程",
+      "width": 104,
+      "sublabel": "seq 1..5 预设"
+    },
+    {
+      "id": "seq",
+      "lane": "s1",
+      "col": 2,
+      "type": "frontend",
+      "label": "全量接收",
+      "width": 98,
+      "sublabel": "顺序断言"
+    },
+    {
+      "id": "drop",
+      "lane": "s2",
+      "col": 1,
+      "type": "external",
+      "label": "断线",
+      "width": 78,
+      "sublabel": "模拟网络故障"
+    },
+    {
+      "id": "resume",
+      "lane": "s2",
+      "col": 2,
+      "type": "backend",
+      "label": "resume",
+      "width": 92,
+      "sublabel": "from_seq=k+1"
+    },
+    {
+      "id": "kick",
+      "lane": "s3",
+      "col": 3,
+      "type": "security",
+      "label": "看门狗",
+      "width": 86,
+      "sublabel": "静默 2s 踢线"
+    },
+    {
+      "id": "code",
+      "lane": "s3",
+      "col": 4,
+      "type": "external",
+      "label": "close 4000",
+      "width": 100,
+      "sublabel": "可断言的踢线信号"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "push",
+      "variant": "default",
+      "label": "subscribe"
+    },
+    {
+      "from": "push",
+      "to": "seq",
+      "variant": "default",
+      "label": "5 条"
+    },
+    {
+      "from": "seq",
+      "to": "drop",
+      "variant": "dashed",
+      "label": "中途断开"
+    },
+    {
+      "from": "drop",
+      "to": "resume",
+      "variant": "dashed",
+      "label": "重连"
+    },
+    {
+      "from": "resume",
+      "to": "kick",
+      "variant": "dashed",
+      "label": "静默 2s"
+    },
+    {
+      "from": "kick",
+      "to": "code",
+      "variant": "default",
+      "label": "踢下线"
+    }
+  ]
+}

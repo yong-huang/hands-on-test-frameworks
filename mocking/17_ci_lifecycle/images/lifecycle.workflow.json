@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "mock 生命周期：健康门与缓存判定",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/17_ci_lifecycle/images/lifecycle.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "flow",
+      "label": "生命周期链（hit 跳过启动与冒烟）"
+    }
+  ],
+  "phases": [
+    {
+      "id": "p1",
+      "label": "判定",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "p2",
+      "label": "启动",
+      "fromCol": 1,
+      "toCol": 1
+    },
+    {
+      "id": "p3",
+      "label": "冒烟",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "p4",
+      "label": "清场",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "cache",
+    "health",
+    "smoke",
+    "clean"
+  ],
+  "nodes": [
+    {
+      "id": "cache",
+      "lane": "flow",
+      "col": 0,
+      "type": "database",
+      "label": "缓存判定",
+      "width": 98,
+      "sublabel": "miss 启动·hit 跳过"
+    },
+    {
+      "id": "health",
+      "lane": "flow",
+      "col": 1,
+      "type": "security",
+      "label": "启动+健康门",
+      "width": 110,
+      "sublabel": "20×0.5s 轮询"
+    },
+    {
+      "id": "smoke",
+      "lane": "flow",
+      "col": 2,
+      "type": "frontend",
+      "label": "消费方冒烟",
+      "width": 104,
+      "sublabel": "TXN-PERF"
+    },
+    {
+      "id": "clean",
+      "lane": "flow",
+      "col": 3,
+      "type": "backend",
+      "label": "always 清场",
+      "width": 104,
+      "sublabel": "socket 探残留"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cache",
+      "to": "health",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "miss"
+    },
+    {
+      "from": "health",
+      "to": "smoke",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "放行"
+    },
+    {
+      "from": "smoke",
+      "to": "clean",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "零残留"
+    }
+  ]
+}

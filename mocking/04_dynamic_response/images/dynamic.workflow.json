@@ -1,0 +1,164 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "动态响应：模板引擎把请求与随机性渲染进应答",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/04_dynamic_response/images/dynamic.html",
+    "viewBox": [
+      1000,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "请求侧"
+    },
+    {
+      "id": "engine",
+      "label": "模板引擎"
+    },
+    {
+      "id": "out",
+      "label": "应答侧"
+    }
+  ],
+  "phases": [
+    {
+      "id": "arrive",
+      "label": "到达",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "render",
+      "label": "渲染",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "应答",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "template",
+    "rendered",
+    "schema"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "in",
+      "col": 0,
+      "type": "frontend",
+      "label": "客户端请求",
+      "width": 118,
+      "sublabel": "customer·amount"
+    },
+    {
+      "id": "template",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "Handlebars 模板",
+      "width": 136,
+      "sublabel": "{{帮手}} 占位"
+    },
+    {
+      "id": "random",
+      "lane": "engine",
+      "col": 2,
+      "type": "external",
+      "label": "randomValue/now",
+      "width": 136,
+      "sublabel": "随机与时间源"
+    },
+    {
+      "id": "jsonpath",
+      "lane": "in",
+      "col": 1,
+      "type": "database",
+      "label": "jsonPath 回填",
+      "width": 128,
+      "sublabel": "取请求字段"
+    },
+    {
+      "id": "rendered",
+      "lane": "out",
+      "col": 3,
+      "type": "backend",
+      "label": "渲染后 JSON",
+      "width": 116,
+      "sublabel": "每次都不同"
+    },
+    {
+      "id": "schema",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "Schema 校验",
+      "width": 112,
+      "sublabel": "100/100 零错误"
+    },
+    {
+      "id": "delay",
+      "lane": "engine",
+      "col": 3,
+      "type": "external",
+      "label": "延迟 800ms",
+      "width": 104,
+      "sublabel": "slow-report 专用"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "template",
+      "variant": "default",
+      "label": "命中模板 stub"
+    },
+    {
+      "from": "template",
+      "to": "random",
+      "variant": "default",
+      "label": "随机位"
+    },
+    {
+      "from": "client",
+      "to": "jsonpath",
+      "variant": "dashed",
+      "label": "请求体字段"
+    },
+    {
+      "from": "jsonpath",
+      "to": "template",
+      "variant": "dashed"
+    },
+    {
+      "from": "template",
+      "to": "rendered",
+      "variant": "default",
+      "label": "渲染"
+    },
+    {
+      "from": "delay",
+      "to": "rendered",
+      "variant": "dashed",
+      "label": "慢响应分支"
+    },
+    {
+      "from": "rendered",
+      "to": "schema",
+      "variant": "default",
+      "label": "逐条校验"
+    }
+  ]
+}

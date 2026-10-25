@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "pact-as-stub：一份契约，两个应答者",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/09_pact_stub/images/pact_stub.html",
+    "viewBox": [
+      1100,
+      700
+    ]
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "契约真源"
+    },
+    {
+      "id": "real",
+      "label": "真 provider"
+    },
+    {
+      "id": "stub",
+      "label": "pact stub"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "load",
+      "label": "来源",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "serve",
+      "label": "双跑",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "compare",
+      "label": "对比",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "pact",
+    "stubserver",
+    "tests",
+    "compare"
+  ],
+  "nodes": [
+    {
+      "id": "pact",
+      "lane": "source",
+      "col": 0,
+      "type": "database",
+      "label": "labs/15 pact 文件",
+      "width": 140,
+      "sublabel": "交互+matchingRules+generators"
+    },
+    {
+      "id": "sut",
+      "lane": "real",
+      "col": 1,
+      "type": "backend",
+      "label": "真 provider",
+      "width": 104,
+      "sublabel": "labs/11 SUT :9700"
+    },
+    {
+      "id": "stubserver",
+      "lane": "stub",
+      "col": 1,
+      "type": "backend",
+      "label": "pact stub 服务器",
+      "width": 130,
+      "sublabel": "查契约即答 :9701"
+    },
+    {
+      "id": "tests",
+      "lane": "real",
+      "col": 2,
+      "type": "frontend",
+      "label": "5 条消费方测试",
+      "width": 130,
+      "sublabel": "双跑同一套"
+    },
+    {
+      "id": "reject",
+      "lane": "stub",
+      "col": 3,
+      "type": "external",
+      "label": "契约外 → 500",
+      "width": 122,
+      "sublabel": "interaction_not_found"
+    },
+    {
+      "id": "compare",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "形状一致性对比",
+      "width": 128,
+      "sublabel": "多余键放行·生成器核型"
+    }
+  ],
+  "edges": [
+    {
+      "from": "pact",
+      "to": "sut",
+      "variant": "dashed",
+      "label": "verify 视角"
+    },
+    {
+      "from": "pact",
+      "to": "stubserver",
+      "variant": "default",
+      "label": "当应答数据源"
+    },
+    {
+      "from": "stubserver",
+      "to": "tests",
+      "variant": "default",
+      "label": "回放交互"
+    },
+    {
+      "from": "tests",
+      "to": "reject",
+      "variant": "dashed",
+      "label": "越界请求"
+    },
+    {
+      "from": "sut",
+      "to": "tests",
+      "variant": "dashed",
+      "label": "同套测试"
+    },
+    {
+      "from": "tests",
+      "to": "compare",
+      "variant": "default",
+      "label": "双方结果"
+    }
+  ]
+}

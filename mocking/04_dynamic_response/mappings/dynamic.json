@@ -1,0 +1,51 @@
+{
+  "mappings": [
+    {
+      "name": "order-dynamic",
+      "request": {
+        "method": "POST",
+        "urlPath": "/orders"
+      },
+      "response": {
+        "status": 201,
+        "headers": { "Content-Type": "application/json" },
+        "body": "{ \"order_id\": \"ORD-{{randomValue length=10 type='ALPHANUMERIC' uppercase=false}}\", \"state\": \"created\", \"customer\": \"{{jsonPath request.body '$.customer'}}\", \"amount\": {{jsonPath request.body '$.amount'}}, \"created_at\": \"{{now format='yyyy-MM-dd HH:mm:ss'}}\" }",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name": "payment-dynamic",
+      "request": {
+        "method": "POST",
+        "urlPath": "/payments"
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "payment_id": "PAY-{{randomValue type='UUID'}}",
+          "state": "settled",
+          "order_id": "{{jsonPath request.body '$.order_id'}}"
+        },
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name": "slow-report",
+      "request": {
+        "method": "GET",
+        "urlPath": "/reports/slow"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 800,
+        "headers": { "Content-Type": "application/json" },
+        "jsonBody": {
+          "report_id": "RPT-{{randomValue length=8 type='ALPHANUMERIC' uppercase=false}}",
+          "generated_at": "{{now format='yyyy-MM-dd HH:mm:ss'}}"
+        },
+        "transformers": ["response-template"]
+      }
+    }
+  ]
+}

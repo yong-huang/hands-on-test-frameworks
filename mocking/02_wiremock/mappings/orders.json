@@ -1,0 +1,107 @@
+{
+  "mappings": [
+    {
+      "name": "order-pos-big",
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/orders",
+        "headers": {
+          "X-Channel": {
+            "equalTo": "pos"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 1000)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "order_id": "ORD-POSRISK-0004",
+          "state": "created",
+          "review": true,
+          "risk_level": "pos_review"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "order-pos-big"
+        }
+      }
+    },
+    {
+      "name": "order-pos-channel",
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPath": "/orders",
+        "headers": {
+          "X-Channel": {
+            "equalTo": "pos"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "order_id": "ORD-POS-0002",
+          "state": "created",
+          "review": false,
+          "channel": "pos"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "order-pos-channel"
+        }
+      }
+    },
+    {
+      "name": "order-big-amount",
+      "priority": 3,
+      "request": {
+        "method": "POST",
+        "urlPath": "/orders",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 1000)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "order_id": "ORD-RISK-0003",
+          "state": "created",
+          "review": true,
+          "risk_level": "manual"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "order-big-amount"
+        }
+      }
+    },
+    {
+      "name": "order-any",
+      "priority": 4,
+      "request": {
+        "method": "POST",
+        "urlPath": "/orders"
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "order_id": "ORD-GEN-0001",
+          "state": "created",
+          "review": false
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "order-any"
+        }
+      }
+    }
+  ]
+}

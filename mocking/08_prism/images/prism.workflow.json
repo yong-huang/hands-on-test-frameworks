@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "契约驱动 mock：OpenAPI 是唯一的真源",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/08_prism/images/prism.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "契约真源"
+    },
+    {
+      "id": "engine",
+      "label": "Prism 引擎"
+    },
+    {
+      "id": "consumer",
+      "label": "消费方"
+    }
+  ],
+  "phases": [
+    {
+      "id": "load",
+      "label": "加载",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "serve",
+      "label": "服务",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "evolve",
+      "label": "随动",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "openapi",
+    "prism",
+    "schema",
+    "examples"
+  ],
+  "nodes": [
+    {
+      "id": "openapi",
+      "lane": "source",
+      "col": 0,
+      "type": "database",
+      "label": "OpenAPI 契约",
+      "width": 128,
+      "sublabel": "唯一的真源（YAML）"
+    },
+    {
+      "id": "prism",
+      "lane": "engine",
+      "col": 1,
+      "type": "backend",
+      "label": "Prism mock",
+      "width": 100,
+      "sublabel": "mock 代码 0 行"
+    },
+    {
+      "id": "schema",
+      "lane": "engine",
+      "col": 2,
+      "type": "security",
+      "label": "请求校验",
+      "width": 98,
+      "sublabel": "非法 → 422"
+    },
+    {
+      "id": "examples",
+      "lane": "engine",
+      "col": 3,
+      "type": "database",
+      "label": "examples 库",
+      "width": 104,
+      "sublabel": "Prefer 头选示例"
+    },
+    {
+      "id": "valid",
+      "lane": "consumer",
+      "col": 2,
+      "type": "frontend",
+      "label": "合法请求",
+      "width": 94,
+      "sublabel": "201 全绿"
+    },
+    {
+      "id": "invalid",
+      "lane": "consumer",
+      "col": 1,
+      "type": "external",
+      "label": "非法请求",
+      "width": 94,
+      "sublabel": "缺字段/错类型"
+    },
+    {
+      "id": "v2",
+      "lane": "consumer",
+      "col": 4,
+      "type": "frontend",
+      "label": "契约 v2 随动",
+      "width": 116,
+      "sublabel": "旧红新绿·0 行代码"
+    }
+  ],
+  "edges": [
+    {
+      "from": "openapi",
+      "to": "prism",
+      "variant": "default",
+      "label": "启动加载"
+    },
+    {
+      "from": "prism",
+      "to": "schema",
+      "variant": "default",
+      "label": "先验请求"
+    },
+    {
+      "from": "valid",
+      "to": "schema",
+      "variant": "default",
+      "label": "放行"
+    },
+    {
+      "from": "invalid",
+      "to": "schema",
+      "variant": "dashed",
+      "label": "422 拒绝"
+    },
+    {
+      "from": "schema",
+      "to": "examples",
+      "variant": "default",
+      "label": "按 Prefer 选例"
+    },
+    {
+      "from": "openapi",
+      "to": "v2",
+      "variant": "dashed",
+      "label": "换契约即换行为"
+    }
+  ]
+}

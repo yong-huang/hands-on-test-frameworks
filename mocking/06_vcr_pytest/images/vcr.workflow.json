@@ -1,0 +1,145 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "VCR 式离线化：进程内拦截 + socket 级断网门",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/06_vcr_pytest/images/vcr.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "record",
+      "label": "录制轮（在线）"
+    },
+    {
+      "id": "gate",
+      "label": "回放与门禁（上游已死）"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "cap",
+      "label": "录制",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "replay",
+      "label": "回放与断网",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "emit",
+      "label": "结论",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "tests",
+    "vcr",
+    "cass",
+    "block",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "tests",
+      "lane": "record",
+      "col": 0,
+      "type": "frontend",
+      "label": "pytest 用例",
+      "width": 110,
+      "sublabel": "测试代码零改动"
+    },
+    {
+      "id": "vcr",
+      "lane": "record",
+      "col": 1,
+      "type": "backend",
+      "label": "vcrpy 拦截",
+      "width": 104,
+      "sublabel": "进程内打补丁"
+    },
+    {
+      "id": "upstream",
+      "lane": "record",
+      "col": 2,
+      "type": "external",
+      "label": "真上游",
+      "width": 92,
+      "sublabel": "录完即杀"
+    },
+    {
+      "id": "cass",
+      "lane": "gate",
+      "col": 2,
+      "type": "database",
+      "label": "cassette YAML",
+      "width": 126,
+      "sublabel": "可读可 diff 可进 git"
+    },
+    {
+      "id": "block",
+      "lane": "gate",
+      "col": 3,
+      "type": "backend",
+      "label": "none+block-network",
+      "width": 158,
+      "sublabel": "socket 级断网门"
+    },
+    {
+      "id": "gate",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "防偷跑结论",
+      "width": 104,
+      "sublabel": "无录制请求必红"
+    }
+  ],
+  "edges": [
+    {
+      "from": "tests",
+      "to": "vcr",
+      "variant": "default",
+      "label": "经拦截器"
+    },
+    {
+      "from": "vcr",
+      "to": "upstream",
+      "variant": "dashed",
+      "label": "仅录制轮"
+    },
+    {
+      "from": "vcr",
+      "to": "cass",
+      "variant": "default",
+      "label": "落盘"
+    },
+    {
+      "from": "cass",
+      "to": "block",
+      "variant": "default",
+      "label": "回放"
+    },
+    {
+      "from": "block",
+      "to": "gate",
+      "variant": "default",
+      "label": "无录制必红"
+    }
+  ]
+}

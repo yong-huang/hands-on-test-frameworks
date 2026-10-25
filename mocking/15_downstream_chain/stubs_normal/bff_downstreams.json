@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mock-pay",
+    "description": "虚拟化替身：支付下游，正常应答",
+    "match": { "method": "POST", "path": "/pay" },
+    "response": { "status": 200, "body": {"txn": "TXN-MOCK-001", "status": "settled"} }
+  },
+  {
+    "id": "mock-risk",
+    "description": "虚拟化替身：风控下游，正常应答",
+    "match": { "method": "POST", "path": "/risk" },
+    "response": { "status": 200, "body": {"decision": "approve", "score": 90} }
+  },
+  {
+    "id": "mock-sms",
+    "description": "虚拟化替身：短信下游，正常应答",
+    "match": { "method": "POST", "path": "/sms" },
+    "response": { "status": 200, "body": {"sent": true, "message_id": "MSG-MOCK-001"} }
+  }
+]

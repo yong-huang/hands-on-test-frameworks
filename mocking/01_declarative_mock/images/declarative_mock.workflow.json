@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "声明式 mock server：规则是数据，匹配靠特异度",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/01_declarative_mock/images/declarative_mock.html",
+    "viewBox": [
+      1000,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "请求侧"
+    },
+    {
+      "id": "engine",
+      "label": "匹配引擎"
+    },
+    {
+      "id": "out",
+      "label": "应答侧"
+    }
+  ],
+  "phases": [
+    {
+      "id": "load",
+      "label": "加载",
+      "fromCol": 1,
+      "toCol": 1
+    },
+    {
+      "id": "match",
+      "label": "匹配",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "answer",
+      "label": "应答",
+      "fromCol": 3,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "matcher",
+    "reply",
+    "stats"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "in",
+      "col": 0,
+      "type": "frontend",
+      "label": "被测代码/测试",
+      "width": 124,
+      "sublabel": "只认 HTTP 接口"
+    },
+    {
+      "id": "rules",
+      "lane": "engine",
+      "col": 1,
+      "type": "database",
+      "label": "规则表 stubs/*.json",
+      "width": 150,
+      "sublabel": "启动加载·运行期只读"
+    },
+    {
+      "id": "matcher",
+      "lane": "engine",
+      "col": 2,
+      "type": "backend",
+      "label": "匹配引擎",
+      "width": 110,
+      "sublabel": "特异度评分 0/10/20/30"
+    },
+    {
+      "id": "reply",
+      "lane": "out",
+      "col": 2,
+      "type": "backend",
+      "label": "stub 应答",
+      "width": 110,
+      "sublabel": "X-Mocked-By·X-Match-Score"
+    },
+    {
+      "id": "diag",
+      "lane": "out",
+      "col": 3,
+      "type": "external",
+      "label": "响亮未命中 404",
+      "width": 130,
+      "sublabel": "逐条失败原因·misses 计数"
+    },
+    {
+      "id": "stats",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "命中统计 /__stats__",
+      "width": 150,
+      "sublabel": "逐规则计数·对账兜底"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "matcher",
+      "variant": "default",
+      "label": "HTTP 请求"
+    },
+    {
+      "from": "rules",
+      "to": "matcher",
+      "variant": "default",
+      "label": "候选规则"
+    },
+    {
+      "from": "matcher",
+      "to": "reply",
+      "variant": "default",
+      "label": "最高分胜出"
+    },
+    {
+      "from": "matcher",
+      "to": "diag",
+      "variant": "dashed",
+      "label": "无规则全满足"
+    },
+    {
+      "from": "reply",
+      "to": "client",
+      "variant": "dashed",
+      "label": "应答+标记"
+    },
+    {
+      "from": "reply",
+      "to": "stats",
+      "variant": "default"
+    },
+    {
+      "from": "diag",
+      "to": "stats",
+      "variant": "dashed"
+    }
+  ]
+}

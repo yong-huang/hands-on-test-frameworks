@@ -1,0 +1,148 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "events",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/14_event_mock/images/events.html",
+    "viewBox": [
+      1100,
+      700
+    ]
+  },
+  "lanes": [
+    {
+      "id": "p",
+      "label": "替身生产者"
+    },
+    {
+      "id": "k",
+      "label": "真 Kafka"
+    },
+    {
+      "id": "c",
+      "label": "消费 worker"
+    },
+    {
+      "id": "o",
+      "label": "断言"
+    }
+  ],
+  "phases": [
+    {
+      "id": "i",
+      "label": "注入",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "h",
+      "label": "处理",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "v",
+      "label": "验证",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "producer",
+    "broker",
+    "worker",
+    "assert"
+  ],
+  "nodes": [
+    {
+      "id": "producer",
+      "lane": "p",
+      "col": 0,
+      "type": "frontend",
+      "label": "替身生产者",
+      "width": 116,
+      "sublabel": "6 条脚本化事件"
+    },
+    {
+      "id": "broker",
+      "lane": "k",
+      "col": 1,
+      "type": "messagebus",
+      "label": "Kafka",
+      "width": 80,
+      "sublabel": "testcontainers"
+    },
+    {
+      "id": "poison",
+      "lane": "k",
+      "col": 2,
+      "type": "external",
+      "label": "毒丸事件",
+      "width": 98,
+      "sublabel": "非法 JSON"
+    },
+    {
+      "id": "worker",
+      "lane": "c",
+      "col": 2,
+      "type": "backend",
+      "label": "消费 worker",
+      "width": 110,
+      "sublabel": "parse→记录/DLQ"
+    },
+    {
+      "id": "dlq",
+      "lane": "c",
+      "col": 3,
+      "type": "database",
+      "label": "DLQ 清单",
+      "width": 96,
+      "sublabel": "毒丸不阻塞"
+    },
+    {
+      "id": "assert",
+      "lane": "o",
+      "col": 3,
+      "type": "frontend",
+      "label": "三件套断言",
+      "width": 110,
+      "sublabel": "全处理/DLQ/不阻塞"
+    }
+  ],
+  "edges": [
+    {
+      "from": "producer",
+      "to": "broker",
+      "variant": "default",
+      "label": "注入"
+    },
+    {
+      "from": "broker",
+      "to": "worker",
+      "variant": "default",
+      "label": "消费"
+    },
+    {
+      "from": "poison",
+      "to": "broker",
+      "variant": "dashed",
+      "label": "混入"
+    },
+    {
+      "from": "worker",
+      "to": "dlq",
+      "variant": "dashed",
+      "label": "毒丸"
+    },
+    {
+      "from": "worker",
+      "to": "assert",
+      "variant": "default",
+      "label": "清单核对"
+    }
+  ]
+}

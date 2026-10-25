@@ -1,0 +1,9 @@
+{
+  "name": "orders",
+  "request": {"method": "GET", "urlPath": "/api/orders"},
+  "response": {
+    "status": 200,
+    "jsonBody": {"items": [{"id": null, "customer": "某人", "qty": null, "price": null, "status": "created"}], "total": null},
+    "headers": {"Content-Type": "application/json"}
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mock-pay-fail",
+    "description": "故障注入：支付下游 500（验证 BFF 的 PENDING_RETRY 降级）",
+    "match": { "method": "POST", "path": "/pay" },
+    "response": { "status": 500, "body": {"error": "payment provider down"} }
+  },
+  {
+    "id": "mock-risk-ok",
+    "description": "风控保持正常",
+    "match": { "method": "POST", "path": "/risk" },
+    "response": { "status": 200, "body": {"decision": "approve", "score": 90} }
+  },
+  {
+    "id": "mock-sms-ok",
+    "description": "短信保持正常",
+    "match": { "method": "POST", "path": "/sms" },
+    "response": { "status": 200, "body": {"sent": true, "message_id": "MSG-MOCK-001"} }
+  }
+]

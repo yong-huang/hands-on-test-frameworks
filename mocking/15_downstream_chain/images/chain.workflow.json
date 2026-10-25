@@ -1,0 +1,142 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "chain",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/15_downstream_chain/images/chain.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "real",
+      "label": "真依赖模式（3/3 存活）"
+    },
+    {
+      "id": "vm",
+      "label": "虚拟化模式（0 存活）"
+    },
+    {
+      "id": "o",
+      "label": "断言"
+    }
+  ],
+  "phases": [
+    {
+      "id": "m1",
+      "label": "真模式",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "m2",
+      "label": "切换",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "f",
+      "label": "故障",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "realds",
+    "realbff"
+  ],
+  "nodes": [
+    {
+      "id": "realds",
+      "lane": "real",
+      "col": 0,
+      "type": "backend",
+      "label": "3 个真下游",
+      "width": 112,
+      "sublabel": "支付/风控/短信"
+    },
+    {
+      "id": "realbff",
+      "lane": "real",
+      "col": 1,
+      "type": "backend",
+      "label": "BFF·real",
+      "width": 92,
+      "sublabel": "3/3 全绿"
+    },
+    {
+      "id": "mock",
+      "lane": "vm",
+      "col": 2,
+      "type": "backend",
+      "label": "01 声明式替身",
+      "width": 130,
+      "sublabel": ":9810 三路径"
+    },
+    {
+      "id": "mockbff",
+      "lane": "vm",
+      "col": 3,
+      "type": "backend",
+      "label": "BFF·mock",
+      "width": 92,
+      "sublabel": "0/3 全绿"
+    },
+    {
+      "id": "fault",
+      "lane": "vm",
+      "col": 4,
+      "type": "external",
+      "label": "支付 500",
+      "width": 86,
+      "sublabel": "PENDING_RETRY"
+    },
+    {
+      "id": "tests",
+      "lane": "o",
+      "col": 4,
+      "type": "frontend",
+      "label": "同一套测试",
+      "width": 110,
+      "sublabel": "两种模式全绿"
+    }
+  ],
+  "edges": [
+    {
+      "from": "realds",
+      "to": "realbff",
+      "variant": "default",
+      "label": "真调用"
+    },
+    {
+      "from": "realds",
+      "to": "tests",
+      "variant": "default",
+      "label": "真模式全绿"
+    },
+    {
+      "from": "mock",
+      "to": "mockbff",
+      "variant": "default",
+      "label": "替身应答"
+    },
+    {
+      "from": "mockbff",
+      "to": "tests",
+      "variant": "default",
+      "label": "虚拟化全绿"
+    },
+    {
+      "from": "fault",
+      "to": "tests",
+      "variant": "dashed",
+      "label": "降级分支"
+    }
+  ]
+}

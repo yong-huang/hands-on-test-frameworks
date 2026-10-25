@@ -1,0 +1,48 @@
+name: mock-lifecycle
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  mock-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 安装 curl
+        run: apt-get update -qq && apt-get install -y -qq curl python3
+
+      - name: 缓存判定（mock 配置未变则跳过重启；工作目录被 --bind 挂载，跨运行保留哈希）
+        id: cache
+        run: |
+          HASH=$(find stubs -type f -exec md5sum {} \; | md5sum | cut -d' ' -f1)
+          if [ -f .mock-cache/mock_hash ] && [ "$(cat .mock-cache/mock_hash)" = "$HASH" ]; then
+            echo "reuse=true" >> "$GITHUB_OUTPUT"
+          else
+            mkdir -p .mock-cache
+            echo "$HASH" > .mock-cache/mock_hash
+            echo "reuse=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 启动 mock（健康门：健康检查通过才放行）
+        if: steps.cache.outputs.reuse != 'true'
+        run: |
+          python3 mock_downstream.py --port 9810 --delay-ms 50 &
+          for i in $(seq 1 20); do
+            curl -sf -m 2 http://127.0.0.1:9810/stats && break
+            sleep 0.5
+          done
+          curl -sf http://127.0.0.1:9810/stats > /dev/null
+
+      - name: 消费方冒烟（打 mock）
+        if: steps.cache.outputs.reuse != 'true'
+        run: |
+          RESULT=$(curl -s -X POST http://127.0.0.1:9810/pay \
+            -H "Content-Type: application/json" -d '{"order":"ORD-1"}')
+          echo "$RESULT" | grep -q "TXN-PERF"
+
+      - name: 零残留清场（always：失败也要清）
+        if: always()
+        run: |
+          pkill -f mock_downstream.py || true
+          sleep 0.5
+          python3 -c "import socket; s=socket.socket(); s.settimeout(1); assert s.connect_ex(('127.0.0.1',9810)) != 0, 'port residue'"
+          echo "零残留确认"

@@ -1,0 +1,133 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "perf",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/16_perf_mock/images/perf.html",
+    "viewBox": [
+      1100,
+      700
+    ]
+  },
+  "lanes": [
+    {
+      "id": "load",
+      "label": "k6 负载"
+    },
+    {
+      "id": "bff",
+      "label": "被测 BFF"
+    },
+    {
+      "id": "ds",
+      "label": "虚拟化下游"
+    },
+    {
+      "id": "o",
+      "label": "对账"
+    }
+  ],
+  "phases": [
+    {
+      "id": "t1",
+      "label": "50ms 档",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "t2",
+      "label": "500ms 档",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "c",
+      "label": "对账",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "k6",
+    "bff",
+    "mock",
+    "hits"
+  ],
+  "nodes": [
+    {
+      "id": "k6",
+      "lane": "load",
+      "col": 0,
+      "type": "frontend",
+      "label": "k6 100 VUs",
+      "width": 104,
+      "sublabel": "15s/档"
+    },
+    {
+      "id": "bff",
+      "lane": "bff",
+      "col": 1,
+      "type": "backend",
+      "label": "BFF 聚合",
+      "width": 100,
+      "sublabel": "串行三调用"
+    },
+    {
+      "id": "mock",
+      "lane": "ds",
+      "col": 2,
+      "type": "backend",
+      "label": "替身下游",
+      "width": 100,
+      "sublabel": "延迟旋钮 50/500"
+    },
+    {
+      "id": "hits",
+      "lane": "ds",
+      "col": 3,
+      "type": "database",
+      "label": "命中计数",
+      "width": 96,
+      "sublabel": "3000 = 1000×3"
+    },
+    {
+      "id": "ledger",
+      "lane": "o",
+      "col": 4,
+      "type": "frontend",
+      "label": "双档对账",
+      "width": 98,
+      "sublabel": "P95×吞吐×泄漏"
+    }
+  ],
+  "edges": [
+    {
+      "from": "k6",
+      "to": "bff",
+      "variant": "default",
+      "label": "100 VUs"
+    },
+    {
+      "from": "bff",
+      "to": "mock",
+      "variant": "default",
+      "label": "3×串行"
+    },
+    {
+      "from": "mock",
+      "to": "hits",
+      "variant": "default",
+      "label": "逐次计数"
+    },
+    {
+      "from": "hits",
+      "to": "ledger",
+      "variant": "default",
+      "label": "对账"
+    }
+  ]
+}

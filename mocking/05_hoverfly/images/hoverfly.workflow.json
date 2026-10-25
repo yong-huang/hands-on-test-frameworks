@@ -1,0 +1,150 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "Hoverfly 代理录制：真上游死后再复活",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/05_hoverfly/images/hoverfly.html",
+    "viewBox": [
+      1100,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "record",
+      "label": "录制期（capture，在线）"
+    },
+    {
+      "id": "replay",
+      "label": "回放期（simulate，上游已死）"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "cap",
+      "label": "录制",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "play",
+      "label": "回放与注入",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "emit",
+      "label": "结论",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "proxy",
+    "sim",
+    "replayer",
+    "diff"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "record",
+      "col": 0,
+      "type": "frontend",
+      "label": "结账客户端",
+      "width": 116,
+      "sublabel": "绝对 URI 发代理"
+    },
+    {
+      "id": "proxy",
+      "lane": "record",
+      "col": 1,
+      "type": "backend",
+      "label": "Hoverfly·capture",
+      "width": 140,
+      "sublabel": "代理转发+记对"
+    },
+    {
+      "id": "upstream",
+      "lane": "record",
+      "col": 2,
+      "type": "external",
+      "label": "真支付网关",
+      "width": 118,
+      "sublabel": "录完即杀"
+    },
+    {
+      "id": "sim",
+      "lane": "replay",
+      "col": 2,
+      "type": "database",
+      "label": "simulation.json",
+      "width": 140,
+      "sublabel": "可手工注入 500"
+    },
+    {
+      "id": "replayer",
+      "lane": "replay",
+      "col": 3,
+      "type": "backend",
+      "label": "Hoverfly·simulate",
+      "width": 150,
+      "sublabel": "查对即答·离线"
+    },
+    {
+      "id": "diff",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "逐字节 diff",
+      "width": 110,
+      "sublabel": "一致 ✅ 注入红 ✅"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "proxy",
+      "variant": "default",
+      "label": "经代理"
+    },
+    {
+      "from": "proxy",
+      "to": "upstream",
+      "variant": "dashed",
+      "label": "转发真上游"
+    },
+    {
+      "from": "proxy",
+      "to": "sim",
+      "variant": "default",
+      "label": "落 simulation"
+    },
+    {
+      "from": "sim",
+      "to": "replayer",
+      "variant": "default"
+    },
+    {
+      "from": "replayer",
+      "to": "client",
+      "variant": "dashed",
+      "label": "离线应答"
+    },
+    {
+      "from": "replayer",
+      "to": "diff",
+      "variant": "default",
+      "label": "输出对比"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "mappings": [
+    {
+      "name": "pay-visa-fast",
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/payments",
+        "headers": {
+          "Idempotency-Key": {
+            "matches": ".+"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.card_token == 'tok_visa')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "payment_id": "PAY-VISA-0001",
+          "state": "settled"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "pay-visa-fast"
+        }
+      }
+    },
+    {
+      "name": "pay-other-review",
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPath": "/payments",
+        "headers": {
+          "Idempotency-Key": {
+            "matches": ".+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "payment_id": "PAY-REV-0002",
+          "state": "under_review"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Mocked-By": "pay-other-review"
+        }
+      }
+    }
+  ]
+}

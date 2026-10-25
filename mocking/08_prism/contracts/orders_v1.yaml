@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: 订单 API（契约 v1）
+  version: 1.0.0
+paths:
+  /orders:
+    post:
+      summary: 创建订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer, amount]
+              properties:
+                customer:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        "201":
+          description: 订单已创建
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [order_id, state, review]
+                properties:
+                  order_id:
+                    type: string
+                  state:
+                    type: string
+                  review:
+                    type: boolean
+              examples:
+                created:
+                  summary: 常规下单
+                  value:
+                    order_id: ORD-EX-0001
+                    state: created
+                    review: false
+                risk-review:
+                  summary: 大额需人工审核
+                  value:
+                    order_id: ORD-EX-RISK
+                    state: created
+                    review: true
+  /orders/{id}:
+    get:
+      summary: 查询订单
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 订单详情
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [order_id, state]
+                properties:
+                  order_id:
+                    type: string
+                  state:
+                    type: string
+              examples:
+                found:
+                  value:
+                    order_id: ORD-EX-0001
+                    state: created

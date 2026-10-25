@@ -1,0 +1,17 @@
+type Query {
+  "单个订单：按 id 查询（mock 场景下 id 只区分取哪套预设）"
+  order(id: ID!): Order
+  "订单列表：limit 截断"
+  orders(limit: Int = 5): [Order!]!
+  "风控订单：resolver 故意抛错，演示字段级结构化错误"
+  riskyOrder: Order!
+}
+
+type Order {
+  id: ID!
+  customer: String!
+  amount: Float!
+  status: String!
+  "是否需要人工审核——AB 两套数据在这里分叉"
+  review: Boolean!
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "order-any",
+    "description": "兜底弱规则：只约束 method+path。任何 POST /orders 至少命中它——也因为它只值 0 分，任何更细的规则都会赢过它",
+    "match": { "method": "POST", "path": "/orders" },
+    "response": {
+      "status": 201,
+      "body": { "order_id": "ORD-GEN-0001", "state": "created", "review": false }
+    }
+  },
+  {
+    "id": "order-pos-channel",
+    "description": "POS 渠道规则：在 path 之上多约束一个 header（+10 分），赢过兜底弱规则",
+    "match": {
+      "method": "POST",
+      "path": "/orders",
+      "headers": { "X-Channel": "pos" }
+    },
+    "response": {
+      "status": 201,
+      "body": { "order_id": "ORD-POS-0002", "state": "created", "review": false, "channel": "pos" }
+    }
+  },
+  {
+    "id": "order-big-amount",
+    "description": "大额规则：body 条件 $.amount > 1000（+20 分），大额单直接进人工审核",
+    "match": {
+      "method": "POST",
+      "path": "/orders",
+      "body": [ { "path": "$.amount", "op": ">", "value": 1000 } ]
+    },
+    "response": {
+      "status": 201,
+      "body": { "order_id": "ORD-RISK-0003", "state": "created", "review": true, "risk_level": "manual" }
+    }
+  },
+  {
+    "id": "order-pos-big",
+    "description": "POS+大额规则：header 与 body 双约束（+30 分），四条规则里最懂这个请求的",
+    "match": {
+      "method": "POST",
+      "path": "/orders",
+      "headers": { "X-Channel": "pos" },
+      "body": [ { "path": "$.amount", "op": ">", "value": 1000 } ]
+    },
+    "response": {
+      "status": 201,
+      "body": { "order_id": "ORD-POSRISK-0004", "state": "created", "review": true, "risk_level": "pos_review" }
+    }
+  }
+]

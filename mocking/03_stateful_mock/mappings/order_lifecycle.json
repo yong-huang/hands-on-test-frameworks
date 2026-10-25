@@ -1,0 +1,182 @@
+{
+  "mappings": [
+    {
+      "name": "create-from-empty",
+      "scenarioName": "order-lifecycle",
+      "newScenarioState": "CREATED",
+      "request": { "method": "POST", "urlPath": "/orders" },
+      "response": {
+        "status": 201,
+        "jsonBody": { "order_id": "ORD-SM-001", "state": "created" },
+        "headers": { "Content-Type": "application/json", "X-From-State": "empty" }
+      }
+    },
+    {
+      "name": "create-from-created",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "CREATED",
+      "request": { "method": "POST", "urlPath": "/orders" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "重复下单：已有未支付订单", "code": "DUPLICATE_ORDER" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "create-from-paid",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "PAID",
+      "request": { "method": "POST", "urlPath": "/orders" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "订单已支付，请走发货", "code": "ALREADY_PAID" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "create-from-shipped",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "SHIPPED",
+      "request": { "method": "POST", "urlPath": "/orders" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "订单已完结，请重置场景", "code": "ORDER_CLOSED" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "pay-from-empty",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "Started",
+      "request": { "method": "POST", "urlPath": "/orders/pay" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "订单未创建，不能支付", "code": "NO_ORDER" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "pay-from-created",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "CREATED",
+      "newScenarioState": "PAID",
+      "request": { "method": "POST", "urlPath": "/orders/pay" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "payment_id": "PAY-SM-001", "state": "settled" },
+        "headers": { "Content-Type": "application/json", "X-From-State": "created" }
+      }
+    },
+    {
+      "name": "pay-from-paid",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "PAID",
+      "request": { "method": "POST", "urlPath": "/orders/pay" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "重复支付", "code": "DUPLICATE_PAY" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "pay-from-shipped",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "SHIPPED",
+      "request": { "method": "POST", "urlPath": "/orders/pay" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "已发货，不能支付", "code": "ORDER_CLOSED" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "ship-from-empty",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "Started",
+      "request": { "method": "POST", "urlPath": "/orders/ship" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "订单未创建，不能发货", "code": "NO_ORDER" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "ship-from-created",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "CREATED",
+      "request": { "method": "POST", "urlPath": "/orders/ship" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "未支付，不能发货", "code": "NOT_PAID" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "ship-from-paid",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "PAID",
+      "newScenarioState": "SHIPPED",
+      "request": { "method": "POST", "urlPath": "/orders/ship" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "tracking_no": "TRK-SM-001", "state": "shipped" },
+        "headers": { "Content-Type": "application/json", "X-From-State": "paid" }
+      }
+    },
+    {
+      "name": "ship-from-shipped",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "SHIPPED",
+      "request": { "method": "POST", "urlPath": "/orders/ship" },
+      "response": {
+        "status": 409,
+        "jsonBody": { "error": "重复发货", "code": "DUPLICATE_SHIP" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "state-query-empty",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "Started",
+      "request": { "method": "GET", "urlPath": "/orders/state" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "scenario": "order-lifecycle", "state": "empty" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "state-query-created",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "CREATED",
+      "request": { "method": "GET", "urlPath": "/orders/state" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "scenario": "order-lifecycle", "state": "created" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "state-query-paid",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "PAID",
+      "request": { "method": "GET", "urlPath": "/orders/state" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "scenario": "order-lifecycle", "state": "paid" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "state-query-shipped",
+      "scenarioName": "order-lifecycle",
+      "requiredScenarioState": "SHIPPED",
+      "request": { "method": "GET", "urlPath": "/orders/state" },
+      "response": {
+        "status": 200,
+        "jsonBody": { "scenario": "order-lifecycle", "state": "shipped" },
+        "headers": { "Content-Type": "application/json" }
+      }
+    }
+  ]
+}

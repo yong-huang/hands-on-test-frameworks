@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: 订单 API（与真服务对齐的契约）
+  version: 1.0.0
+paths:
+  /orders/{id}:
+    get:
+      summary: 查询订单
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 订单详情
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [order_id, customer, amount, state, created_at]
+                properties:
+                  order_id: { type: string }
+                  customer: { type: string }
+                  amount: { type: number }
+                  state: { type: string }
+                  created_at: { type: string }
+              examples:
+                found:
+                  value:
+                    order_id: ORD-001
+                    customer: alice
+                    amount: 123.5
+                    state: created
+                    created_at: "2026-10-24 12:00:00"
+  /orders:
+    post:
+      summary: 创建订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer, amount]
+              properties:
+                customer: { type: string }
+                amount: { type: number }
+      responses:
+        "201":
+          description: 已创建
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [order_id, state, review, created_at]
+                properties:
+                  order_id: { type: string }
+                  state: { type: string }
+                  review: { type: boolean }
+                  created_at: { type: string }
+              examples:
+                created:
+                  value:
+                    order_id: ORD-NEW-001
+                    state: created
+                    review: false
+                    created_at: "2026-10-24 12:00:00"

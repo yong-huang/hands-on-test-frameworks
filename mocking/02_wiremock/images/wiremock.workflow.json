@@ -1,0 +1,156 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "WireMock 等价重做：同一序列双打，逐字段对账",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/02_wiremock/images/wiremock.html",
+    "viewBox": [
+      1000,
+      540
+    ]
+  },
+  "lanes": [
+    {
+      "id": "drive",
+      "label": "驱动"
+    },
+    {
+      "id": "impl",
+      "label": "两套替身"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "seq",
+      "label": "驱动",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "compare",
+      "label": "对照",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "emit",
+      "label": "产出",
+      "fromCol": 3,
+      "toCol": 3
+    }
+  ],
+  "mainPath": [
+    "seq",
+    "wm",
+    "diff",
+    "gate"
+  ],
+  "nodes": [
+    {
+      "id": "seq",
+      "lane": "drive",
+      "col": 0,
+      "type": "frontend",
+      "label": "10 场景请求序列",
+      "width": 140,
+      "sublabel": "同一序列双打"
+    },
+    {
+      "id": "mock01",
+      "lane": "impl",
+      "col": 1,
+      "type": "backend",
+      "label": "自研声明式 mock",
+      "width": 134,
+      "sublabel": "特异度自动评分 :9110"
+    },
+    {
+      "id": "wm",
+      "lane": "impl",
+      "col": 2,
+      "type": "backend",
+      "label": "WireMock 容器",
+      "width": 124,
+      "sublabel": "手工 priority :9200"
+    },
+    {
+      "id": "admin",
+      "lane": "impl",
+      "col": 3,
+      "type": "database",
+      "label": "__admin/requests",
+      "width": 140,
+      "sublabel": "unmatched 请求留痕"
+    },
+    {
+      "id": "diff",
+      "lane": "out",
+      "col": 2,
+      "type": "frontend",
+      "label": "逐字段 diff",
+      "width": 110,
+      "sublabel": "status/stub/body"
+    },
+    {
+      "id": "gate",
+      "lane": "out",
+      "col": 3,
+      "type": "frontend",
+      "label": "等价结论 + 差距表",
+      "width": 150,
+      "sublabel": "10/10 等价 · 六行差距"
+    }
+  ],
+  "edges": [
+    {
+      "from": "seq",
+      "to": "mock01",
+      "variant": "default",
+      "label": "同一请求"
+    },
+    {
+      "from": "seq",
+      "to": "wm",
+      "variant": "default",
+      "label": "同一请求"
+    },
+    {
+      "from": "mock01",
+      "to": "diff",
+      "variant": "default",
+      "label": "响应 A"
+    },
+    {
+      "from": "wm",
+      "to": "diff",
+      "variant": "default",
+      "label": "响应 B"
+    },
+    {
+      "from": "wm",
+      "to": "admin",
+      "variant": "dashed",
+      "label": "全量留痕"
+    },
+    {
+      "from": "diff",
+      "to": "gate",
+      "variant": "default",
+      "label": "等价结论"
+    },
+    {
+      "from": "admin",
+      "to": "gate",
+      "variant": "dashed",
+      "label": "verify 抓未预期"
+    }
+  ]
+}

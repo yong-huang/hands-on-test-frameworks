@@ -1,0 +1,140 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "故障注入矩阵：逐格注入，逐格断言降级分支",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/07_fault_matrix/images/fault_matrix.html",
+    "viewBox": [
+      1100,
+      700
+    ]
+  },
+  "lanes": [
+    {
+      "id": "drive",
+      "label": "矩阵驱动器"
+    },
+    {
+      "id": "mock",
+      "label": "WireMock 靶场"
+    },
+    {
+      "id": "client",
+      "label": "被测客户端"
+    },
+    {
+      "id": "out",
+      "label": "产出"
+    }
+  ],
+  "phases": [
+    {
+      "id": "inject",
+      "label": "注入",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "run",
+      "label": "执行与断言",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "report",
+      "label": "报告",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "driver",
+    "stub",
+    "client",
+    "branch",
+    "report"
+  ],
+  "nodes": [
+    {
+      "id": "driver",
+      "lane": "drive",
+      "col": 0,
+      "type": "frontend",
+      "label": "矩阵驱动器",
+      "width": 116,
+      "sublabel": "7 格逐格执行"
+    },
+    {
+      "id": "stub",
+      "lane": "mock",
+      "col": 1,
+      "type": "backend",
+      "label": "单格 stub",
+      "width": 98,
+      "sublabel": "admin API 注入"
+    },
+    {
+      "id": "client",
+      "lane": "client",
+      "col": 2,
+      "type": "backend",
+      "label": "结账客户端",
+      "width": 110,
+      "sublabel": "重试/熔断/兜底"
+    },
+    {
+      "id": "branch",
+      "lane": "client",
+      "col": 3,
+      "type": "backend",
+      "label": "分支判定",
+      "width": 98,
+      "sublabel": "7 分支一一对应"
+    },
+    {
+      "id": "report",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "覆盖率报告",
+      "width": 110,
+      "sublabel": "格子 7/7 · 分支 7/7"
+    }
+  ],
+  "edges": [
+    {
+      "from": "driver",
+      "to": "stub",
+      "variant": "default",
+      "label": "注入当前格"
+    },
+    {
+      "from": "stub",
+      "to": "client",
+      "variant": "dashed",
+      "label": "故障应答"
+    },
+    {
+      "from": "client",
+      "to": "branch",
+      "variant": "default",
+      "label": "降级行为"
+    },
+    {
+      "from": "branch",
+      "to": "driver",
+      "variant": "dashed",
+      "label": "断言错格即红"
+    },
+    {
+      "from": "branch",
+      "to": "report",
+      "variant": "default",
+      "label": "汇总"
+    }
+  ]
+}

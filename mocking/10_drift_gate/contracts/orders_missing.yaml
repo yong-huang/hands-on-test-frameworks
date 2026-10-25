@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: 订单 API（漂移注入：created_at 被删）
+  version: 1.0.0
+paths:
+  /orders/{id}:
+    get:
+      summary: 查询订单
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 订单详情
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - order_id
+                - customer
+                - amount
+                - state
+                properties:
+                  order_id:
+                    type: string
+                  customer:
+                    type: string
+                  amount:
+                    type: number
+                  state:
+                    type: string
+              examples:
+                found:
+                  value:
+                    order_id: ORD-001
+                    customer: alice
+                    amount: 123.5
+                    state: created
+  /orders:
+    post:
+      summary: 创建订单
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - customer
+              - amount
+              properties:
+                customer:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        '201':
+          description: 已创建
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - order_id
+                - state
+                - review
+                properties:
+                  order_id:
+                    type: string
+                  state:
+                    type: string
+                  review:
+                    type: boolean
+              examples:
+                created:
+                  value:
+                    order_id: ORD-NEW-001
+                    state: created
+                    review: false

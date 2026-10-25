@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "title": "订单状态机：4 态 × 3 动作，非法跳转拒绝",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/03_stateful_mock/images/order_lifecycle.html",
+    "viewBox": [
+      1000,
+      580
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "订单状态机（order-lifecycle）：合法流转主线"
+    },
+    {
+      "id": "mid",
+      "label": "（本状态机没有挂起/中断态——非法跳转全部原地 409，状态不变）"
+    },
+    {
+      "id": "terminal",
+      "label": "（终态在主链内：SHIPPED；重置由 POST /__admin/scenarios/reset 完成）"
+    }
+  ],
+  "states": [
+    {
+      "id": "empty",
+      "type": "start",
+      "label": "Started（空）",
+      "sublabel": "pay/ship 直接调 → 409",
+      "lane": "main",
+      "col": 0,
+      "step": "00"
+    },
+    {
+      "id": "created",
+      "type": "active",
+      "label": "CREATED",
+      "sublabel": "重复下单/发货 → 409",
+      "lane": "main",
+      "col": 1,
+      "step": "01"
+    },
+    {
+      "id": "paid",
+      "type": "active",
+      "label": "PAID",
+      "sublabel": "重复支付/下单 → 409",
+      "lane": "main",
+      "col": 2,
+      "step": "02"
+    },
+    {
+      "id": "shipped",
+      "type": "success",
+      "label": "SHIPPED",
+      "sublabel": "任何写操作 → 409（终态）",
+      "lane": "main",
+      "col": 3,
+      "step": "03"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t-create",
+      "from": "empty",
+      "to": "created",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "POST /orders → 201",
+      "labelDy": -25
+    },
+    {
+      "id": "t-pay",
+      "from": "created",
+      "to": "paid",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "POST /orders/pay → 200",
+      "labelDy": -25
+    },
+    {
+      "id": "t-ship",
+      "from": "paid",
+      "to": "shipped",
+      "fromSide": "right",
+      "toSide": "left",
+      "label": "POST /orders/ship → 200",
+      "labelDy": -25
+    }
+  ]
+}

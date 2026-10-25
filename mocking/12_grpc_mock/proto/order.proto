@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package order.v1;
+
+// 订单查询服务（gRPC 替身）：unary 查询 + server-streaming 事件流
+service OrderQuery {
+  // unary：查单个订单；order_id 为空时返回 INVALID_ARGUMENT 并点名字段
+  rpc GetOrder (GetOrderRequest) returns (OrderResponse);
+  // server-streaming：按序推送 order_id 的生命周期事件（固定 5 条，seq 1..5）
+  rpc StreamOrderEvents (StreamRequest) returns (stream OrderEvent);
+}
+
+message GetOrderRequest {
+  string order_id = 1; // 必填语义由服务端校验：空 → INVALID_ARGUMENT
+}
+
+message OrderResponse {
+  string order_id = 1;
+  string customer = 2;
+  double amount = 3;
+  string status = 4;
+}
+
+message StreamRequest {
+  string order_id = 1;
+}
+
+message OrderEvent {
+  int32 seq = 1;        // 事件序号：1..5，顺序断言的锚点
+  string stage = 2;     // created → paid → reviewed → shipped → settled
+  string order_id = 3;
+}

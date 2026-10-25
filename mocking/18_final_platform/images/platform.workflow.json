@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "🏁 compose 全家桶一键冷启动",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/18_final_platform/images/platform.html",
+    "viewBox": [
+      1200,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "flow",
+      "label": "compose 全家桶（REST/GQL/gRPC/BFF/事件）"
+    }
+  ],
+  "phases": [
+    {
+      "id": "p1",
+      "label": "冷启动",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "p2",
+      "label": "全家桶",
+      "fromCol": 1,
+      "toCol": 4
+    },
+    {
+      "id": "p3",
+      "label": "冒烟+门禁",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "compose",
+    "wiremock",
+    "gqlgrpc",
+    "bffds",
+    "smoke",
+    "dash"
+  ],
+  "nodes": [
+    {
+      "id": "compose",
+      "lane": "flow",
+      "col": 0,
+      "type": "frontend",
+      "label": "docker c",
+      "width": 124,
+      "sublabel": "一键冷启动"
+    },
+    {
+      "id": "wiremock",
+      "lane": "flow",
+      "col": 1,
+      "type": "backend",
+      "label": "WireMock",
+      "width": 92,
+      "sublabel": "REST 声明式"
+    },
+    {
+      "id": "gqlgrpc",
+      "lane": "flow",
+      "col": 2,
+      "type": "backend",
+      "label": "GQL+gRPC",
+      "width": 92,
+      "sublabel": "11/12 复用"
+    },
+    {
+      "id": "bffds",
+      "lane": "flow",
+      "col": 3,
+      "type": "backend",
+      "label": "BFF+替身链",
+      "width": 104,
+      "sublabel": "15 复用"
+    },
+    {
+      "id": "smoke",
+      "lane": "flow",
+      "col": 4,
+      "type": "frontend",
+      "label": "五路冒烟",
+      "width": 92,
+      "sublabel": "五路全绿"
+    },
+    {
+      "id": "dash",
+      "lane": "flow",
+      "col": 5,
+      "type": "database",
+      "label": "看板+门禁",
+      "width": 104,
+      "sublabel": "✅/🔴 落盘"
+    }
+  ],
+  "edges": [
+    {
+      "from": "compose",
+      "to": "wiremock",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "wiremock",
+      "to": "gqlgrpc",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "gqlgrpc",
+      "to": "bffds",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "bffds",
+      "to": "smoke",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "smoke",
+      "to": "dash",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

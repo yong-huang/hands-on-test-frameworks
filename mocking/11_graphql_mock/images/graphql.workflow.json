@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "quality_profile": "showcase",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "title": "GraphQL mock：schema 感知 + AB 场景切换",
+    "output": "/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/mocking/11_graphql_mock/images/graphql.html",
+    "viewBox": [
+      1100,
+      620
+    ]
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "请求侧"
+    },
+    {
+      "id": "engine",
+      "label": "GraphQL 引擎"
+    },
+    {
+      "id": "out",
+      "label": "应答侧"
+    }
+  ],
+  "phases": [
+    {
+      "id": "arrive",
+      "label": "到达",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "exec",
+      "label": "执行",
+      "fromCol": 1,
+      "toCol": 3
+    },
+    {
+      "id": "answer",
+      "label": "应答",
+      "fromCol": 4,
+      "toCol": 4
+    }
+  ],
+  "mainPath": [
+    "client",
+    "validate",
+    "resolvers",
+    "data"
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "lane": "in",
+      "col": 0,
+      "type": "frontend",
+      "label": "query 请求",
+      "width": 104,
+      "sublabel": "+X-Mock-Scene 头"
+    },
+    {
+      "id": "sdl",
+      "lane": "engine",
+      "col": 1,
+      "type": "database",
+      "label": "schema.graphql",
+      "width": 130,
+      "sublabel": "类型系统的真源"
+    },
+    {
+      "id": "validate",
+      "lane": "engine",
+      "col": 2,
+      "type": "security",
+      "label": "schema 校验",
+      "width": 104,
+      "sublabel": "外字段→结构化 errors"
+    },
+    {
+      "id": "resolvers",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "场景化 resolver",
+      "width": 128,
+      "sublabel": "按场景头选数据"
+    },
+    {
+      "id": "dataA",
+      "lane": "out",
+      "col": 3,
+      "type": "database",
+      "label": "数据集 a",
+      "width": 92,
+      "sublabel": "常规"
+    },
+    {
+      "id": "dataB",
+      "lane": "out",
+      "col": 5,
+      "type": "database",
+      "label": "数据集 b",
+      "width": 92,
+      "sublabel": "大额风控"
+    },
+    {
+      "id": "data",
+      "lane": "out",
+      "col": 4,
+      "type": "frontend",
+      "label": "data+errors",
+      "width": 104,
+      "sublabel": "恒 JSON 应答"
+    }
+  ],
+  "edges": [
+    {
+      "from": "client",
+      "to": "validate",
+      "variant": "default",
+      "label": "POST /graphql"
+    },
+    {
+      "from": "sdl",
+      "to": "validate",
+      "variant": "default",
+      "label": "类型检查"
+    },
+    {
+      "from": "validate",
+      "to": "resolvers",
+      "variant": "default",
+      "label": "合法放行"
+    },
+    {
+      "from": "resolvers",
+      "to": "dataA",
+      "variant": "dashed",
+      "label": "scene=a"
+    },
+    {
+      "from": "resolvers",
+      "to": "dataB",
+      "variant": "dashed",
+      "label": "scene=b"
+    },
+    {
+      "from": "resolvers",
+      "to": "data",
+      "variant": "default",
+      "label": "组装"
+    }
+  ]
+}
