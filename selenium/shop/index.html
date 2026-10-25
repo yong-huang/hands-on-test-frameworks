@@ -12,6 +12,7 @@
     <a href="index.html" id="nav-home">首页</a>
     <a href="checkout.html" id="nav-checkout">下单结账</a>
     <a href="form.html" id="nav-form">表单</a>
+    <a href="playground.html" id="nav-playground">交互操场</a>
   </nav>
 </header>
 
@@ -20,6 +21,7 @@
 
 <main>
   <h2>商品列表（滚动加载，共 30 件）</h2>
+  <button id="compare-btn" class="ghost">🔍 与友商比价（新开标签页）</button>
   <p id="load-hint">正在加载商品…</p>
   <div id="product-grid" class="grid"></div>
   <p id="load-done" hidden>✅ 全部 30 件商品已加载</p>
@@ -46,11 +48,19 @@ async function loadPage() {
   document.getElementById("load-hint").hidden = true;
   if (page >= data.pages) { document.getElementById("load-done").hidden = false; }
   loading = false;
+  // 大屏兜底：内容没填满视口时用户无路可滚，自动续载下一页（真实懒加载站的经典缺陷修复）
+  if (page < data.pages && document.body.scrollHeight <= window.innerHeight) loadPage();
 }
 window.addEventListener("scroll", () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 4) loadPage();
 });
 loadPage();
+
+// 项目 5 素材：比价按钮新开标签页
+document.getElementById("compare-btn").addEventListener("click", () => {
+  window.open("compare.html", "_blank");
+});
+
 </script>
 </body>
 </html>

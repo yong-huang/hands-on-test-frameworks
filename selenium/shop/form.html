@@ -13,6 +13,7 @@
 <main>
   <form id="order-form">
     <label>客户称呼 <input type="text" id="customer" name="customer"></label>
+    <label>券码（值只在 input 事件时同步进状态） <input type="text" id="coupon" name="coupon"></label>
     <label>下单渠道
       <select id="channel" name="channel">
         <option value="">请选择</option>
@@ -42,10 +43,16 @@
   <pre id="echo" hidden></pre>
 </main>
 <script>
+// 项目 7 素材：券码走「input 事件 → 状态」同步，不走 .value 直读——
+// JS 直接改 value 而不派发事件时，提交读到的仍是旧状态（经典事件陷阱）
+const state = { coupon: "" };
+document.getElementById("coupon").addEventListener("input", (e) => { state.coupon = e.target.value; });
+
 document.getElementById("order-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const payload = {
     customer: document.getElementById("customer").value,
+    coupon: state.coupon,
     channel: document.getElementById("channel").value,
     tags: [...document.getElementById("tags").selectedOptions].map(o => o.value),
     gift: document.getElementById("gift").checked,
@@ -59,6 +66,8 @@ document.getElementById("order-form").addEventListener("submit", async (e) => {
   });
   const echo = await r.json();
   const pre = document.getElementById("echo");
+  window.__submits = (window.__submits || 0) + 1;
+  pre.dataset.seq = window.__submits;            // 提交序号：让自动化能等「新一轮」回显
   pre.textContent = JSON.stringify(echo.received, null, 2);
   pre.hidden = false;
 });

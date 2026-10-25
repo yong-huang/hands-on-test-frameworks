@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>交互操场 - Selenium 带病靶场</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  #play-area { position: relative; height: 260px; border: 1px solid #b9c2c9; border-radius: 8px; }
+  #drag-item { position: absolute; left: 10px; top: 20px; width: 90px; height: 40px; background: #12805c;
+               color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+               cursor: grab; user-select: none; }
+  #drop-zone { position: absolute; right: 20px; top: 40px; width: 200px; height: 160px;
+               border: 2px dashed #b9c2c9; border-radius: 8px; display: flex; align-items: center;
+               justify-content: center; color: #7a868d; }
+  #drop-zone.hot { border-color: #12805c; color: #12805c; }
+  .menu { position: relative; display: inline-block; margin-right: 24px; }
+  #menu-sub { display: none; position: absolute; background: #fff; border: 1px solid #d7dde2;
+              border-radius: 6px; padding: 6px 10px; z-index: 5; }
+  .menu:hover #menu-sub { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>交互操场</h1>
+  <nav><a href="index.html" id="nav-home">首页</a></nav>
+</header>
+<main>
+  <div class="menu">
+    <span id="menu-parent" style="cursor:pointer;">⚙ 偏好设置（hover 弹出）</span>
+    <div id="menu-sub"><span id="menu-sub-item" style="cursor:pointer;">深色模式</span></div>
+  </div>
+  <span id="menu-picked"></span>
+
+  <h2>拖拽</h2>
+  <div id="play-area">
+    <div id="drag-item">拖我</div>
+    <div id="drop-zone">拖到这里</div>
+  </div>
+
+  <h2>快捷键</h2>
+  <input id="note" placeholder="写点东西然后 Ctrl+S">
+  <span id="save-state"></span>
+
+  <h2>画布涂鸦</h2>
+  <canvas id="cv" width="420" height="160" style="border:1px solid #b9c2c9; cursor: crosshair;"></canvas>
+  <button id="clear-cv" class="ghost">清空画布</button>
+  <span id="ink-count"></span>
+</main>
+<script>
+// ---- 拖拽（自实现 mouse 事件流，Selenium ActionChains 可直接驱动）----
+const item = document.getElementById("drag-item");
+const area = document.getElementById("play-area");
+const zone = document.getElementById("drop-zone");
+let dragging = null;
+item.addEventListener("mousedown", (e) => {
+  dragging = { dx: e.offsetX, dy: e.offsetY };
+  e.preventDefault();
+});
+area.addEventListener("mousemove", (e) => {
+  if (!dragging) return;
+  const r = area.getBoundingClientRect();
+  item.style.left = (e.clientX - r.left - dragging.dx) + "px";
+  item.style.top = (e.clientY - r.top - dragging.dy) + "px";
+  const zr = zone.getBoundingClientRect();
+  const ir = item.getBoundingClientRect();
+  zone.classList.toggle("hot", !(ir.right < zr.left || ir.left > zr.right || ir.bottom < zr.top || ir.top > zr.bottom));
+});
+area.addEventListener("mouseup", () => { dragging = null; });
+
+// ---- hover 菜单 ----
+document.getElementById("menu-sub-item").addEventListener("click", () => {
+  document.getElementById("menu-picked").textContent = "已选择：深色模式";
+});
+
+// ---- 快捷键 Ctrl+S ----
+const note = document.getElementById("note");
+note.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+    e.preventDefault();
+    document.getElementById("save-state").textContent = "已保存：" + note.value;
+  }
+});
+
+// ---- 画布 ----
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+let drawing = false;
+function inkCount() {
+  const d = ctx.getImageData(0, 0, cv.width, cv.height).data;
+  let n = 0;
+  for (let i = 0; i < d.length; i += 4) if (d[i+3] > 0 && (d[i] < 250 || d[i+1] < 250 || d[i+2] < 250)) n++;
+  document.getElementById("ink-count").textContent = "墨迹像素：" + n;
+  return n;
+}
+cv.addEventListener("mousedown", (e) => {
+  drawing = true;
+  const r = cv.getBoundingClientRect();
+  ctx.beginPath(); ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+});
+cv.addEventListener("mousemove", (e) => {
+  if (!drawing) return;
+  const r = cv.getBoundingClientRect();
+  ctx.lineTo(e.clientX - r.left, e.clientY - r.top); ctx.stroke(); inkCount();
+});
+window.addEventListener("mouseup", () => { drawing = false; });
+document.getElementById("clear-cv").addEventListener("click", () => {
+  ctx.clearRect(0, 0, cv.width, cv.height); inkCount();
+});
+inkCount();
+</script>
+</body>
+</html>
