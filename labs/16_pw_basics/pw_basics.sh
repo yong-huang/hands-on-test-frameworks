@@ -53,6 +53,7 @@ do_observe() {
 
     step "observe" "③ codegen 录制器（生成代码骨架，请手动体验）："
     echo ">>> $PY -m playwright codegen ${BASE_URL}   # 浏览器会打开，操作即生成代码"
+    echo ">>> 录好的骨架示例见 codegen_recorded.py（放 tests/ 外：模块级代码会在 pytest 收集时执行）"
 }
 
 do_clean() {
