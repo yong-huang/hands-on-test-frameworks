@@ -57,10 +57,12 @@ RetryAnalyzer 让每条失败用例自动重试 1 次；RetryTransformer 把它
 
 ## Quick Start
 
-前置条件四条：①完成 01-13；②Appium Server 已启动（默认 4723）；
-③被测应用包在 `/tmp/SauceLabs-Demo-App.Simulator.zip`（重启过机器
-按实验 01 重新下载解压）；④第二台模拟器已创建（`xcrun simctl
-clone`，克隆连应用一起复制）。
+前置条件三条：①完成 01-13；
+②被测应用包在 `/tmp/SauceLabs-Demo-App.Simulator.zip`（重启过机器
+按实验 01 重新下载解压）；③第二台模拟器已创建（`xcrun simctl
+clone`，克隆连应用一起复制）。Appium Server 无需手动启动——
+`run_suite.sh` 的 setup 会先复用实验 01 的 `ios_session.sh apply`
+（幂等：已启动则跳过）。
 
 **UDID 与构建路径必须替换**：`run_suite.sh` 顶部的 `UDID1`/`UDID2`
 和 `configs/final-suite.xml` 里的 `device.udid` 要改成你机器上查询

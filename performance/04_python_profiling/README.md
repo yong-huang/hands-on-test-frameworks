@@ -84,14 +84,16 @@ sleep 缺陷移除等于砍掉一段"风控"业务语义，性能修复必须与
 ```bash
 docker run --rm --pid=container:$SHOP_CONTAINER --cap-add SYS_PTRACE \
   python:3.13-slim bash -c "pip install --no-index --find-links /pkgs py-spy \
-  && py-spy record --pid 1 --idle --duration 50 --rate 50 --format flamegraph -o /out/flame.svg"
+  && PID=\$(for p in /proc/[0-9]*; do read -r c < \$p/comm 2>/dev/null; \
+           case \$c in python*|uvicorn*) basename \$p; break;; esac; done) \
+  && py-spy record --pid \$PID --idle --duration 50 --rate 50 --format flamegraph -o /out/flame.svg"
 ```
 
 ## How It Works
 
 **伴生容器的原理**。
 
-剖析对象是**容器里的 shop**：伴生容器`--pid=container:shop` 共享目标容器的 PID namespace（进程编号空间），`--cap-add SYS_PTRACE` 授予跨进程读栈的权限——之后 `py-spy --pid 1`直接采样目标进程。
+剖析对象是**容器里的 shop**：伴生容器`--pid=container:shop` 共享目标容器的 PID namespace（进程编号空间），`--cap-add SYS_PTRACE` 授予跨进程读栈的权限——采样前先扫 `/proc` 找到 python 进程的真实 PID（shop 的 PID 1 是 `sh -c uvicorn` 包装壳，直接 `--pid 1` 只会得到 "Failed to find python version from target process"）。
 
 macOS 侧 SIP 挡路，Linux 侧容器绕开。
 

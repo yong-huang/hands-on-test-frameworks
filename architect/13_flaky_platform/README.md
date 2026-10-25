@@ -59,7 +59,7 @@ BLOCKING。
 
 ```bash
 cd architect/13_flaky_platform
-./flaky_platform.sh apply     # 清空隔离区（植入的 flaky 用例常驻，注释即声明）
+./flaky_platform.sh apply     # 清空隔离区与 .shared_state（靶子常驻，注释即声明；残留会让顺序依赖型永不现形）
 ./flaky_platform.sh observe   # 10 轮检测 → 自动隔离 → 门禁联动 → 3 连绿 → 摘牌
 ./flaky_platform.sh clean
 ```

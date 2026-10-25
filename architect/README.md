@@ -34,3 +34,10 @@
 - [26_escape_analysis](26_escape_analysis/README.md) ✅ 逃逸分析——10 案例归因+改进映射真实校验
 - [27_panorama_board](27_panorama_board/README.md) ✅ 效能全景看板——make 一键 6 面板 11 指标
 - [28_evolution_plan](28_evolution_plan/README.md) ✅ 架构演进方案——30 条证据 100% 可复核：用清单里每个项目的 🤖 开始提示词启动
+
+## ⚠️ 预期失败诚实标注
+
+- 01 的审计对 labs 的故意失败用例（labs/01/06/10/17/20）声明 `expected_fail`——「默认不绿」不会被误报成审计发现
+- 13 植入的 flaky 用例（随机失败 + 顺序依赖）是检测素材：检出并进隔离区即验收
+- 18 的劣化 canary 是故意注入的坏：抓红并做出回滚判定即验收
+- 22 的植入 CVE、24 的覆盖率不达标提交，被门禁点名拦截/打回即验收
