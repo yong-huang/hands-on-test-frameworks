@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>下单结账 - Selenium 带病靶场</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>下单结账</h1>
+  <nav><a href="index.html" id="nav-home">首页</a></nav>
+</header>
+<main>
+  <h2>结账容器</h2>
+  <button id="promo-btn" class="ghost">开启促销提醒</button>
+  <span id="promo-state"></span>
+
+  <!-- 陷阱②：三层 iframe 包住真正的购买按钮 -->
+  <iframe id="frame-outer" src="frame_outer.html" style="width:96%;height:340px;border:none;"></iframe>
+</main>
+<script>
+// 陷阱③：原生 alert 弹窗（弹窗不处理时，后续一切操作被阻塞）
+document.getElementById("promo-btn").addEventListener("click", () => {
+  alert("已开启促销提醒");
+  document.getElementById("promo-state").textContent = "已开启";
+});
+</script>
+</body>
+</html>

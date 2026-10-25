@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Selenium 带病靶场</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Selenium 带病靶场</h1>
+  <nav>
+    <a href="index.html" id="nav-home">首页</a>
+    <a href="checkout.html" id="nav-checkout">下单结账</a>
+    <a href="form.html" id="nav-form">表单</a>
+  </nav>
+</header>
+
+<!-- 陷阱①：慢元素——页面打开 2.5s 后才出现的秒杀横幅 -->
+<div id="flash-banner" class="banner" hidden>⚡ 限时秒杀中（2.5s 后才出现）</div>
+
+<main>
+  <h2>商品列表（滚动加载，共 30 件）</h2>
+  <p id="load-hint">正在加载商品…</p>
+  <div id="product-grid" class="grid"></div>
+  <p id="load-done" hidden>✅ 全部 30 件商品已加载</p>
+</main>
+
+<script>
+// 陷阱①：2.5s 后慢元素现身
+setTimeout(() => { document.getElementById("flash-banner").hidden = false; }, 2500);
+
+// 陷阱④：懒加载——首屏只加载第 1 页（10 件），滚动到底部再取下一页
+const grid = document.getElementById("product-grid");
+let page = 0, loading = false;
+async function loadPage() {
+  if (loading || page >= 3) return;
+  loading = true; page += 1;
+  const r = await fetch(`/api/products?page=${page}`);
+  const data = await r.json();
+  for (const it of data.items) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<div class="name">${it.name}</div><div class="price">$${it.price.toFixed(2)}</div>`;
+    grid.appendChild(card);
+  }
+  document.getElementById("load-hint").hidden = true;
+  if (page >= data.pages) { document.getElementById("load-done").hidden = false; }
+  loading = false;
+}
+window.addEventListener("scroll", () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 4) loadPage();
+});
+loadPage();
+</script>
+</body>
+</html>

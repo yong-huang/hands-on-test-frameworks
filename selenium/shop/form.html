@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>下单表单 - Selenium 带病靶场</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>下单表单（8 类控件）</h1>
+  <nav><a href="index.html" id="nav-home">首页</a></nav>
+</header>
+<main>
+  <form id="order-form">
+    <label>客户称呼 <input type="text" id="customer" name="customer"></label>
+    <label>下单渠道
+      <select id="channel" name="channel">
+        <option value="">请选择</option>
+        <option value="app">App</option>
+        <option value="web">Web</option>
+        <option value="mini">小程序</option>
+      </select>
+    </label>
+    <label>增值服务（多选）
+      <select id="tags" name="tags" multiple size="3">
+        <option value="rush">加急</option>
+        <option value="gift">礼品包装</option>
+        <option value="insure">保价</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="gift" name="gift" value="on"> 附带贺卡</label>
+    <label>快递方式
+      <input type="radio" name="express" value="sf" checked> 顺丰
+      <input type="radio" name="express" value="ems"> EMS
+    </label>
+    <label>期望送达 <input type="date" id="date" name="date"></label>
+    <label>包裹重量档位(1-10) <input type="range" id="weight" name="weight" min="1" max="10" value="5"></label>
+    <label>附件凭证 <input type="file" id="attachment" name="attachment"></label>
+    <p><button type="submit" id="submit-btn">提交订单</button></p>
+  </form>
+  <h2>服务端回读</h2>
+  <pre id="echo" hidden></pre>
+</main>
+<script>
+document.getElementById("order-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const payload = {
+    customer: document.getElementById("customer").value,
+    channel: document.getElementById("channel").value,
+    tags: [...document.getElementById("tags").selectedOptions].map(o => o.value),
+    gift: document.getElementById("gift").checked,
+    express: document.querySelector("input[name=express]:checked").value,
+    date: document.getElementById("date").value,
+    weight: document.getElementById("weight").value,
+    attachment: (f => (f ? { name: f.name, size: f.size } : null))(document.getElementById("attachment").files[0]),
+  };
+  const r = await fetch("/api/feedback", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+  });
+  const echo = await r.json();
+  const pre = document.getElementById("echo");
+  pre.textContent = JSON.stringify(echo.received, null, 2);
+  pre.hidden = false;
+});
+</script>
+</body>
+</html>

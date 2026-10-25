@@ -1,0 +1,18 @@
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "PingFang SC", sans-serif; margin: 0; color: #1c2b33; }
+header { display: flex; align-items: center; gap: 24px; padding: 12px 24px; background: #12805c; color: #fff; }
+header h1 { font-size: 20px; margin: 0; }
+nav a { color: #d9f2e6; margin-right: 16px; text-decoration: none; font-size: 15px; }
+nav a:hover { color: #fff; text-decoration: underline; }
+main { padding: 16px 24px; }
+.banner { margin: 10px 24px; padding: 10px 16px; background: #ffefc2; border: 1px solid #e0a800; border-radius: 6px; }
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 12px; min-height: 60vh; }
+.card { border: 1px solid #d7dde2; border-radius: 8px; padding: 10px; background: #fff; }
+.card .name { font-weight: 600; }
+.card .price { color: #12805c; margin-top: 4px; }
+.framebox { border: 2px dashed #888; padding: 10px; margin: 8px; }
+button { padding: 6px 14px; border: 1px solid #12805c; background: #12805c; color: #fff; border-radius: 6px; cursor: pointer; }
+button.ghost { background: #fff; color: #12805c; }
+input, select { padding: 6px; border: 1px solid #b9c2c9; border-radius: 4px; }
+form label { display: block; margin-top: 10px; font-size: 14px; }
+#order-id { font-weight: 700; color: #12805c; }

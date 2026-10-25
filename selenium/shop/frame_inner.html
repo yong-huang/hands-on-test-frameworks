@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>内层</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<div class="framebox" style="border-color:#e0a800;">内层：确认购买
+  <button id="buy-btn" class="primary">确认购买</button>
+  <span id="order-id">订单号：（未生成）</span>
+</div>
+<script>
+document.getElementById("buy-btn").addEventListener("click", async () => {
+  const r = await fetch("/api/orders", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customer: "iframe-user", product: "靶场测试商品", qty: 1 })
+  });
+  const order = await r.json();
+  document.getElementById("order-id").textContent = "订单号 " + order.id;
+});
+</script>
+</body>
+</html>
