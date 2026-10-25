@@ -1,0 +1,16 @@
+# Grid 并行（arm64 口径）：selenium 官方 node-chrome 镜像至 4.27 仍无 linux/arm64 manifest
+# （实测 no matching manifest），故用本机已有的 arm64 原生 standalone-chrome——
+# standalone 即「单容器版 Grid」，调大 SE_NODE_MAX_SESSIONS 承载 4 路并行会话
+services:
+  grid:
+    image: selenium/standalone-chrome:latest
+    container_name: sel-grid
+    shm_size: 2g
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_NODE_MAX_SESSIONS=4
+      - SE_NODE_SESSION_TIMEOUT=120
+      - SE_OPTS_LOG_LEVEL=WARNING

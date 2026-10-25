@@ -104,9 +104,10 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8946)
+    ap.add_argument("--bind", default="0.0.0.0", help="Grid 容器里的浏览器要经 host.docker.internal 访问，须绑 0.0.0.0")
     args = ap.parse_args()
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"shop serving on http://127.0.0.1:{args.port}", flush=True)
+    srv = ThreadingHTTPServer((args.bind, args.port), Handler)
+    print(f"shop serving on http://{args.bind}:{args.port}", flush=True)
     srv.serve_forever()
 
 
