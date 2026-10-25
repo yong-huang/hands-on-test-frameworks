@@ -1,0 +1,5 @@
+name,customer,product,expected
+CSV-中文组,李雷,机械键盘,201
+CSV-英文组,Alice,无线鼠标,201
+CSV-日文组,佐藤太郎,显示器灯,201
+CSV-负向-空客户,,机械键盘,422

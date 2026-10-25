@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>Robot 靶场</title>
+<style>
+body { font-family: -apple-system, "PingFang SC", sans-serif; margin: 0; color: #24292f; }
+header { padding: 12px 24px; background: #7c3aed; color: #fff; }
+header h1 { margin: 0; font-size: 20px; }
+main { padding: 16px 24px; }
+label { display: block; margin-top: 12px; }
+input, select { padding: 6px; border: 1px solid #bbb; border-radius: 4px; width: 260px; }
+button { margin-top: 14px; padding: 8px 18px; background: #7c3aed; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+#order-id { font-weight: 700; color: #7c3aed; }
+</style>
+</head>
+<body>
+<header><h1>Robot 靶场：下单</h1></header>
+<main>
+  <form id="f">
+    <label>客户称呼 <input id="customer" placeholder="收件人"></label>
+    <label>商品
+      <select id="product">
+        <option value="机械键盘">机械键盘</option>
+        <option value="无线鼠标">无线鼠标</option>
+        <option value="显示器灯">显示器灯</option>
+      </select>
+    </label>
+    <button type="submit" id="submit-btn">创建订单</button>
+  </form>
+  <p id="order-id"></p>
+</main>
+<script>
+document.getElementById("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const r = await fetch("/api/orders", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customer: document.getElementById("customer").value,
+                           product: document.getElementById("product").value })
+  });
+  const order = await r.json();
+  document.getElementById("order-id").textContent = "订单号 " + order.id;
+});
+</script>
+</body>
+</html>
