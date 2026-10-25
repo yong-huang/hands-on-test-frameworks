@@ -29,6 +29,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/health":
             return self._send(200, {"status": "ok"})
+        if self.path.startswith("/api/recs"):
+            page = 1
+            if "page=" in self.path:
+                page = int(self.path.split("page=")[1].split("&")[0])
+            items = [{"name": f"推荐商品 {((page - 1) * 10) + i:02d}"} for i in range(1, 11)]
+            return self._send(200, {"page": page, "pages": 3, "items": items})
         if self.path.startswith("/api/orders/"):
             oid = self.path.rsplit("/", 1)[1]
             with LOCK:

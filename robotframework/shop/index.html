@@ -8,13 +8,17 @@ header h1 { margin: 0; font-size: 20px; }
 main { padding: 16px 24px; }
 label { display: block; margin-top: 12px; }
 input, select { padding: 6px; border: 1px solid #bbb; border-radius: 4px; width: 260px; }
+input[type=checkbox], input[type=radio], input[type=file] { width: auto; }
 button { margin-top: 14px; padding: 8px 18px; background: #7c3aed; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
 #order-id { font-weight: 700; color: #7c3aed; }
+#summary { margin-top: 10px; padding: 8px 12px; background: #f3effc; border-radius: 6px; display: none; }
+fieldset { margin-top: 12px; border: 1px solid #ddd; border-radius: 6px; }
 </style>
 </head>
 <body>
 <header><h1>Robot 靶场：下单</h1></header>
 <main>
+  <div id="slow-banner" hidden style="margin-bottom:10px;color:#7c3aed;">⚡ 今日订单已达 999 单（2s 后才出现）</div>
   <form id="f">
     <label>客户称呼 <input id="customer" placeholder="收件人"></label>
     <label>商品
@@ -24,20 +28,74 @@ button { margin-top: 14px; padding: 8px 18px; background: #7c3aed; color: #fff; 
         <option value="显示器灯">显示器灯</option>
       </select>
     </label>
+    <label>增值服务（可多选）
+      <select id="gifts" multiple size="3">
+        <option value="rush">加急</option>
+        <option value="gift">礼品包装</option>
+        <option value="insure">保价</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="gift-wrap"> 附带贺卡</label>
+    <fieldset>
+      <legend>快递方式</legend>
+      <input type="radio" name="express" value="sf" checked> 顺丰
+      <input type="radio" name="express" value="ems"> EMS
+    </fieldset>
+    <label>附件凭证 <input type="file" id="voucher"></label>
     <button type="submit" id="submit-btn">创建订单</button>
   </form>
   <p id="order-id"></p>
+  <p id="summary"></p>
+  <h2>支付面板（iframe 嵌入）</h2>
+  <iframe id="pay-frame" src="panel.html" style="width:420px;height:120px;border:1px dashed #999;"></iframe>
+  <h2>猜你喜欢（滚动懒加载，共 30 件）</h2>
+  <div id="recs"></div>
+  <p id="rec-done" hidden>✅ 30 件推荐已全部加载</p>
+  <p><a id="compare-link" href="compare.html" target="_blank">🔗 打开价格对照页（新窗口）</a></p>
 </main>
 <script>
+setTimeout(() => { document.getElementById("slow-banner").hidden = false; }, 2000);
+// 懒加载推荐区
+let recPage = 0, recLoading = false;
+async function loadRecs() {
+  if (recLoading || recPage >= 3) return;
+  recLoading = true; recPage += 1;
+  const r = await fetch(`/api/recs?page=${recPage}`);
+  const data = await r.json();
+  const box = document.getElementById("recs");
+  for (const it of data.items) {
+    const div = document.createElement("div");
+    div.className = "rcard"; div.textContent = it.name;
+    box.appendChild(div);
+  }
+  if (recPage >= data.pages) document.getElementById("rec-done").hidden = false;
+  recLoading = false;
+  if (document.body.scrollHeight <= window.innerHeight && recPage < data.pages) loadRecs();
+}
+window.addEventListener("scroll", () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 4) loadRecs();
+});
+loadRecs();
 document.getElementById("f").addEventListener("submit", async (e) => {
   e.preventDefault();
+  const gifts = [...document.getElementById("gifts").selectedOptions].map(o => o.value);
   const r = await fetch("/api/orders", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ customer: document.getElementById("customer").value,
                            product: document.getElementById("product").value })
   });
   const order = await r.json();
+  if (!r.ok) {
+    document.getElementById("order-id").textContent = "下单失败：请填写完整";
+    return;
+  }
   document.getElementById("order-id").textContent = "订单号 " + order.id;
+  const v = document.getElementById("voucher");
+  document.getElementById("summary").style.display = "block";
+  document.getElementById("summary").textContent =
+    `汇总：${gifts.join("+") || "无增值服务"} | 贺卡=${document.getElementById("gift-wrap").checked}` +
+    ` | 快递=${document.querySelector("input[name=express]:checked").value}` +
+    ` | 附件=${v.files.length ? v.files[0].name : "无"}`;
 });
 </script>
 </body>

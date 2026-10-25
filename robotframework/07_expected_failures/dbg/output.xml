@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.13.9 on darwin)" generated="2026-10-26T03:18:19.593517" rpa="false" schemaversion="5">
+<suite id="s1" name="Try Demo" source="/Users/hyhit/Desktop/workspace/projects/hands-on-test-frameworks/robotframework/07_expected_failures/try_demo.robot">
+<test id="s1-t1" name="精确全消息" line="5">
+<try>
+<branch type="TRY">
+<kw name="boom">
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-10-26T03:18:19.606318" level="FAIL">boom-b happened</msg>
+<arg>boom-b happened</arg>
+<doc>Fails the test or task with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-10-26T03:18:19.606212" elapsed="0.000150">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.606046" elapsed="0.000363">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.605926" elapsed="0.000498">boom-b happened</status>
+</branch>
+<branch type="EXCEPT">
+<pattern>boom-b happened</pattern>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-10-26T03:18:19.606553" level="INFO">caught exact</msg>
+<arg>caught exact</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-10-26T03:18:19.606495" elapsed="0.000072"/>
+</kw>
+<status status="PASS" start="2026-10-26T03:18:19.606443" elapsed="0.000134"/>
+</branch>
+<status status="PASS" start="2026-10-26T03:18:19.605908" elapsed="0.000679"/>
+</try>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-10-26T03:18:19.606679" level="INFO">T1 survived</msg>
+<arg>T1 survived</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-10-26T03:18:19.606633" elapsed="0.000057"/>
+</kw>
+<status status="PASS" start="2026-10-26T03:18:19.605777" elapsed="0.000940"/>
+</test>
+<test id="s1-t2" name="前缀模式" line="13">
+<try>
+<branch type="TRY">
+<kw name="boom">
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-10-26T03:18:19.607042" level="FAIL">boom-b happened</msg>
+<arg>boom-b happened</arg>
+<doc>Fails the test or task with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-10-26T03:18:19.606970" elapsed="0.000092">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.606910" elapsed="0.000182">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.606878" elapsed="0.000225">boom-b happened</status>
+</branch>
+<branch type="EXCEPT">
+<pattern>boom-b*</pattern>
+<kw name="Log" owner="BuiltIn">
+<arg>caught prefix</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607160" elapsed="0.000005"/>
+</kw>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607116" elapsed="0.000056"/>
+</branch>
+<status status="FAIL" start="2026-10-26T03:18:19.606870" elapsed="0.000309">boom-b happened</status>
+</try>
+<kw name="Log" owner="BuiltIn">
+<arg>T2 survived</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607222" elapsed="0.000004"/>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.606774" elapsed="0.000482">boom-b happened</status>
+</test>
+<test id="s1-t3" name="type glob 显式" line="21">
+<try>
+<branch type="TRY">
+<kw name="boom">
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-10-26T03:18:19.607544" level="FAIL">boom-b happened</msg>
+<arg>boom-b happened</arg>
+<doc>Fails the test or task with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-10-26T03:18:19.607481" elapsed="0.000079">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.607417" elapsed="0.000163">boom-b happened</status>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.607388" elapsed="0.000202">boom-b happened</status>
+</branch>
+<branch type="EXCEPT">
+<pattern>type=glob</pattern>
+<pattern>*boom*</pattern>
+<kw name="Log" owner="BuiltIn">
+<arg>caught typeglob</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607643" elapsed="0.000005"/>
+</kw>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607602" elapsed="0.000052"/>
+</branch>
+<status status="FAIL" start="2026-10-26T03:18:19.607380" elapsed="0.000280">boom-b happened</status>
+</try>
+<kw name="Log" owner="BuiltIn">
+<arg>T3 survived</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-10-26T03:18:19.607703" elapsed="0.000003"/>
+</kw>
+<status status="FAIL" start="2026-10-26T03:18:19.607309" elapsed="0.000431">boom-b happened</status>
+</test>
+<status status="FAIL" start="2026-10-26T03:18:19.594006" elapsed="0.013848"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="2" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Try Demo" id="s1" pass="1" fail="2" skip="0">Try Demo</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

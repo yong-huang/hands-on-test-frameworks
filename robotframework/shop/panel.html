@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>支付面板</title></head>
+<body style="font-family: sans-serif;">
+  <p style="margin:4px 0;">内嵌支付面板</p>
+  <button id="gen-btn">生成订单号</button>
+  <span id="panel-order"></span>
+</body>
+<script>
+document.getElementById("gen-btn").addEventListener("click", async () => {
+  const r = await fetch("/api/orders", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customer: "iframe-user", product: "iframe 商品" })
+  });
+  const order = await r.json();
+  document.getElementById("panel-order").textContent = "面板订单号 " + order.id;
+});
+</script>
+</body>
+</html>
