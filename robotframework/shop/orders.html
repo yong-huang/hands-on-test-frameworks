@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>订单查询 - Robot 靶场</title>
+<style>
+body { font-family: -apple-system, "PingFang SC", sans-serif; margin: 0; color: #24292f; }
+header { padding: 12px 24px; background: #7c3aed; color: #fff; }
+main { padding: 16px 24px; }
+input { padding: 6px; border: 1px solid #bbb; border-radius: 4px; width: 240px; }
+button { padding: 6px 14px; background: #7c3aed; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+#detail { margin-top: 14px; padding: 10px 14px; background: #f3effc; border-radius: 6px; display: none; }
+#pay-btn { display: none; }
+</style>
+</head>
+<body>
+<header><h1>订单查询</h1></header>
+<main>
+  <input id="oid" placeholder="订单号，如 ROB-xxxxxxxx">
+  <button id="query-btn">查询</button>
+  <button id="pay-btn">支付此订单</button>
+  <pre id="detail"></pre>
+</main>
+<script>
+async function query() {
+  const oid = document.getElementById("oid").value.trim();
+  const r = await fetch("/api/orders/" + oid);
+  const order = await r.json();
+  const box = document.getElementById("detail");
+  box.style.display = "block";
+  if (r.ok) {
+    box.textContent = JSON.stringify(order, null, 2);
+    document.getElementById("pay-btn").style.display = order.status === "created" ? "inline-block" : "none";
+  } else {
+    box.textContent = "查询失败：" + (order.error || r.status);
+    document.getElementById("pay-btn").style.display = "none";
+  }
+}
+document.getElementById("query-btn").addEventListener("click", query);
+document.getElementById("pay-btn").addEventListener("click", async () => {
+  const oid = document.getElementById("oid").value.trim();
+  await fetch(`/api/orders/${oid}/pay`, { method: "POST" });
+  query();
+});
+</script>
+</body>
+</html>

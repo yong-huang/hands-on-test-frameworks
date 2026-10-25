@@ -58,8 +58,8 @@ class Handler(BaseHTTPRequestHandler):
                                "amount": round(19.9 * int(body.get("qty", 1)), 2), "status": "created"}
             return self._send(201, ORDERS[oid])
         parts = path.split("/")
-        if len(parts) >= 4 and parts[1] == "orders" and parts[2] != "":
-            oid, action = parts[2], (parts[3] if len(parts) > 3 else "")
+        if len(parts) >= 5 and parts[1] == "api" and parts[2] == "orders" and parts[3] != "":
+            oid, action = parts[3], (parts[4] if len(parts) > 4 else "")
             with LOCK:
                 order = ORDERS.get(oid)
             if not order:

@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": ["id", "customer", "product", "amount", "status"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^ROB-[0-9a-f]{8}$"},
+    "customer": {"type": "string"},
+    "product": {"type": "string"},
+    "amount": {"type": "number"},
+    "status": {"enum": ["created", "paid", "cancelled"]}
+  }
+}
