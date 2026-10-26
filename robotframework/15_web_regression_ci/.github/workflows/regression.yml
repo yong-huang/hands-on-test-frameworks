@@ -1,0 +1,43 @@
+# robot/15：Web 回归套件的 CI 工作流（act 本地离线真跑版）
+#
+# 形态说明（离线口径，本机网络实测：github.com 不通，见 playwright/18 与 labs/30 踩坑链）：
+# - steps 全部为 run 命令、零外部 action（uses:）——act 离线真跑不能从 github 拉 action 仓库
+# - job 级 container 用 selenium/standalone-chrome（arm64 原生，本机已有镜像，labs/24 拉过）：
+#   自带 google-chrome + chromedriver + chromium 用户目录，Selenium Manager 也因此离线可用
+#   （driver 与浏览器同目录、版本匹配，Selenium 4 先查 PATH 命中即不走网络）
+# - 云端 GitHub Actions 跑同一文件也成立：把 container: 换回 runs-on + actions/checkout@v4
+#   + setup-python@v5 + browser-actions/setup-chrome@v1 即可
+name: robot-web-regression
+
+on: [push, workflow_dispatch]
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    container:
+      image: selenium/standalone-chrome:latest
+      options: --shm-size=1g
+    steps:
+      - name: 环境自检（离线：不拉任何外部资源）
+        run: |
+          python3 --version
+          google-chrome --version | head -1
+          chromedriver --version | head -1
+      - name: 安装依赖
+        run: |
+          # 容器内 pip 受 PEP 668 限制，CI 一次性环境用 --break-system-packages 安全
+          python3 -m pip install --quiet --break-system-packages robotframework robotframework-seleniumlibrary
+      - name: 起靶场
+        run: |
+          python3 "$GITHUB_WORKSPACE/robotframework/shop/server.py" --port 8952 &
+          sleep 1
+          curl -sf http://127.0.0.1:8952/api/health
+      - name: 跑回归套件
+        working-directory: robotframework/15_web_regression_ci
+        run: |
+          python3 -m robot --include regression --outputdir reports suites/
+      - name: 报告归档（artifact 等价物）
+        if: always()
+        run: |
+          mkdir -p /tmp/artifacts && find reports -type f -exec cp {} /tmp/artifacts/ \; 2>/dev/null || true
+          find /tmp/artifacts -type f | head -5
