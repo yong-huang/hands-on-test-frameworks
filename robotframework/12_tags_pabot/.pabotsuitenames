@@ -1,0 +1,7 @@
+datasources:ac22f2b9e68f2c9c41d4bfd759b21104a52d5fb2
+commandlineoptions:97d170e1550eee4afc0af065b78cda302a97674c
+suitesfrom:no-suites-from-option
+file:89e0871bc8a204ff82acc90e29d95d3aebccf152
+--suite Suites.Smoke Orders
+--suite Suites.Web Regression A
+--suite Suites.Web Regression B
