@@ -70,8 +70,8 @@ class Handler(BaseHTTPRequestHandler):
                 order["status"] = "paid"
                 return self._send(200, order)
             if action == "cancel":
-                if order["status"] == "paid":
-                    return self._send(409, {"error": "paid order cannot be cancelled"})
+                if order["status"] != "created":
+                    return self._send(409, {"error": f"cannot cancel from {order['status']}"})
                 order["status"] = "cancelled"
                 return self._send(200, order)
         return self._send(404, {"error": "not found"})

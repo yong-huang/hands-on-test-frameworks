@@ -1,6 +1,6 @@
 # 🧪 hands-on-test-frameworks：测试框架动手学习系列
 
-> 八份项目清单落成的动手实验仓库：**8 条实验线、154 个实验**，全部在本机（Apple Silicon）真实跑通，
+> 十份项目清单落成的动手实验仓库：**10 条实验线、189 个实验**，全部在本机（Apple Silicon）真实跑通，
 > 只用开源工具、不碰任何付费 SaaS。每个实验 = **主演示脚本**（apply/observe/clean 生命周期）
 > + **六段式 README** + **交互式架构图**，clone 下来照着跑就能复现每一个结论。
 
@@ -16,16 +16,22 @@
 | Appium iOS | [appium/](appium/README.md) | Java + iOS | 真实 App 贯穿：首会话 → 定位/登录/购物车/结算 → 手势/WebView/Face ID/生命周期 → 数据驱动/POM（页面对象模型）/报告 → 🏁 双模拟器终极套件 | ✅ 14/14 |
 | 测试左移 | [shiftleft/](shiftleft/README.md) | Python | 成本漏斗 → 需求可测性/卡片/矩阵 → 契约先行/TDD/变异 → 静态门禁/SAST/供应链/pre-commit → CI 分层/性能预算 → 🏁 全景串联 | ✅ 20/20 |
 | 服务虚拟化 | [mocking/](mocking/README.md) | Python + Docker | 订单 BFF（Backend for Frontend，聚合多个下游、专供前端的后端层）三下游贯穿：声明式 stub → WireMock/状态机/模板 → 录制回放/故障矩阵 → 契约融合/漂移门禁 → GraphQL/gRPC/WS/Kafka → 🏁 compose 全家桶 | ✅ 18/18 |
+| Selenium Web | [selenium/](selenium/README.md) | Python + Java 双栈 | 带病靶场贯穿：定位/等待 → 窗口/iframe/JS/Actions → 证据链/POM/数据驱动 → Grid 并行/浏览器矩阵/CDP/flaky → 🏁 双栈终极套件 | ✅ 18/18 |
+| Robot Framework | [robotframework/](robotframework/README.md) | Python | 关键字驱动：Web（SeleniumLibrary）/API（RequestsLibrary）/RPA（Excel+桌面）→ 自定义库/编排并行 → 🏁 Web+API+RPA 三合一串联 | ✅ 17/17 |
 
 缩写：a11y＝无障碍可访问性；POM＝页面对象模型；SAST＝静态应用安全测试；WS＝WebSocket。
 
 递进关系：labs 练**用工具** → performance 学**测性能** → playwright/cucumber 挖**深水区** →
-appium 上**真实移动 App** → mocking 斩断**依赖不可控** → shiftleft **向左移** → architect 练**设计体系**。
+appium 上**真移动 App** → selenium/robotframework 吃透 **Web 双流派**。
 
-八份清单文档（阶段规划/验收标准/周计划）见 [docs/](docs/)。
+再往右走：mocking 斩**依赖** → shiftleft **向左移** → architect 练**体系**。
+
+十份清单文档（阶段规划/验收标准/周计划）见 [docs/](docs/)。
 
 共享被测应用让同主题实验可横向对比：labs 12-30 都测 labs/11 造的 FastAPI 订单管理（SUT，被测系统）；
 playwright/03 起与 cucumber/ 全线都测 playwright/02 造的靶场 pw-store。
+
+selenium/ 与 robotframework/ 各有自建靶场（带病电商站 / Robot 商店）。
 
 appium/ 全线测 SauceLabs My Demo App 真实 iOS 应用；shiftleft/ 拿 labs/11 的订单应用当治理对象；mocking/ 的 09 用 labs/11 当真 provider 对账。
 
@@ -60,6 +66,8 @@ cd mocking/01_declarative_mock && ./declarative_mock.sh all # mocking/ 首个实
 - appium：真实 App 的元素歧义与排序键缺陷、WebView context 不可见（降级断言）、Face ID 提示「卡住」、报告线的故意失败
 - shiftleft：预期红贯穿全线（strict 卡点、停挡板全红、门禁 exit 1、超预算即红，脚本内均显式标注）
 - mocking：响亮未命中 404、断网门红、契约外 500、Kafka 毒丸进 DLQ（死信队列）——红是验收的一部分
+- selenium：sleep 版必挂（数据说话）、注入失败留证据、Safari 非前台 click 不生效（JS 兜底）
+- robotframework：负向 422/409 按预期绿、注入失败截图留证、RPA 非法行记表不中断——红是验收的一部分
 - architect：labs 的故意失败用例被审计声明豁免、植入 flaky/劣化 canary/植入 CVE 的抓红即验收
 
 两个跨线注意点：
@@ -70,9 +78,9 @@ cd mocking/01_declarative_mock && ./declarative_mock.sh all # mocking/ 首个实
 ## 🔧 环境要求
 
 - macOS（Apple Silicon 实测）
-- Python 3.11+：labs、performance、architect、shiftleft、mocking
+- Python 3.11+：labs、performance、architect、shiftleft、mocking、selenium、robotframework
 - Node 20+：playwright/ 与 cucumber/（shiftleft 仅 03 复用、mocking 仅 08/10 的 Prism）
-- Docker：labs 14/24/29/30、performance/ 全线、mocking 02-04/07/14/17/18、architect 10（act 本地流水线）
+- Docker：labs 14/24/29/30、performance/ 全线、mocking 02-04/07/14/17/18、architect 10（act 本地流水线）、selenium 13/18（Grid）、robotframework 15（act）
 - Java 17 + Maven + 完整 Xcode（iPhone 17 / iOS 26.5 模拟器）：appium/
 - Chrome+Safari 自带
 - labs 前置一条命令体检：`bash scripts/load_resources.sh check`
@@ -89,5 +97,7 @@ cd mocking/01_declarative_mock && ./declarative_mock.sh all # mocking/ 首个实
 - [appium.md](docs/appium.md)（14）
 - [shiftleft.md](docs/shiftleft.md)（20）
 - [mocking.md](docs/mocking.md)（18）
+- [selenium.md](docs/selenium.md)（18）
+- [robotframework.md](docs/robotframework.md)（17）
 
 实验实现与脚本为系列配套产物。LICENSE 待定（默认保留所有权利，如需 MIT 请告知）。
