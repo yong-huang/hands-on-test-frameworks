@@ -76,7 +76,9 @@ jobs:
           curl -fSL --retry 5 --retry-all-errors --retry-delay 2 \
             -o /tmp/k6.tar.gz \
             https://github.com/grafana/k6/releases/download/v0.57.0/k6-v0.57.0-linux-amd64.tar.gz
-          sudo tar -xzf /tmp/k6.tar.gz -C /usr/local/bin --strip-components=1 k6
+          # 成员名匹配的是归档内原始路径（k6-vX/k6），--strip-components 只管落盘不管匹配——
+          # 写 'k6' 会报 Not found in archive；全量解压（顶层只有二进制+LICENSE）最稳
+          sudo tar -xzf /tmp/k6.tar.gz -C /usr/local/bin --strip-components=1
           k6 --version
           cd labs/27_k6 && ./k6_run.sh
 
