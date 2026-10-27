@@ -71,8 +71,13 @@ jobs:
         run: |
           pip install fastapi "uvicorn[standard]"
           sudo apt-get update && sudo apt-get install -y curl
-          curl -sL https://github.com/grafana/k6/releases/download/v0.57.0/k6-v0.57.0-linux-amd64.tar.gz | tar xz --strip-components=1
-          ./k6 --version
+          # -f 让 HTTP 错误（限流/错误页）显式失败而不是把 HTML 静默管道进 tar；
+          # --retry 兜住 release 资产 302 链路的瞬时抖动（实测 CI 曾因此拿到非 gzip 页）
+          curl -fSL --retry 5 --retry-all-errors --retry-delay 2 \
+            -o /tmp/k6.tar.gz \
+            https://github.com/grafana/k6/releases/download/v0.57.0/k6-v0.57.0-linux-amd64.tar.gz
+          sudo tar -xzf /tmp/k6.tar.gz -C /usr/local/bin --strip-components=1 k6
+          k6 --version
           cd labs/27_k6 && ./k6_run.sh
 
   # ---------- 第 5 层：a11y/安全基线（axe 门禁 + ZAP 报告 artifact） ----------
