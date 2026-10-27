@@ -125,7 +125,10 @@ FAIL 才非 0——基线扫描的定位是"风险清单生成器"而不是拦�
 - **ZAP 打生产或共享环境**。现象：active scan 写坏数据。
   解法：baseline（被动+爬虫）用于日常；active 只在隔离环境。
 - **ZAP 容器连不上 SUT**。现象：扫描目标不可达。
-  解法：`host.docker.internal`（lab 24 同款坑）。
+  解法：`host.docker.internal`（lab 24 同款坑）。**且 SUT 必须绑 0.0.0.0**——标准 Docker
+  下 host-gateway 是网桥网关 IP，绑 127.0.0.1 的服务不接受来自网关的连接（本机 OrbStack
+  会穿透 localhost 所以测不出，CI 实测必红，2026-10-27 踩坑）；另把 ZAP 输出落文件显式
+  判定，别用 grep 掩码式管道——它会把镜像拉取失败静默成一行 "exit code 1"。
 
 深入问答：
 

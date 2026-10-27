@@ -20,7 +20,7 @@ start_sut() {
     # （uvicorn 收到 TERM 后按信号语义退出，若被任何 bash 当作业收尸会打印 Terminated 噪声）
     nohup env APP_DIR="$PWD/$SUT_DIR/app" SUT_DB="$PWD/$SUT_DIR/app/test_orders.db" \
         PY="$PY" PORT="$SUT_PORT" PIDFILE="$PWD/$PIDFILE" \
-        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
+        bash -c 'trap "" TERM INT; cd "$APP_DIR" || exit 1; "$PY" -m uvicorn main:app --host 0.0.0.0 --port "$PORT" </dev/null & U=$!; echo $U > "$PIDFILE"; wait $U; exit 0' \
         </dev/null > ../.sut_a11y.log 2>&1 &
     for i in $(seq 1 40); do
         curl -sf -m 2 "${BASE_URL}/api/health" >/dev/null 2>&1 && return 0
@@ -47,13 +47,30 @@ do_observe() {
     step "observe" "② ZAP 基线扫描（docker，被动扫 + 爬虫；WARN 不阻断，清单落 docs/）"
     # 更新源指向 127.0.0.1：ZAP 2.17 无头模式下「启动检查更新→下载→装完等重启」会死锁
     # （2026-10-25 实测两次复现，各挂 20+ 分钟）；断网更新源让检查秒失败，扫描本体不受影响
+    #
+    # SUT 必须绑 0.0.0.0：ZAP 容器经 host-gateway（网桥网关 IP）访问宿主，标准 Docker 下
+    # 绑 127.0.0.1 的服务不接受来自网关的连接（OrbStack 会穿透所以本机测不出——CI 实测踩坑）
+    #
+    # 输出落 docs/zap_scan.log 并显式判定：grep 掩码式管道会把 docker 拉取失败/ZAP 启动失败
+    # 静默成一行 "exit code 1"（2026-10-27 CI 实测），排查无从下手
+    ZAP_LOG="$PWD/docs/zap_scan.log"
+    set +e
     docker run --rm --add-host=host.docker.internal:host-gateway \
         --add-host=raw.githubusercontent.com:127.0.0.1 \
         --add-host=zap-download-files.s3.amazonaws.com:127.0.0.1 \
         -v "$PWD/docs:/zap/wrk" -t zaproxy/zap-stable \
         zap-baseline.py -t "http://host.docker.internal:${SUT_PORT}/" \
-        -r zap_report.html -I 2>&1 | grep -E "FAIL-NEW|WARN-NEW|PASS:" | tail -3
-    echo ">>> 报告: docs/zap_report.html（浏览器打开可看全部告警明细）"
+        -r zap_report.html -I > "$ZAP_LOG" 2>&1
+    ZAP_RC=$?
+    set -e
+    if grep -qE "FAIL-NEW|WARN-NEW|PASS:" "$ZAP_LOG"; then
+        grep -E "FAIL-NEW|WARN-NEW|PASS:" "$ZAP_LOG" | tail -3 | sed 's/^/    /'
+        echo ">>> 报告: docs/zap_report.html（浏览器打开可看全部告警明细）；完整日志 docs/zap_scan.log"
+    else
+        echo "❌ ZAP 未产出扫描摘要（退出码 $ZAP_RC）——日志尾部：" >&2
+        tail -15 "$ZAP_LOG" >&2
+        exit 1
+    fi
 
     step "observe" "③ 一键重跑语义：本脚本即为可回归的 a11y+安全门禁（CI 见 lab 30）"
 }
